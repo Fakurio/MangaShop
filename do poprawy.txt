@@ -1,0 +1,1 @@
+1. Startowe dane z tabel przerobić na JSON
