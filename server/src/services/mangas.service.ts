@@ -14,6 +14,10 @@ export class MangasService {
       .where('manga.stock_quantity > 0')
       .getMany();
 
+    if (!mangas) {
+      throw new HttpException('Mangas not found', HttpStatus.NOT_FOUND);
+    }
+
     return mangas;
   }
 
