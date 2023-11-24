@@ -8,6 +8,8 @@ export type Manga = {
   img_url: string;
   price: number;
   stock_quantity: number;
+  author: string;
   genres: Genre[];
   reviews: Review[];
+  fetched: boolean;
 };
