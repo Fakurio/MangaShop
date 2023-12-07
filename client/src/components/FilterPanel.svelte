@@ -45,8 +45,6 @@
   .filter-panel {
     display: flex;
     flex-direction: column;
-    margin-top: 2rem;
-    margin-left: 3rem;
     padding: 1.5rem;
     background: #282628;
     border-radius: 1.5rem;
@@ -125,5 +123,37 @@
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+  }
+
+  @media (max-width: 920px) {
+    .filter-panel {
+      grid-column: 1 / 1;
+      grid-row: 2 / 3;
+      width: 100%;
+      justify-self: center;
+    }
+
+    .filter-panel__genres {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    input[type="number"] {
+      width: auto;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .price-section__price-range-wrapper {
+      flex-wrap: wrap;
+    }
+
+    input[type="number"] {
+      width: 100%;
+    }
+
+    input[type="number"] + input[type="number"] {
+      margin-top: 2rem;
+    }
   }
 </style>

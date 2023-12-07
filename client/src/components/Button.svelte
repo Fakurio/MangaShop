@@ -1,8 +1,9 @@
 <script lang="ts">
   export let text: string;
+  export let className = "";
 </script>
 
-<button type="submit">{text}</button>
+<button type="submit" class={className}>{text}</button>
 
 <style>
   button {
