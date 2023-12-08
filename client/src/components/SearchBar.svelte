@@ -1,23 +1,13 @@
 <script lang="ts">
   import Icon from "./Icon.svelte";
-  import { mangaStore, resetStore } from "../stores/manga.store";
+  import { filteredText } from "../stores/manga.store";
   import { onMount } from "svelte";
 
   let query: string;
   let input: HTMLInputElement;
 
   const filterMangasByTitle = () => {
-    if (query) {
-      resetStore();
-      query = query.trim();
-      mangaStore.update((mangas) => {
-        return mangas.filter((manga) =>
-          manga.title.toLowerCase().includes(query.toLowerCase())
-        );
-      });
-    } else {
-      resetStore();
-    }
+    filteredText.set(query);
   };
 
   const handleEnterKey = (e: KeyboardEvent) => {
@@ -28,6 +18,8 @@
 
   onMount(() => {
     input.addEventListener("keydown", (e) => handleEnterKey(e));
+
+    return () => input.removeEventListener("keydown", handleEnterKey);
   });
 </script>
 

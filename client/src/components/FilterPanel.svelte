@@ -1,5 +1,9 @@
 <script lang="ts">
   import Button from "./Button.svelte";
+  import { fetchMangaDetails, mangaStore } from "../stores/manga.store";
+  import { get } from "svelte/store";
+
+  let selectedGenres: string[] = [];
 
   const fetchGenres = async () => {
     let response = await fetch("http://localhost:3000/genres");
@@ -9,6 +13,29 @@
     } else {
       let error = await response.json();
       throw new Error(error.message);
+    }
+  };
+
+  const filterMangasByGenre = async () => {
+    if (selectedGenres.length !== 0) {
+      for (let manga of get(mangaStore)) {
+        await fetchMangaDetails(manga.manga_id);
+      }
+
+      mangaStore.update((mangas) => {
+        return mangas.filter((manga) => {
+          let isProper = true;
+          for (let selectedGenre of selectedGenres) {
+            let genreNames = manga.genres.map((genre) => genre.name);
+            if (!genreNames.includes(selectedGenre)) {
+              isProper = false;
+            }
+          }
+          return isProper;
+        });
+      });
+    } else {
+      console.log("reset store");
     }
   };
 </script>
@@ -22,7 +49,12 @@
       <div class="filter-panel__genres">
         {#each genres as genre (genre.genre_id)}
           <div class="filter-panel__genre">
-            <input id={genre.genre_id} type="checkbox" />
+            <input
+              id={genre.genre_id}
+              value={genre.name}
+              bind:group={selectedGenres}
+              type="checkbox"
+            />
             <label for={genre.genre_id}>{genre.name}</label>
           </div>
         {/each}
@@ -38,7 +70,7 @@
       <input type="number" />
     </div>
   </section>
-  <Button text="Apply Filters" />
+  <Button text="Apply Filters" onClick={filterMangasByGenre} />
 </aside>
 
 <style>

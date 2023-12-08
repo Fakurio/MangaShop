@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { mangaStore, serverError } from "../stores/manga.store";
+  import { filteredMangaStore, serverError } from "../stores/manga.store";
   import MangaCard from "../components/MangaCard.svelte";
   import Header from "../components/Header.svelte";
   import SearchBar from "../components/SearchBar.svelte";
@@ -17,7 +17,7 @@
     <FilterPanel />
     <SearchBar />
     <section class="mangas">
-      {#each $mangaStore as manga (manga.manga_id)}
+      {#each $filteredMangaStore as manga (manga.manga_id)}
         <MangaCard
           manga_id={manga.manga_id}
           title={manga.title}

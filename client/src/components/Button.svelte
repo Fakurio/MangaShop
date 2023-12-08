@@ -1,9 +1,10 @@
 <script lang="ts">
   export let text: string;
   export let className = "";
+  export let onClick: () => void = () => {};
 </script>
 
-<button type="submit" class={className}>{text}</button>
+<button type="submit" class={className} on:click={onClick}>{text}</button>
 
 <style>
   button {
