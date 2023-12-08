@@ -5,12 +5,24 @@ const mangaStore = writable<Manga[]>([]);
 const serverError = writable({ isError: false, message: "" });
 
 const filteredText = writable<string>("");
+const filteredGenres = writable<string[]>([]);
 const filteredMangaStore = derived(
-  [mangaStore, filteredText],
-  ([$mangaStore, $filteredText]) => {
-    return $mangaStore.filter((manga) =>
-      manga.title.toLowerCase().includes($filteredText.toLowerCase())
-    );
+  [mangaStore, filteredText, filteredGenres],
+  ([$mangaStore, $filteredText, $filteredGenres]) => {
+    return $mangaStore
+      .filter((manga) => {
+        let isProper = true;
+        for (let selectedGenre of $filteredGenres) {
+          let genreNames = manga.genres.map((genre) => genre.name);
+          if (!genreNames.includes(selectedGenre)) {
+            isProper = false;
+          }
+        }
+        return isProper;
+      })
+      .filter((manga) => {
+        return manga.title.toLowerCase().includes($filteredText.toLowerCase());
+      });
   }
 );
 
@@ -68,4 +80,5 @@ export {
   serverError,
   filteredMangaStore,
   filteredText,
+  filteredGenres,
 };

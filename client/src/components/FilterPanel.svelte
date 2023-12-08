@@ -1,6 +1,10 @@
 <script lang="ts">
   import Button from "./Button.svelte";
-  import { fetchMangaDetails, mangaStore } from "../stores/manga.store";
+  import {
+    fetchMangaDetails,
+    mangaStore,
+    filteredGenres,
+  } from "../stores/manga.store";
   import { get } from "svelte/store";
 
   let selectedGenres: string[] = [];
@@ -17,26 +21,10 @@
   };
 
   const filterMangasByGenre = async () => {
-    if (selectedGenres.length !== 0) {
-      for (let manga of get(mangaStore)) {
-        await fetchMangaDetails(manga.manga_id);
-      }
-
-      mangaStore.update((mangas) => {
-        return mangas.filter((manga) => {
-          let isProper = true;
-          for (let selectedGenre of selectedGenres) {
-            let genreNames = manga.genres.map((genre) => genre.name);
-            if (!genreNames.includes(selectedGenre)) {
-              isProper = false;
-            }
-          }
-          return isProper;
-        });
-      });
-    } else {
-      console.log("reset store");
+    for (let manga of get(mangaStore)) {
+      await fetchMangaDetails(manga.manga_id);
     }
+    filteredGenres.set(selectedGenres);
   };
 </script>
 
