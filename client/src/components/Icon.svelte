@@ -1,8 +1,11 @@
 <script lang="ts">
   export let type: string;
+  export let onClick: () => void = () => {};
 </script>
 
-<img src="../../public/{type}.svg" alt="{type} icon" class="icon" />
+<button on:click={onClick}>
+  <img src="../{type}.svg" alt="{type} icon" class="icon" />
+</button>
 
 <style>
   .icon {

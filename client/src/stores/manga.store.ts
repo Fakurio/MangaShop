@@ -3,6 +3,7 @@ import type { Manga } from "../types/manga";
 
 const mangaStore = writable<Manga[]>([]);
 const serverError = writable({ isError: false, message: "" });
+let defaultMangas: Manga[] = [];
 
 const fetchMangas = async () => {
   try {
@@ -12,6 +13,7 @@ const fetchMangas = async () => {
       throw new Error(error.message);
     }
     const mangas = await response.json();
+    defaultMangas = mangas;
     mangaStore.set(mangas);
   } catch (e: any) {
     serverError.set({ isError: true, message: e.message });
@@ -50,6 +52,10 @@ const fetchMangaDetails = async (manga_id: number) => {
   }
 };
 
+const resetStore = () => {
+  mangaStore.set(defaultMangas);
+};
+
 fetchMangas();
 
-export { mangaStore, fetchMangaDetails, serverError };
+export { mangaStore, fetchMangaDetails, serverError, resetStore };

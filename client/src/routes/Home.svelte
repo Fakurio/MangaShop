@@ -11,8 +11,6 @@
 
 {#if $serverError.isError}
   <p>{$serverError.message}</p>
-{:else if $mangaStore.length === 0}
-  <p>Try reloading the page</p>
 {:else}
   <Header />
   <main>

@@ -1,10 +1,39 @@
 <script lang="ts">
   import Icon from "./Icon.svelte";
+  import { mangaStore, resetStore } from "../stores/manga.store";
+  import { onMount } from "svelte";
+
+  let query: string;
+  let input: HTMLInputElement;
+
+  const filterMangasByTitle = () => {
+    if (query) {
+      resetStore();
+      query = query.trim();
+      mangaStore.update((mangas) => {
+        return mangas.filter((manga) =>
+          manga.title.toLowerCase().includes(query.toLowerCase())
+        );
+      });
+    } else {
+      resetStore();
+    }
+  };
+
+  const handleEnterKey = (e: KeyboardEvent) => {
+    if (e.key === "Enter") {
+      filterMangasByTitle();
+    }
+  };
+
+  onMount(() => {
+    input.addEventListener("keydown", (e) => handleEnterKey(e));
+  });
 </script>
 
 <div class="search-bar">
-  <input type="text" />
-  <Icon type="search" />
+  <input type="text" bind:value={query} bind:this={input} />
+  <Icon type="search" onClick={filterMangasByTitle} />
 </div>
 
 <style>
