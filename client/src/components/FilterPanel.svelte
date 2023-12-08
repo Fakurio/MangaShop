@@ -4,10 +4,13 @@
     fetchMangaDetails,
     mangaStore,
     filteredGenres,
+    filteredPriceRange,
   } from "../stores/manga.store";
   import { get } from "svelte/store";
+  import type { PriceRange } from "../types/price-range";
 
   let selectedGenres: string[] = [];
+  let selectedPriceRange: PriceRange = { from: 0, to: 200 };
 
   const fetchGenres = async () => {
     let response = await fetch("http://localhost:3000/genres");
@@ -20,11 +23,18 @@
     }
   };
 
-  const filterMangasByGenre = async () => {
+  const applyFilters = async () => {
     for (let manga of get(mangaStore)) {
       await fetchMangaDetails(manga.manga_id);
     }
     filteredGenres.set(selectedGenres);
+    if (!selectedPriceRange.from) {
+      selectedPriceRange.from = 0;
+    }
+    if (!selectedPriceRange.to) {
+      selectedPriceRange.to = 200;
+    }
+    filteredPriceRange.set(selectedPriceRange);
   };
 </script>
 
@@ -54,11 +64,11 @@
   <section class="price-section">
     <h2 class="section-title">Price</h2>
     <div class="price-section__price-range-wrapper">
-      <input type="number" />
-      <input type="number" />
+      <input type="number" bind:value={selectedPriceRange.from} />
+      <input type="number" bind:value={selectedPriceRange.to} />
     </div>
   </section>
-  <Button text="Apply Filters" onClick={filterMangasByGenre} />
+  <Button text="Apply Filters" onClick={applyFilters} />
 </aside>
 
 <style>

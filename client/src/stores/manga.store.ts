@@ -1,14 +1,19 @@
 import { get, writable, derived } from "svelte/store";
 import type { Manga } from "../types/manga";
+import type { PriceRange } from "../types/price-range";
 
 const mangaStore = writable<Manga[]>([]);
 const serverError = writable({ isError: false, message: "" });
 
 const filteredText = writable<string>("");
 const filteredGenres = writable<string[]>([]);
+const filteredPriceRange = writable<PriceRange>({
+  from: 0,
+  to: Number.POSITIVE_INFINITY,
+});
 const filteredMangaStore = derived(
-  [mangaStore, filteredText, filteredGenres],
-  ([$mangaStore, $filteredText, $filteredGenres]) => {
+  [mangaStore, filteredText, filteredGenres, filteredPriceRange],
+  ([$mangaStore, $filteredText, $filteredGenres, $filteredPriceRange]) => {
     return $mangaStore
       .filter((manga) => {
         let isProper = true;
@@ -19,6 +24,12 @@ const filteredMangaStore = derived(
           }
         }
         return isProper;
+      })
+      .filter((manga) => {
+        return (
+          manga.price >= $filteredPriceRange.from &&
+          manga.price <= $filteredPriceRange.to
+        );
       })
       .filter((manga) => {
         return manga.title.toLowerCase().includes($filteredText.toLowerCase());
@@ -81,4 +92,5 @@ export {
   filteredMangaStore,
   filteredText,
   filteredGenres,
+  filteredPriceRange,
 };
