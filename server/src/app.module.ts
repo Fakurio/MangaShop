@@ -7,10 +7,17 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from './database/data-source';
 import { GenresController } from './controllers/genres.controller';
 import { GenresService } from './services/genres.service';
+import { UsersController } from './controllers/users.controller';
+import { UsersService } from './services/users.service';
 
 @Module({
-  controllers: [MangasController, CartsController, GenresController],
-  providers: [MangasService, CartsService, GenresService],
+  controllers: [
+    MangasController,
+    CartsController,
+    GenresController,
+    UsersController,
+  ],
+  providers: [MangasService, CartsService, GenresService, UsersService],
   imports: [TypeOrmModule.forRoot(dataSourceOptions)],
 })
 export class AppModule {}

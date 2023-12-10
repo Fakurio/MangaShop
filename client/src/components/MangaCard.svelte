@@ -39,6 +39,10 @@
     margin-top: 0.8rem;
   }
 
+  .manga-card__title:hover {
+    color: #e58e27;
+  }
+
   .manga-card__footer {
     display: flex;
     justify-content: space-between;
