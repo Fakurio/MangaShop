@@ -70,7 +70,7 @@
   main {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 1fr min-content;
     padding: 1.5rem 5rem;
   }
 
