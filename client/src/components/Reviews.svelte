@@ -22,16 +22,20 @@
 
 <section class="reviews">
   <h2 class="reviews__heading">Reviews</h2>
-  {#each reviewsList as review (review.review_id)}
-    <div class="reviews__review">
-      <Rating rating={review.rating} />
-      <p class="review__content">{review.content}</p>
-      <p class="review__date">
-        {review.user_id}, {review.created_at.getDate()}.{review.created_at.getMonth() +
-          1}.{review.created_at.getFullYear()}
-      </p>
-    </div>
-  {/each}
+  {#if reviewsList.length === 0}
+    <p class="reviews__error">There is no reviews yet</p>
+  {:else}
+    {#each reviewsList as review (review.review_id)}
+      <div class="reviews__review">
+        <Rating rating={review.rating} />
+        <p class="review__content">{review.content}</p>
+        <p class="review__date">
+          {review.user_id}, {review.created_at.getDate()}.{review.created_at.getMonth() +
+            1}.{review.created_at.getFullYear()}
+        </p>
+      </div>
+    {/each}
+  {/if}
 </section>
 
 <style>
@@ -65,5 +69,13 @@
   .review__date {
     margin-top: 1rem;
     text-align: right;
+  }
+
+  .reviews__error {
+    text-align: center;
+    color: rgb(184, 40, 40);
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-top: 2rem;
   }
 </style>
