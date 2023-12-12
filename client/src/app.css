@@ -25,3 +25,15 @@ button {
   background-color: transparent;
   border: none;
 }
+
+.error {
+  color: red;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.error--server {
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin-top: 3rem;
+}

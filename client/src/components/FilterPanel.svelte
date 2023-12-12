@@ -58,7 +58,7 @@
         {/each}
       </div>
     {:catch error}
-      <p>{error}</p>
+      <p class="error error--server">{error}</p>
     {/await}
   </section>
   <section class="price-section">

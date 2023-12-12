@@ -10,7 +10,7 @@
 </script>
 
 {#if $serverError.isError}
-  <p>{$serverError.message}</p>
+  <p class="error error--server">{$serverError.message}</p>
 {:else}
   <Header />
   <main>
