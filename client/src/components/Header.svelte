@@ -29,7 +29,7 @@
     {:else}
       <span>Cart</span>
     {/if}
-    <span>Username</span>
+    <span><a href="/login" use:link>Login</a></span>
   </div>
 </header>
 

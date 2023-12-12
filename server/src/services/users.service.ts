@@ -11,6 +11,7 @@ export class UsersService {
       .getRepository(User)
       .createQueryBuilder('user')
       .select('user.name')
+      .where('user.user_id = :user_id', { user_id: user_id })
       .getOne();
 
     if (!user) {
