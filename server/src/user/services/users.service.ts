@@ -20,4 +20,12 @@ export class UsersService {
 
     return user;
   }
+
+  async checkUser(email: string): Promise<boolean> {
+    const user = await this.dataSource
+      .getRepository(User)
+      .exist({ where: { email: email } });
+
+    return user;
+  }
 }

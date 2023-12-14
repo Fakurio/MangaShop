@@ -7,17 +7,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from './database/data-source';
 import { GenresController } from './controllers/genres.controller';
 import { GenresService } from './services/genres.service';
-import { UsersController } from './controllers/users.controller';
-import { UsersService } from './services/users.service';
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
 
 @Module({
-  controllers: [
-    MangasController,
-    CartsController,
-    GenresController,
-    UsersController,
-  ],
-  providers: [MangasService, CartsService, GenresService, UsersService],
-  imports: [TypeOrmModule.forRoot(dataSourceOptions)],
+  controllers: [MangasController, CartsController, GenresController],
+  providers: [MangasService, CartsService, GenresService],
+  imports: [TypeOrmModule.forRoot(dataSourceOptions), AuthModule, UserModule],
 })
 export class AppModule {}

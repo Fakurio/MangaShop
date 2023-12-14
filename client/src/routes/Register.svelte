@@ -12,21 +12,23 @@
 
   let user: RegisterUser = {
     username: "",
-    password: { value: "", confirm: "" },
+    password: "",
     email: "",
   };
 
   let errors: RegisterError = cleanErrors;
+  let serverResponse: string = "";
+  let isServerError: boolean = false;
 
   const resetErrors = () => {
     errors = cleanErrors;
   };
 
-  const handleFormSubmit = () => {
+  const handleFormSubmit = async () => {
     let parsedUser = RegisterSchema.safeParse(user);
     if (!parsedUser.success) {
       fromZodError(parsedUser.error).details.forEach((error) => {
-        switch (error.path.join("-")) {
+        switch (error.path.join("")) {
           case "email": {
             errors = { ...errors, email: error.message };
             break;
@@ -35,16 +37,46 @@
             errors = { ...errors, username: error.message };
             break;
           }
-          default: {
+          case "password": {
             errors = { ...errors, password: error.message };
             break;
           }
         }
       });
+    } else {
+      serverResponse = "";
+      isServerError = false;
+      try {
+        let response = await fetch("http://localhost:3000/auth/register", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify(user),
+        });
+        if (!response.ok) {
+          let err = await response.json();
+          throw new Error(err.message);
+        }
+        let msg = await response.json();
+        serverResponse = msg.message;
+      } catch (e: any) {
+        serverResponse = e.message;
+        isServerError = true;
+      }
     }
   };
 </script>
 
+{#if serverResponse}
+  <p
+    class={`server-response ${
+      isServerError ? "server-response--error" : undefined
+    }`}
+  >
+    {serverResponse}
+  </p>
+{/if}
 <main>
   <form class="register-form" on:submit|preventDefault={handleFormSubmit}>
     <h1 class="register-form__heading">Register</h1>
@@ -78,18 +110,8 @@
       <label for="password">Password</label>
       <input
         id="password"
-        type="text"
-        bind:value={user.password.value}
-        on:input={() => resetErrors()}
-        required
-      />
-    </div>
-    <div class="register-form__field">
-      <label for="conf-password">Confirm Password</label>
-      <input
-        id="conf-password"
-        type="text"
-        bind:value={user.password.confirm}
+        type="password"
+        bind:value={user.password}
         on:input={() => resetErrors()}
         required
       />
@@ -97,12 +119,49 @@
         <span class="error">{errors.password}</span>
       {/if}
     </div>
-
     <Button text="Register" />
   </form>
 </main>
 
 <style>
+  .server-response {
+    background-color: green;
+    color: white;
+    padding: 1rem;
+    font-weight: 700;
+    font-size: 1.3rem;
+    text-align: center;
+    animation:
+      slideIn 0.3s ease-in-out,
+      slideOut 0.3s ease-in-out 2s forwards;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+
+  .server-response--error {
+    background-color: rgb(197, 40, 40);
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateY(-100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideOut {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-100%);
+    }
+  }
+
   main {
     display: flex;
     justify-content: center;

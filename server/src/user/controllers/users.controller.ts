@@ -1,8 +1,8 @@
 import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { User } from 'src/entities/user.entity';
-import { UsersService } from 'src/services/users.service';
+import { UsersService } from '../services/users.service';
 
-@Controller('/users')
+@Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 

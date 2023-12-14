@@ -6,33 +6,16 @@ const RegisterSchema = z.object({
   }),
   email: z.string().email({ message: "Enter email in proper format" }),
   password: z
-    .object({
-      value: z
-        .string()
-        .regex(
-          new RegExp(
-            "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$"
-          ),
-          {
-            message:
-              "Minimum 8 characters, at least one letter, one number and one special character",
-          }
-        ),
-      confirm: z
-        .string()
-        .regex(
-          new RegExp(
-            "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$"
-          ),
-          {
-            message:
-              "Minimum 8 characters, at least one letter, one number and one special character",
-          }
-        ),
-    })
-    .refine((password) => password.value === password.confirm, {
-      message: "Passwords don't match",
-    }),
+    .string()
+    .regex(
+      new RegExp(
+        "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$"
+      ),
+      {
+        message:
+          "Minimum 8 characters, at least one letter, one number and one special character",
+      }
+    ),
 });
 
 type RegisterUser = z.infer<typeof RegisterSchema>;

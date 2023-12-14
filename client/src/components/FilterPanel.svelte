@@ -118,7 +118,7 @@
 
   input[type="checkbox"]:checked {
     background-color: #e58e27;
-    background-image: url("../public/check.svg");
+    background-image: url("./check.svg");
   }
 
   .price-section {
