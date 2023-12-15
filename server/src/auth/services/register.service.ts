@@ -3,7 +3,7 @@ import { RegisterUserDto } from '../dto/register-user.dto';
 import { UsersService } from 'src/user/services/users.service';
 import RegisterUserSchema from '../dto/register-user.dto';
 import { HashService } from './hash.service';
-import { DataSource, InsertResult } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 
 @Injectable()

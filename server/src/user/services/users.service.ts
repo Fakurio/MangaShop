@@ -21,6 +21,16 @@ export class UsersService {
     return user;
   }
 
+  async findOne(email: string): Promise<User | null> {
+    const user = await this.dataSource
+      .getRepository(User)
+      .createQueryBuilder('user')
+      .where('user.email = :email', { email: email })
+      .getOne();
+
+    return user;
+  }
+
   async checkUser(email: string): Promise<boolean> {
     const user = await this.dataSource
       .getRepository(User)

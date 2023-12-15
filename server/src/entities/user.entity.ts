@@ -13,7 +13,7 @@ export class User {
   @Column('varchar', { length: 30, unique: true })
   email: string;
 
-  @Column('varchar', { length: 30 })
+  @Column('varchar', { length: 200 })
   password: string;
 
   @OneToMany(() => Cart, (cart) => cart.user_id, { cascade: true })
