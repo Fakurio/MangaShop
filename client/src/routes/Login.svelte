@@ -1,23 +1,23 @@
 <script lang="ts">
   import Button from "../components/Button.svelte";
   import Header from "../components/Header.svelte";
-  import type { RegisterUser, RegisterError } from "../types/user-register";
-  import RegisterSchema from "../types/user-register";
+  import type { LoginError, LoginUser } from "../types/user-login";
+  import LoginSchema from "../types/user-login";
   import { fromZodError } from "zod-validation-error";
+  import { authStore } from "../stores/auth.store";
+  import { replace } from "svelte-spa-router";
 
   const cleanErrors = {
-    username: "",
     password: "",
     email: "",
   };
 
-  let user: RegisterUser = {
-    username: "",
+  let user: LoginUser = {
     password: "",
     email: "",
   };
 
-  let errors: RegisterError = cleanErrors;
+  let errors: LoginError = cleanErrors;
   let serverResponse: string = "";
   let isServerError: boolean = false;
 
@@ -26,20 +26,12 @@
   };
 
   const handleFormSubmit = async () => {
-    let parsedUser = RegisterSchema.safeParse(user);
+    let parsedUser = LoginSchema.safeParse(user);
     if (!parsedUser.success) {
       fromZodError(parsedUser.error).details.forEach((error) => {
         switch (error.path.join("")) {
           case "email": {
             errors = { ...errors, email: error.message };
-            break;
-          }
-          case "username": {
-            errors = { ...errors, username: error.message };
-            break;
-          }
-          case "password": {
-            errors = { ...errors, password: error.message };
             break;
           }
         }
@@ -48,19 +40,22 @@
       serverResponse = "";
       isServerError = false;
       try {
-        let response = await fetch("http://localhost:3000/auth/register", {
+        let response = await fetch("http://localhost:3000/auth/login", {
           method: "POST",
           headers: {
             "content-type": "application/json",
           },
           body: JSON.stringify(user),
         });
+
         if (!response.ok) {
           let err = await response.json();
           throw new Error(err.message);
         }
-        let msg = await response.json();
-        serverResponse = msg.message;
+
+        let loggedInUser = await response.json();
+        authStore.set(loggedInUser);
+        replace("/");
       } catch (e: any) {
         serverResponse = e.message;
         isServerError = true;
@@ -80,22 +75,9 @@
 {/if}
 <Header />
 <main>
-  <form class="register-form" on:submit|preventDefault={handleFormSubmit}>
-    <h1 class="register-form__heading">Register</h1>
-    <div class="register-form__field">
-      <label for="username">Username</label>
-      <input
-        id="username"
-        type="text"
-        bind:value={user.username}
-        on:input={() => resetErrors()}
-        required
-      />
-      {#if errors.username}
-        <span class="error">{errors.username}</span>
-      {/if}
-    </div>
-    <div class="register-form__field">
+  <form class="login-form" on:submit|preventDefault={handleFormSubmit}>
+    <h1 class="login-form__heading">Login</h1>
+    <div class="login-form__field">
       <label for="email">Email</label>
       <input
         id="email"
@@ -108,7 +90,7 @@
         <span class="error">{errors.email}</span>
       {/if}
     </div>
-    <div class="register-form__field">
+    <div class="login-form__field">
       <label for="password">Password</label>
       <input
         id="password"
@@ -121,7 +103,7 @@
         <span class="error">{errors.password}</span>
       {/if}
     </div>
-    <Button text="Register" />
+    <Button text="Login" />
   </form>
 </main>
 
@@ -172,7 +154,7 @@
     padding: 1rem;
   }
 
-  .register-form {
+  .login-form {
     display: flex;
     flex-direction: column;
     color: white;
@@ -184,17 +166,17 @@
     gap: 2rem;
   }
 
-  .register-form__heading {
+  .login-form__heading {
     text-align: center;
     font-size: 2.5rem;
   }
 
-  .register-form__field {
+  .login-form__field {
     display: flex;
     flex-direction: column;
   }
 
-  .register-form__field input {
+  .login-form__field input {
     background-color: #383638;
     border: none;
     padding: 0.5rem;
@@ -204,7 +186,7 @@
     border-radius: 0.5rem;
   }
 
-  .register-form__field label {
+  .login-form__field label {
     font-weight: 700;
     font-size: 1.2rem;
   }

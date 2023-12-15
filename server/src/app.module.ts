@@ -9,10 +9,18 @@ import { GenresController } from './controllers/genres.controller';
 import { GenresService } from './services/genres.service';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   controllers: [MangasController, CartsController, GenresController],
   providers: [MangasService, CartsService, GenresService],
-  imports: [TypeOrmModule.forRoot(dataSourceOptions), AuthModule, UserModule],
+  imports: [
+    TypeOrmModule.forRoot(dataSourceOptions),
+    AuthModule,
+    UserModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+  ],
 })
 export class AppModule {}

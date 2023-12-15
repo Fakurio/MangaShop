@@ -1,6 +1,7 @@
 <script lang="ts">
   import { link } from "svelte-spa-router";
   import { onMount } from "svelte";
+  import { authStore } from "../stores/auth.store";
   import Icon from "./Icon.svelte";
 
   let isCartIconHidden = false;
@@ -29,7 +30,12 @@
     {:else}
       <span>Cart</span>
     {/if}
-    <span><a href="/login" use:link>Login</a></span>
+    {#if !$authStore}
+      <span><a href="/register" use:link>Register</a></span>
+      <span><a href="/login" use:link>Login</a></span>
+    {:else}
+      <span>{$authStore.username}</span>
+    {/if}
   </div>
 </header>
 
