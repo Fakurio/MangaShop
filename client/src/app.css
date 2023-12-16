@@ -24,6 +24,7 @@ ul {
 button {
   background-color: transparent;
   border: none;
+  color: inherit;
 }
 
 .error {

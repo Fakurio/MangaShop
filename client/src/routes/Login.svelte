@@ -134,7 +134,7 @@
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    margin-top: 5rem;
+    margin-top: 3rem;
     padding: 1rem;
   }
 
