@@ -7,10 +7,17 @@ import { LoginService } from './services/login.service';
 import { JwtModule } from '@nestjs/jwt';
 import { RefreshTokenService } from './services/refreshToken.service';
 import { ConfigService } from '@nestjs/config';
+import { LogoutService } from './services/logout.service';
 
 @Module({
   controllers: [AuthController],
-  providers: [RegisterService, HashService, LoginService, RefreshTokenService],
+  providers: [
+    RegisterService,
+    HashService,
+    LoginService,
+    LogoutService,
+    RefreshTokenService,
+  ],
   imports: [
     UserModule,
     JwtModule.registerAsync({

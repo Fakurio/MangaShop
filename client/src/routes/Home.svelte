@@ -8,25 +8,25 @@
   import { refreshToken, authStore } from "../stores/auth.store";
   import { get } from "svelte/store";
 
-  let isLoading = true;
+  let isLoading = false;
 
-  onMount(() => {
-    const verifyRefreshToken = async () => {
-      try {
-        await refreshToken();
-      } catch (err) {
-        console.log(err);
-      } finally {
-        isLoading = false;
-      }
-    };
+  // onMount(() => {
+  //   const verifyRefreshToken = async () => {
+  //     try {
+  //       await refreshToken();
+  //     } catch (err) {
+  //       console.log(err);
+  //     } finally {
+  //       isLoading = false;
+  //     }
+  //   };
 
-    if (!get(authStore)) {
-      verifyRefreshToken();
-    } else {
-      isLoading = false;
-    }
-  });
+  //   if (!get(authStore)) {
+  //     verifyRefreshToken();
+  //   } else {
+  //     isLoading = false;
+  //   }
+  // });
 
   onDestroy(() => serverError.set({ isError: false, message: "" }));
 </script>

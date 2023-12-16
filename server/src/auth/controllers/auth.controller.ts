@@ -1,10 +1,20 @@
-import { Body, Controller, Post, UseGuards, Request } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+  Request,
+  Res,
+  Get,
+} from '@nestjs/common';
 import { RegisterService } from '../services/register.service';
 import { RegisterUserDto } from '../dto/register-user.dto';
 import { LoginUserDto } from '../dto/login-user.dto';
 import { LoginService } from '../services/login.service';
 import { RefreshTokenService } from '../services/refreshToken.service';
 import { JwtGuard } from '../guards/jwt.guard';
+import { Response } from 'express';
+import { LogoutService } from '../services/logout.service';
 
 @Controller('auth')
 export class AuthController {
@@ -12,6 +22,7 @@ export class AuthController {
     private registerService: RegisterService,
     private loginService: LoginService,
     private refreshTokenService: RefreshTokenService,
+    private logoutService: LogoutService,
   ) {}
 
   @Post('register')
@@ -20,13 +31,22 @@ export class AuthController {
   }
 
   @Post('login')
-  loginUser(@Body() loginUserDto: LoginUserDto) {
-    return this.loginService.loginUser(loginUserDto);
+  loginUser(
+    @Body() loginUserDto: LoginUserDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    return this.loginService.loginUser(loginUserDto, response);
   }
 
   @UseGuards(JwtGuard)
-  @Post('refresh')
-  refreshToken(@Request() req) {
-    return this.refreshTokenService.refreshToken(req.user);
+  @Get('refresh')
+  refreshToken(@Request() req, @Res({ passthrough: true }) res: Response) {
+    return this.refreshTokenService.refreshToken(req, res);
+  }
+
+  @UseGuards(JwtGuard)
+  @Get('logout')
+  logoutUser(@Request() req, @Res({ passthrough: true }) res: Response) {
+    return this.logoutService.logoutUser(req, res);
   }
 }

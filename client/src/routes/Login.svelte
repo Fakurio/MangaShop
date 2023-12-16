@@ -4,8 +4,7 @@
   import type { LoginError, LoginUser } from "../types/user-login";
   import LoginSchema from "../types/user-login";
   import { fromZodError } from "zod-validation-error";
-  import { authStore } from "../stores/auth.store";
-  import { replace } from "svelte-spa-router";
+  import { login } from "../stores/auth.store";
 
   const cleanErrors = {
     password: "",
@@ -40,22 +39,7 @@
       serverResponse = "";
       isServerError = false;
       try {
-        let response = await fetch("http://localhost:3000/auth/login", {
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-          },
-          body: JSON.stringify(user),
-        });
-
-        if (!response.ok) {
-          let err = await response.json();
-          throw new Error(err.message);
-        }
-
-        let loggedInUser = await response.json();
-        authStore.set(loggedInUser);
-        replace("/");
+        await login(user);
       } catch (e: any) {
         serverResponse = e.message;
         isServerError = true;

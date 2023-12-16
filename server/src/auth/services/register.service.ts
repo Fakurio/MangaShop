@@ -34,12 +34,7 @@ export class RegisterService {
 
     let hashedPassword = await this.hashService.hashPassword(password);
     try {
-      await this.dataSource
-        .createQueryBuilder()
-        .insert()
-        .into(User)
-        .values({ name: username, email: email, password: hashedPassword })
-        .execute();
+      await this.usersService.addNewUser(username, email, hashedPassword);
 
       return {
         message: 'User registered successfully',

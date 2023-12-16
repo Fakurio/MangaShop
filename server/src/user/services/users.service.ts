@@ -31,11 +31,37 @@ export class UsersService {
     return user;
   }
 
+  async findByRefreshToken(rT: string) {
+    return await this.dataSource
+      .getRepository(User)
+      .createQueryBuilder('user')
+      .where('user.refresh_token = :rT', { rT: rT })
+      .getOne();
+  }
+
   async checkUser(email: string): Promise<boolean> {
     const user = await this.dataSource
       .getRepository(User)
       .exist({ where: { email: email } });
 
     return user;
+  }
+
+  async addNewUser(username: string, email: string, password: string) {
+    return await this.dataSource
+      .createQueryBuilder()
+      .insert()
+      .into(User)
+      .values({ name: username, email: email, password: password })
+      .execute();
+  }
+
+  async updateRefreshToken(id: number, rf: string) {
+    return await this.dataSource
+      .createQueryBuilder()
+      .update(User)
+      .set({ refresh_token: rf })
+      .where('user_id = :id', { id: id })
+      .execute();
   }
 }

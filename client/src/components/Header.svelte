@@ -1,8 +1,9 @@
 <script lang="ts">
   import { link } from "svelte-spa-router";
   import { onMount } from "svelte";
-  import { authStore } from "../stores/auth.store";
+  import { authStore, logout } from "../stores/auth.store";
   import Icon from "./Icon.svelte";
+  import Button from "./Button.svelte";
 
   let isCartIconHidden = false;
 
@@ -35,6 +36,9 @@
       <span><a href="/login" use:link>Login</a></span>
     {:else}
       <span>{$authStore.username}</span>
+      <button class="right-block__logout" on:click={() => logout()}
+        >Logout</button
+      >
     {/if}
   </div>
 </header>
@@ -61,6 +65,11 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 1rem;
+  }
+
+  .right-block__logout {
+    color: inherit;
+    font-size: 1rem;
   }
 
   a:hover {
