@@ -9,9 +9,6 @@ const refreshToken = async () => {
   try {
     let response = await fetch("http://localhost:3000/auth/refresh", {
       method: "GET",
-      headers: {
-        authorization: `Bearer ${get(authStore)?.access_token}`,
-      },
       credentials: "include",
     });
 
@@ -22,13 +19,13 @@ const refreshToken = async () => {
 
     let data = await response.json();
     authStore.update((prev: LoggedInUser | null) => {
-      return { ...prev!, access_token: data.access_token };
+      return {
+        ...prev!,
+        username: data.username,
+        access_token: data.access_token,
+      };
     });
-
-    return data.access_token;
-  } catch (e: any) {
-    console.log(e.message);
-  }
+  } catch (e: any) {}
 };
 
 const login = async (user: LoginUser) => {

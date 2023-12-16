@@ -14,7 +14,6 @@ export class RefreshTokenService {
 
   async refreshToken(req, res: Response) {
     const cookies = req.cookies;
-    const aTpayload = req.user;
 
     if (!cookies?.jwt) {
       throw new HttpException('No cookies', HttpStatus.UNAUTHORIZED);
@@ -30,13 +29,6 @@ export class RefreshTokenService {
       const rTpayload = await this.jwtService.verifyAsync(refreshToken, {
         secret: this.configService.get('JWT_SECRET'),
       });
-      if (!(rTpayload.email === aTpayload.email)) {
-        throw new HttpException(
-          'Token payloads do not match',
-          HttpStatus.UNAUTHORIZED,
-        );
-      }
-
       const { sub, email, username } = rTpayload;
       const newPayload = {
         sub: sub,
@@ -48,13 +40,14 @@ export class RefreshTokenService {
         expiresIn: '1d',
       });
 
-      this.usersService.updateRefreshToken(aTpayload.sub, newRefreshToken);
+      this.usersService.updateRefreshToken(rTpayload.sub, newRefreshToken);
 
       res.cookie('jwt', newRefreshToken, {
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000,
       });
       return {
+        username: username,
         access_token: newAccessToken,
       };
     } catch {

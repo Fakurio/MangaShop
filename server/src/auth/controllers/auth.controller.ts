@@ -38,7 +38,6 @@ export class AuthController {
     return this.loginService.loginUser(loginUserDto, response);
   }
 
-  @UseGuards(JwtGuard)
   @Get('refresh')
   refreshToken(@Request() req, @Res({ passthrough: true }) res: Response) {
     return this.refreshTokenService.refreshToken(req, res);
