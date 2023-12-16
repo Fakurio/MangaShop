@@ -4,14 +4,36 @@
   import Header from "../components/Header.svelte";
   import SearchBar from "../components/SearchBar.svelte";
   import FilterPanel from "../components/FilterPanel.svelte";
-  import { onDestroy } from "svelte";
+  import { onDestroy, onMount } from "svelte";
+  import { refreshToken, authStore } from "../stores/auth.store";
+  import { get } from "svelte/store";
+
+  let isLoading = true;
+
+  onMount(() => {
+    const verifyRefreshToken = async () => {
+      try {
+        await refreshToken();
+      } catch (err) {
+        console.log(err);
+      } finally {
+        isLoading = false;
+      }
+    };
+
+    if (!get(authStore)) {
+      verifyRefreshToken();
+    } else {
+      isLoading = false;
+    }
+  });
 
   onDestroy(() => serverError.set({ isError: false, message: "" }));
 </script>
 
 {#if $serverError.isError}
   <p class="error error--server">{$serverError.message}</p>
-{:else}
+{:else if !isLoading}
   <Header />
   <main>
     <FilterPanel />

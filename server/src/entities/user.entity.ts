@@ -16,6 +16,9 @@ export class User {
   @Column('varchar', { length: 200 })
   password: string;
 
+  @Column('varchar', { length: 200 })
+  refresh_token: string;
+
   @OneToMany(() => Cart, (cart) => cart.user_id, { cascade: true })
   carts?: Cart[];
 

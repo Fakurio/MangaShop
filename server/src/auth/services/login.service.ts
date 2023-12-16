@@ -40,7 +40,6 @@ export class LoginService {
     const payload = { sub: user.user_id, email: user.email };
     return {
       username: user.name,
-      email: user.email,
       access_token: await this.jwtService.signAsync(payload),
       refresh_token: await this.jwtService.signAsync(payload, {
         expiresIn: '1d',
