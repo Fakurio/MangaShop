@@ -83,8 +83,6 @@ const fetchMangaDetails = async (manga_id: number) => {
   }
 };
 
-fetchMangas();
-
 export {
   mangaStore,
   fetchMangaDetails,
@@ -93,4 +91,5 @@ export {
   filteredText,
   filteredGenres,
   filteredPriceRange,
+  fetchMangas,
 };

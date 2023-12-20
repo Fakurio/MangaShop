@@ -15,5 +15,6 @@
     filter: invert(52%) sepia(0%) saturate(1541%) hue-rotate(36deg)
       brightness(85%) contrast(85%);
     cursor: pointer;
+    position: relative;
   }
 </style>

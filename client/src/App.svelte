@@ -6,9 +6,15 @@
   import MangaDetails from "./routes/MangaDetails.svelte";
   import Register from "./routes/Register.svelte";
   import Login from "./routes/Login.svelte";
+  import Cart from "./routes/Cart.svelte";
   import { wrap } from "svelte-spa-router/wrap";
   import { authStore, refreshToken } from "./stores/auth.store";
   import { get } from "svelte/store";
+  import { getCartFromLocalStorage } from "./stores/cart.store";
+  import { fetchMangas } from "./stores/manga.store";
+  import { onMount } from "svelte";
+
+  let isLoading = true;
 
   const verifyRefreshToken = () => {
     if (!get(authStore)) {
@@ -22,18 +28,32 @@
     }
   };
 
+  onMount(async () => {
+    try {
+      await fetchMangas();
+    } finally {
+      isLoading = false;
+    }
+  });
+
   let routes = {
     "/": wrap({
       component: Home,
-      conditions: [() => verifyRefreshToken()],
+      conditions: [() => getCartFromLocalStorage(), () => verifyRefreshToken()],
     }),
     "/manga/:id": wrap({
       component: MangaDetails,
-      conditions: [() => verifyRefreshToken()],
+      conditions: [() => getCartFromLocalStorage(), () => verifyRefreshToken()],
     }),
     "/register": Register,
     "/login": Login,
+    "/cart": wrap({
+      component: Cart,
+      conditions: [() => getCartFromLocalStorage(), () => verifyRefreshToken()],
+    }),
   };
 </script>
 
-<Router {routes} />
+{#if !isLoading}
+  <Router {routes} />
+{/if}

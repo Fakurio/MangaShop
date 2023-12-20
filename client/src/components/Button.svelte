@@ -16,6 +16,7 @@
     font-weight: 700;
     border-radius: 1rem;
     cursor: pointer;
+    color: #383638;
   }
 
   button:hover {

@@ -1,6 +1,8 @@
 <script lang="ts">
   import { link } from "svelte-spa-router";
   import Button from "./Button.svelte";
+  import { addToCart } from "../stores/cart.store";
+
   export let title: string;
   export let img_url: string;
   export let price: number;
@@ -14,7 +16,11 @@
   </h2>
   <div class="manga-card__footer">
     <span class="manga-card__price">{price} PLN</span>
-    <Button text="Buy" className="manga-card__btn" />
+    <Button
+      onClick={() => addToCart({ manga_id, quantity: 1 })}
+      text="Buy"
+      className="manga-card__btn"
+    />
   </div>
 </div>
 

@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { link } from "svelte-spa-router";
+  import { link, push } from "svelte-spa-router";
   import { onMount } from "svelte";
   import { authStore, logout } from "../stores/auth.store";
   import Icon from "./Icon.svelte";
+  import cartStore from "../stores/cart.store";
 
   let isCartIconHidden = false;
   let isMenuCollapsed = true;
@@ -33,11 +34,10 @@
       {/if}
     </div>
     <div class="header__right-block">
-      {#if !isCartIconHidden}
-        <Icon type="cart" />
-      {:else}
-        <span>Cart</span>
+      {#if $cartStore.length > 0}
+        <span class="cart-count">{$cartStore.length}</span>
       {/if}
+      <Icon type="cart" onClick={() => push("/cart")} />
       {#if !$authStore}
         <span><a href="/register" use:link>Register</a></span>
         <span><a href="/login" use:link>Login</a></span>
@@ -60,11 +60,7 @@
           {/if}
         </div>
         <div class="header__right-block">
-          {#if !isCartIconHidden}
-            <Icon type="cart" />
-          {:else}
-            <a href="/" use:link>Cart</a>
-          {/if}
+          <a href="/cart" use:link>Cart</a>
           {#if !$authStore}
             <span><a href="/register" use:link>Register</a></span>
             <span><a href="/login" use:link>Login</a></span>
@@ -140,6 +136,23 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 1rem;
+    position: relative;
+  }
+
+  .header__right-block .cart-count {
+    position: absolute;
+    top: -0.5rem;
+    left: -0.5rem;
+    background-color: #e58e27;
+    color: #fff;
+    border-radius: 50%;
+    width: 1rem;
+    height: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.8rem;
+    z-index: 1;
   }
 
   .right-block__logout {

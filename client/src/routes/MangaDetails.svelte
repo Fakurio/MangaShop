@@ -6,11 +6,17 @@
   import Header from "../components/Header.svelte";
   import Button from "../components/Button.svelte";
   import Reviews from "../components/Reviews.svelte";
+  import { addToCart } from "../stores/cart.store";
 
   export let params: { id: string } = {} as any;
   let manga: Manga | undefined;
   let isLoading = true;
   let addToCartValue: number = 0;
+
+  const updateCartContent = () => {
+    if (!manga) return;
+    addToCart({ manga_id: manga.manga_id, quantity: addToCartValue });
+  };
 
   onMount(async () => {
     try {
@@ -62,7 +68,7 @@
                 ? (addToCartValue = 0)
                 : (addToCartValue -= 1)}>-</button
           >
-          <input type="text" bind:value={addToCartValue} />
+          <input type="text" bind:value={addToCartValue} readonly />
           <button
             on:click={() =>
               manga?.stock_quantity && addToCartValue + 1 > manga.stock_quantity
@@ -70,7 +76,11 @@
                 : (addToCartValue += 1)}>+</button
           >
         </div>
-        <Button text="Add to cart" className="cart-adder__btn" />
+        <Button
+          text="Add to cart"
+          className="cart-adder__btn"
+          onClick={() => updateCartContent()}
+        />
       </div>
     </div>
 
@@ -153,6 +163,7 @@
     border-radius: 0.5rem;
     width: 50px;
     margin-top: 1rem;
+    cursor: pointer;
   }
 
   .cart-adder__adder input {
