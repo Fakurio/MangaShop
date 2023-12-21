@@ -15,6 +15,7 @@ import { RefreshTokenService } from '../services/refreshToken.service';
 import { JwtGuard } from '../guards/jwt.guard';
 import { Response } from 'express';
 import { LogoutService } from '../services/logout.service';
+import { CartItemT } from 'src/cart/types/cart-item';
 
 @Controller('auth')
 export class AuthController {
@@ -44,8 +45,12 @@ export class AuthController {
   }
 
   @UseGuards(JwtGuard)
-  @Get('logout')
-  logoutUser(@Request() req, @Res({ passthrough: true }) res: Response) {
-    return this.logoutService.logoutUser(req, res);
+  @Post('logout')
+  logoutUser(
+    @Request() req,
+    @Res({ passthrough: true }) res: Response,
+    @Body() cart: CartItemT[],
+  ) {
+    return this.logoutService.logoutUser(req, res, cart);
   }
 }

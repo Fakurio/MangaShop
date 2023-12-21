@@ -2,6 +2,8 @@ import { writable, get } from "svelte/store";
 import type { LoggedInUser } from "../types/logged-in-user";
 import { replace } from "svelte-spa-router";
 import type { LoginUser } from "../types/user-login";
+import type { CartItem } from "../types/cart-item";
+import cartStore from "./cart.store";
 
 const authStore = writable<LoggedInUser | null>(null);
 
@@ -28,7 +30,7 @@ const refreshToken = async () => {
   } catch (e: any) {}
 };
 
-const login = async (user: LoginUser) => {
+const login = async (user: LoginUser, cart: CartItem[]) => {
   try {
     let response = await fetch("http://localhost:3000/auth/login", {
       method: "POST",
@@ -36,7 +38,7 @@ const login = async (user: LoginUser) => {
         "content-type": "application/json",
       },
       credentials: "include",
-      body: JSON.stringify(user),
+      body: JSON.stringify({ ...user, cart: [...cart] }),
     });
 
     if (!response.ok) {
@@ -44,8 +46,9 @@ const login = async (user: LoginUser) => {
       throw new Error(err.message);
     }
 
-    let loggedInUser = await response.json();
-    authStore.set(loggedInUser);
+    const { username, access_token, new_cart } = await response.json();
+    authStore.set({ username, access_token });
+    localStorage.setItem("cart", JSON.stringify(new_cart));
     replace("/");
   } catch (e: any) {
     throw new Error(e.message);
@@ -53,13 +56,16 @@ const login = async (user: LoginUser) => {
 };
 
 const logout = async () => {
+  console.log(get(cartStore));
   try {
     let response = await fetch("http://localhost:3000/auth/logout", {
-      method: "GET",
+      method: "POST",
       headers: {
         authorization: `Bearer ${get(authStore)?.access_token}`,
+        "content-type": "application/json",
       },
       credentials: "include",
+      body: JSON.stringify([...get(cartStore)]),
     });
 
     if (!response.ok) {
@@ -68,6 +74,8 @@ const logout = async () => {
     }
 
     authStore.set(null);
+    cartStore.set([]);
+    localStorage.removeItem("cart");
     replace("/");
   } catch (e: any) {
     console.log(e.message);

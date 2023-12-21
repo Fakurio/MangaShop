@@ -4,8 +4,10 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { User } from './user.entity';
+import { CartItem } from './cart-item.entity';
 
 enum Status {
   ACTIVE = 'Active',
@@ -26,4 +28,7 @@ export class Cart {
 
   @Column('enum', { enum: Status, default: Status.ACTIVE })
   status: Status;
+
+  @OneToMany(() => CartItem, (cartItem) => cartItem.cart_id, { cascade: true })
+  cartItems: CartItem[];
 }

@@ -10,7 +10,7 @@ export class CartItem {
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'cart_id' })
-  cart_id: Cart;
+  cart_id: number;
 
   @PrimaryColumn()
   @ManyToOne(() => Manga, (manga) => manga.manga_id, {
@@ -18,7 +18,7 @@ export class CartItem {
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'manga_id' })
-  manga_id: Manga;
+  manga_id: number;
 
   @Column('int')
   quantity: number;

@@ -5,6 +5,8 @@
   import LoginSchema from "../types/user-login";
   import { fromZodError } from "zod-validation-error";
   import { login } from "../stores/auth.store";
+  import cartStore from "../stores/cart.store";
+  import { get } from "svelte/store";
 
   const cleanErrors = {
     password: "",
@@ -39,7 +41,7 @@
       serverResponse = "";
       isServerError = false;
       try {
-        await login(user);
+        await login(user, get(cartStore));
       } catch (e: any) {
         serverResponse = e.message;
         isServerError = true;

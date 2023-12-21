@@ -5,6 +5,7 @@ import { LoginUserDto } from '../dto/login-user.dto';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
+import { CartsService } from 'src/cart/services/carts.service';
 
 @Injectable()
 export class LoginService {
@@ -12,10 +13,11 @@ export class LoginService {
     private usersService: UsersService,
     private hashService: HashService,
     private jwtService: JwtService,
+    private cartService: CartsService,
   ) {}
 
   async loginUser(loginUserDto: LoginUserDto, response: Response) {
-    const { email, password } = loginUserDto;
+    const { email, password, cart } = loginUserDto;
 
     if (!LoginUserSchema.safeParse(loginUserDto).success) {
       throw new HttpException('Incorrect login data', HttpStatus.BAD_REQUEST);
@@ -38,6 +40,12 @@ export class LoginService {
       throw new HttpException('Bad password', HttpStatus.UNAUTHORIZED);
     }
 
+    const userCart = await this.cartService.getUserCart(user.user_id);
+    let finalCart = cart;
+    if (userCart) {
+      finalCart = this.cartService.mergeCarts(cart, userCart);
+    }
+
     const payload = {
       sub: user.user_id,
       email: user.email,
@@ -52,6 +60,7 @@ export class LoginService {
     response.cookie('jwt', rT, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
     return {
       username: user.name,
+      new_cart: finalCart,
       access_token: aT,
     };
   }

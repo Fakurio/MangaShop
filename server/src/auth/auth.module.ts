@@ -8,6 +8,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { RefreshTokenService } from './services/refreshToken.service';
 import { ConfigService } from '@nestjs/config';
 import { LogoutService } from './services/logout.service';
+import { CartModule } from 'src/cart/cart.module';
 
 @Module({
   controllers: [AuthController],
@@ -20,6 +21,7 @@ import { LogoutService } from './services/logout.service';
   ],
   imports: [
     UserModule,
+    CartModule,
     JwtModule.registerAsync({
       global: true,
       useFactory: async (configService: ConfigService) => ({
