@@ -60,7 +60,15 @@
           {/if}
         </div>
         <div class="header__right-block">
-          <a href="/cart" use:link>Cart</a>
+          <div class="mobile-cart-count-wrapper">
+            {#if $cartStore.length > 0}
+              <span class="cart-count cart-count--mobile"
+                >{$cartStore.length}</span
+              >
+            {/if}
+            <a href="/cart" use:link>Cart</a>
+          </div>
+
           {#if !$authStore}
             <span><a href="/register" use:link>Register</a></span>
             <span><a href="/login" use:link>Login</a></span>
@@ -144,7 +152,7 @@
     top: -0.5rem;
     left: -0.5rem;
     background-color: #e58e27;
-    color: #fff;
+    color: black;
     border-radius: 50%;
     width: 1rem;
     height: 1rem;
@@ -153,6 +161,21 @@
     align-items: center;
     font-size: 0.8rem;
     z-index: 1;
+    font-weight: 700;
+  }
+
+  .mobile-cart-count-wrapper {
+    min-width: 50px;
+    max-width: 50px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .mobile-cart-count-wrapper .cart-count--mobile {
+    left: -1.5rem;
+    top: 0;
+    width: 1.4rem;
+    height: 1.4rem;
+    font-size: 1rem;
   }
 
   .right-block__logout {

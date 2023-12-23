@@ -83,6 +83,10 @@ const fetchMangaDetails = async (manga_id: number) => {
   }
 };
 
+const getMangaPrice = (manga_id: number) => {
+  return get(mangaStore).find((manga) => manga.manga_id === manga_id)?.price;
+};
+
 export {
   mangaStore,
   fetchMangaDetails,
@@ -92,4 +96,5 @@ export {
   filteredGenres,
   filteredPriceRange,
   fetchMangas,
+  getMangaPrice,
 };

@@ -1,6 +1,7 @@
 import { writable, get } from "svelte/store";
 import type { CartItem } from "../types/cart-item";
 import { mangaStore } from "./manga.store";
+import { getMangaPrice } from "./manga.store";
 
 const cartStore = writable<CartItem[]>([]);
 
@@ -53,5 +54,17 @@ const addToCart = (item: CartItem) => {
   localStorage.setItem("cart", JSON.stringify(get(cartStore)));
 };
 
+const getTotalValue = () => {
+  return get(cartStore)
+    .reduce((acc, item) => {
+      let mangaPrice = getMangaPrice(item.manga_id);
+      if (mangaPrice) {
+        return acc + mangaPrice * item.quantity;
+      }
+      return acc;
+    }, 0)
+    .toFixed(2);
+};
+
 export default cartStore;
-export { addToCart, deleteFromCart, getCartFromLocalStorage };
+export { addToCart, deleteFromCart, getCartFromLocalStorage, getTotalValue };

@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { CartModule } from './cart/cart.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   controllers: [MangasController, GenresController],
@@ -22,6 +23,7 @@ import { CartModule } from './cart/cart.module';
       isGlobal: true,
     }),
     CartModule,
+    OrderModule,
   ],
 })
 export class AppModule {}
