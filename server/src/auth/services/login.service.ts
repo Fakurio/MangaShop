@@ -44,6 +44,7 @@ export class LoginService {
     let finalCart = cart;
     if (userCart) {
       finalCart = this.cartService.mergeCarts(cart, userCart);
+      finalCart = this.cartService.removeCartID(finalCart);
     }
 
     const payload = {

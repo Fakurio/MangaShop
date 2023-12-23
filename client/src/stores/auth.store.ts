@@ -56,7 +56,6 @@ const login = async (user: LoginUser, cart: CartItem[]) => {
 };
 
 const logout = async () => {
-  console.log(get(cartStore));
   try {
     let response = await fetch("http://localhost:3000/auth/logout", {
       method: "POST",

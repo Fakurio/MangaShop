@@ -9,7 +9,7 @@ import {
 import { User } from './user.entity';
 import { CartItem } from './cart-item.entity';
 
-enum Status {
+export enum Status {
   ACTIVE = 'Active',
   INACTIVE = 'Inactive',
 }
@@ -24,7 +24,7 @@ export class Cart {
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'user_id' })
-  user_id: User;
+  user_id: number;
 
   @Column('enum', { enum: Status, default: Status.ACTIVE })
   status: Status;

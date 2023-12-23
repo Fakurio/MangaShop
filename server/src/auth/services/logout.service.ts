@@ -28,6 +28,8 @@ export class LogoutService {
     await this.usersService.updateRefreshToken(req.user.sub, '');
     res.clearCookie('jwt', { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
 
-    await this.cartsService.saveCart(cart, req.user.sub);
+    if (cart.length !== 0) {
+      await this.cartsService.saveCart(cart, req.user.sub);
+    }
   }
 }
