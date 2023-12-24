@@ -71,4 +71,11 @@ export class CartsService {
       await this.dataSource.getRepository(Cart).save(newCart);
     }
   }
+
+  async deleteCart(user_id: number) {
+    await this.dataSource.getRepository(Cart).delete({
+      user_id: user_id,
+      status: Status.ACTIVE,
+    });
+  }
 }

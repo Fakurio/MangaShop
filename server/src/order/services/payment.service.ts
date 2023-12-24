@@ -12,4 +12,13 @@ export class PaymentService {
       .createQueryBuilder('paymentMethod')
       .getMany();
   }
+
+  async getPaymentMethodID(value: string) {
+    return await this.dataSource
+      .getRepository(PaymentMethod)
+      .createQueryBuilder('paymentMethod')
+      .select('payment_method_id')
+      .where('paymentMethod.name = :name', { name: value })
+      .getRawOne();
+  }
 }

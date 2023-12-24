@@ -4,11 +4,13 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { User } from './user.entity';
 import { PaymentMethod } from './payment-method.entity';
+import { OrderDetail } from './order-detail.entity';
 
-enum OrderStatus {
+export enum OrderStatus {
   PENDING = 'Pending',
   COMPLETED = 'Completed',
 }
@@ -23,7 +25,7 @@ export class Order {
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'user_id' })
-  user_id: User;
+  user_id: number;
 
   @Column('date')
   order_date: Date;
@@ -43,5 +45,10 @@ export class Order {
     },
   )
   @JoinColumn({ name: 'payment_method_id' })
-  payment_method_id: PaymentMethod;
+  payment_method_id: number;
+
+  @OneToMany(() => OrderDetail, (orderItem) => orderItem.order_id, {
+    cascade: true,
+  })
+  orderItems: OrderDetail[];
 }

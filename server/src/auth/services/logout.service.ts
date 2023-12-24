@@ -30,6 +30,8 @@ export class LogoutService {
 
     if (cart.length !== 0) {
       await this.cartsService.saveCart(cart, req.user.sub);
+    } else {
+      await this.cartsService.deleteCart(req.user.sub);
     }
   }
 }

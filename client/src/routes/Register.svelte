@@ -126,44 +126,6 @@
 </main>
 
 <style>
-  .server-response {
-    background-color: green;
-    color: white;
-    padding: 1rem;
-    font-weight: 700;
-    font-size: 1.3rem;
-    text-align: center;
-    animation:
-      slideIn 0.3s ease-in-out,
-      slideOut 0.3s ease-in-out 2s forwards;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-  }
-
-  .server-response--error {
-    background-color: rgb(197, 40, 40);
-  }
-
-  @keyframes slideIn {
-    from {
-      transform: translateY(-100%);
-    }
-    to {
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes slideOut {
-    from {
-      transform: translateY(0);
-    }
-    to {
-      transform: translateY(-100%);
-    }
-  }
-
   main {
     display: flex;
     justify-content: center;

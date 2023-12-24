@@ -2,8 +2,14 @@
   import { getTotalValue } from "../stores/cart.store";
   import cartStore from "../stores/cart.store";
   import Button from "./Button.svelte";
+  import { get } from "svelte/store";
+  import { authStore } from "../stores/auth.store";
+  import { replace } from "svelte-spa-router";
 
   let totalValue: string;
+  let paymentMethod: string;
+  let serverResponse: string = "";
+  let isServerError: boolean = false;
 
   const fetchPaymentMethods = async () => {
     let response = await fetch("http://localhost:3000/payment");
@@ -21,8 +27,58 @@
   };
 
   $: $cartStore, updateTotalValue();
+
+  const createOrder = async () => {
+    serverResponse = "";
+    isServerError = false;
+
+    if (!get(authStore)) {
+      replace("/login");
+    }
+
+    try {
+      let payload = {
+        cart: get(cartStore),
+        payment_method: paymentMethod,
+        total: Number.parseFloat(totalValue),
+      };
+
+      let response = await fetch("http://localhost:3000/order/create", {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${get(authStore)?.access_token}`,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        let error = await response.json();
+        throw new Error(error.message);
+      }
+
+      let msg = await response.json();
+      serverResponse = msg;
+      setTimeout(() => {
+        localStorage.removeItem("cart");
+        cartStore.set([]);
+      }, 2700);
+    } catch (e: any) {
+      serverResponse = e.message;
+      isServerError = true;
+    }
+  };
 </script>
 
+{#if serverResponse}
+  <p
+    class={`server-response ${
+      isServerError ? "server-response--error" : undefined
+    }`}
+  >
+    {serverResponse}
+  </p>
+{/if}
 {#await fetchPaymentMethods()}
   <p>Loading...</p>
 {:then paymentMethods}
@@ -31,13 +87,17 @@
     <label for="payment-method" class="order-summary__label"
       >Payment method</label
     >
-    <select id="payment-method" class="order-summary__select">
+    <select
+      id="payment-method"
+      class="order-summary__select"
+      bind:value={paymentMethod}
+    >
       {#each paymentMethods as method (method.payment_method_id)}
-        <option>{method.name}</option>
+        <option value={method.name}>{method.name}</option>
       {/each}
     </select>
     <h2 class="order-summary__total">Order total: {totalValue} PLN</h2>
-    <Button text="Checkout" />
+    <Button text="Checkout" onClick={() => createOrder()} />
   </div>
 {:catch error}
   <p class="error error--server">{error}</p>
