@@ -5,6 +5,7 @@
   import { get } from "svelte/store";
   import { authStore } from "../stores/auth.store";
   import { replace } from "svelte-spa-router";
+  import { usePrivateInterceptor } from "../inteceptors/private";
 
   let totalValue: string;
   let paymentMethod: string;
@@ -43,14 +44,11 @@
         total: Number.parseFloat(totalValue),
       };
 
-      let response = await fetch("http://localhost:3000/order/create", {
-        method: "POST",
-        headers: {
-          authorization: `Bearer ${get(authStore)?.access_token}`,
-          "content-type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      let response = await usePrivateInterceptor(
+        "order/create",
+        "POST",
+        payload
+      );
 
       if (!response.ok) {
         let error = await response.json();

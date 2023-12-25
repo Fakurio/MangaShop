@@ -4,6 +4,7 @@ import { replace } from "svelte-spa-router";
 import type { LoginUser } from "../types/user-login";
 import type { CartItem } from "../types/cart-item";
 import cartStore from "./cart.store";
+import { usePrivateInterceptor } from "../inteceptors/private";
 
 const authStore = writable<LoggedInUser | null>(null);
 
@@ -57,15 +58,14 @@ const login = async (user: LoginUser, cart: CartItem[]) => {
 
 const logout = async () => {
   try {
-    let response = await fetch("http://localhost:3000/auth/logout", {
-      method: "POST",
-      headers: {
-        authorization: `Bearer ${get(authStore)?.access_token}`,
-        "content-type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify([...get(cartStore)]),
-    });
+    let payload = [...get(cartStore)];
+
+    let response = await usePrivateInterceptor(
+      "auth/logout",
+      "POST",
+      payload,
+      "include"
+    );
 
     if (!response.ok) {
       let err = await response.json();
