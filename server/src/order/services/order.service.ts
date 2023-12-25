@@ -36,22 +36,41 @@ export class OrderService {
     newOrder.user_id = req.user.sub;
     newOrder.order_status = OrderStatus.PENDING;
     newOrder.orderItems = [];
+
     order.cart.forEach((item) => {
       let orderItem = new OrderDetail();
       orderItem.manga_id = item.manga_id;
       orderItem.quantity = item.quantity;
       newOrder.orderItems.push(orderItem);
     });
+
     newOrder.order_date = new Date();
+
     let paymentMethod = await this.paymentService.getPaymentMethodID(
       order.payment_method,
     );
+
     if (paymentMethod) {
       newOrder.payment_method_id = paymentMethod.payment_method_id;
     }
+
     newOrder.total_price = order.total;
+
     await this.dataSource.getRepository(Order).save(newOrder);
 
     return JSON.stringify('Order created');
+  }
+
+  getOrderStatus() {
+    return Object.keys(OrderStatus).reduce((acc, key) => {
+      return [...acc, OrderStatus[key]];
+    }, []);
+  }
+
+  async getAllOrders(user_id: number) {
+    return await this.dataSource.getRepository(Order).find({
+      where: { user_id: user_id },
+      relations: ['orderItems'],
+    });
   }
 }

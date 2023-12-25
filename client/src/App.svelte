@@ -2,11 +2,12 @@
   // @ts-nocheck
 
   import Home from "./routes/Home.svelte";
-  import Router from "svelte-spa-router";
+  import Router, { replace } from "svelte-spa-router";
   import MangaDetails from "./routes/MangaDetails.svelte";
   import Register from "./routes/Register.svelte";
   import Login from "./routes/Login.svelte";
   import Cart from "./routes/Cart.svelte";
+  import Orders from "./routes/Orders.svelte";
   import { wrap } from "svelte-spa-router/wrap";
   import { authStore, refreshToken } from "./stores/auth.store";
   import { get } from "svelte/store";
@@ -16,16 +17,23 @@
 
   let isLoading = true;
 
-  const verifyRefreshToken = () => {
+  const verifyRefreshToken = async () => {
     if (!get(authStore)) {
       try {
-        refreshToken();
+        await refreshToken();
       } finally {
         return true;
       }
     } else {
       return true;
     }
+  };
+
+  const isLoggedIn = () => {
+    if (!get(authStore)) {
+      replace("/login");
+    }
+    return true;
   };
 
   onMount(async () => {
@@ -50,6 +58,14 @@
     "/cart": wrap({
       component: Cart,
       conditions: [() => getCartFromLocalStorage(), () => verifyRefreshToken()],
+    }),
+    "/orders": wrap({
+      component: Orders,
+      conditions: [
+        () => getCartFromLocalStorage(),
+        async () => await verifyRefreshToken(),
+        () => isLoggedIn(),
+      ],
     }),
   };
 </script>

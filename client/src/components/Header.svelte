@@ -30,7 +30,7 @@
     <div class="header__left-block">
       <a href="/" use:link>Home</a>
       {#if $authStore}
-        <a href="/" use:link>My orders</a>
+        <a href="/orders" use:link>My orders</a>
       {/if}
     </div>
     <div class="header__right-block">
