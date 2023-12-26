@@ -1,19 +1,22 @@
 <script lang="ts">
-  import { usePrivateInterceptor } from "../inteceptors/private";
   import OrderItem from "./OrderItem.svelte";
+  import { filteredOrderStore, fetchUserOrders } from "../stores/order.store";
+  import { onMount } from "svelte";
 
-  const fetchUserOrders = async () => {
-    let response = await usePrivateInterceptor("order/all", "GET");
-    let orders = await response.json();
-    return orders;
-  };
+  let isLoading = true;
+
+  onMount(async () => {
+    try {
+      await fetchUserOrders();
+    } finally {
+      isLoading = false;
+    }
+  });
 </script>
 
-{#await fetchUserOrders()}
-  <p>Loading...</p>
-{:then orders}
+{#if !isLoading}
   <div class="order-list">
-    {#each orders as order (order.order_id)}
+    {#each $filteredOrderStore as order (order.order_id)}
       <OrderItem
         total={order.total_price}
         status={order.order_status}
@@ -22,7 +25,7 @@
       />
     {/each}
   </div>
-{/await}
+{/if}
 
 <style>
   .order-list {

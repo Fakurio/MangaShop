@@ -3,11 +3,23 @@
   import Button from "../components/Button.svelte";
   import OrderList from "../components/OrderList.svelte";
   import { usePrivateInterceptor } from "../inteceptors/private";
+  import { statusFilter, sortFilter, SortFilter } from "../stores/order.store";
+
+  let selectedStatusFilter: string;
+  let selectedSortFilter: SortFilter;
 
   const fetchOrderStatuses = async () => {
     let response = await usePrivateInterceptor("order/status", "GET");
     let orderStatuses = await response.json();
     return orderStatuses;
+  };
+
+  const applyStatusFilter = () => {
+    statusFilter.set(selectedStatusFilter);
+  };
+
+  const applySortFilter = () => {
+    sortFilter.set(selectedSortFilter);
   };
 </script>
 
@@ -18,11 +30,15 @@
       <h1>My Orders</h1>
       <div class="filters">
         <div class="filters__left">
-          <Button text="Filter" className="filter-btn" />
+          <Button
+            text="Filter"
+            className="filter-btn"
+            onClick={() => applyStatusFilter()}
+          />
           {#await fetchOrderStatuses()}
             <p>Loading...</p>
           {:then statuses}
-            <select>
+            <select bind:value={selectedStatusFilter}>
               {#each statuses as status}
                 <option value={status}>{status}</option>
               {/each}
@@ -30,12 +46,16 @@
           {/await}
         </div>
         <div class="filters__right">
-          <Button text="Sort" className="filter-btn" />
-          <select>
-            <option>By date ascending</option>
-            <option>By date descending</option>
-            <option>By price ascending</option>
-            <option>By price descending</option>
+          <Button
+            text="Sort"
+            className="filter-btn"
+            onClick={() => applySortFilter()}
+          />
+          <select bind:value={selectedSortFilter}>
+            <option value={SortFilter.DATE_ASC}>By date ascending</option>
+            <option value={SortFilter.DATE_DESC}>By date descending</option>
+            <option value={SortFilter.PRICE_ASC}>By price ascending</option>
+            <option value={SortFilter.PRICE_DESC}>By price descending</option>
           </select>
         </div>
       </div>

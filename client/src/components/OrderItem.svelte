@@ -44,7 +44,7 @@
           Order value: <span class="accent">{total} PLN</span>
         </p>
         <p class="left-block__info">
-          Order date: <span class="accent">{date}</span>
+          Order date: <span class="accent">{date.toLocaleDateString()}</span>
         </p>
       </div>
       <div class="item__right-block">
