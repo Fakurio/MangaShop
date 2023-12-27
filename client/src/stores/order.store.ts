@@ -10,7 +10,7 @@ enum SortFilter {
 }
 
 const orderStore = writable<Order[]>([]);
-const sortFilter = writable(SortFilter.DATE_ASC);
+const sortFilter = writable(SortFilter.DATE_DESC);
 const statusFilter = writable("Pending");
 const filteredOrderStore = derived(
   [orderStore, sortFilter, statusFilter],

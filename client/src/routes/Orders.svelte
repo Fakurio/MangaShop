@@ -52,10 +52,10 @@
             onClick={() => applySortFilter()}
           />
           <select bind:value={selectedSortFilter}>
-            <option value={SortFilter.DATE_ASC}>By date ascending</option>
             <option value={SortFilter.DATE_DESC}>By date descending</option>
-            <option value={SortFilter.PRICE_ASC}>By price ascending</option>
+            <option value={SortFilter.DATE_ASC}>By date ascending</option>
             <option value={SortFilter.PRICE_DESC}>By price descending</option>
+            <option value={SortFilter.PRICE_ASC}>By price ascending</option>
           </select>
         </div>
       </div>

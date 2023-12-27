@@ -41,5 +41,5 @@ export class Manga {
   genres: Genre[];
 
   @OneToMany(() => Review, (review) => review.manga_id, { cascade: true })
-  reviews?: Review[];
+  reviews: Review[];
 }

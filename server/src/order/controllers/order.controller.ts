@@ -6,9 +6,9 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { OrderService } from '../services/order.service';
+import { OrderService } from '../../order/services/order.service';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
-import { CreateOrderT } from '../dto/create-order.dto';
+import { CreateOrderT } from '../../order/dto/create-order.dto';
 
 @Controller('order')
 export class OrderController {

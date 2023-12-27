@@ -4,6 +4,7 @@
   import { mangaStore } from "../stores/manga.store";
   import { get } from "svelte/store";
   import { onMount } from "svelte";
+  import { formatDate } from "../utils/formatDate";
 
   export let status: string;
   export let date: Date;
@@ -44,7 +45,7 @@
           Order value: <span class="accent">{total} PLN</span>
         </p>
         <p class="left-block__info">
-          Order date: <span class="accent">{date.toLocaleDateString()}</span>
+          Order date: <span class="accent">{formatDate(date)}</span>
         </p>
       </div>
       <div class="item__right-block">

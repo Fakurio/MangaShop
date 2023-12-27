@@ -22,14 +22,14 @@ export class Review {
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'user_id' })
-  user_id: User;
+  user_id: number;
 
   @ManyToOne(() => Manga, (manga) => manga.manga_id, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'manga_id' })
-  manga_id: Manga;
+  manga_id: number;
 
   @Column('int')
   @Check('rating >= 0 AND rating <= 5')

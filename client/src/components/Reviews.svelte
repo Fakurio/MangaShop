@@ -1,42 +1,62 @@
 <script lang="ts">
-  import type { Review } from "../types/review";
   import Rating from "./Rating.svelte";
+  import ReviewForm from "./ReviewForm.svelte";
+  import { formatDate } from "../utils/formatDate";
+  import {
+    reviewStore,
+    fetchReviews,
+    reviewStoreResponse,
+    reviewStoreError,
+  } from "../stores/review.store";
+  import { onDestroy, onMount } from "svelte";
 
-  export let reviewsList: Review[] = [
-    {
-      review_id: 1,
-      content: "Bardzo dobrze jeszcze jak",
-      rating: 2,
-      user_id: 1,
-      created_at: new Date("2023-12-10"),
-    },
-    {
-      review_id: 2,
-      content: "Bardzo dobrze jeszcze jak",
-      rating: 4,
-      user_id: 1,
-      created_at: new Date("2023-12-10"),
-    },
-  ];
+  export let manga_id: number;
+
+  let isLoading = true;
+
+  onMount(async () => {
+    try {
+      await fetchReviews(manga_id);
+    } finally {
+      isLoading = false;
+    }
+  });
+
+  onDestroy(() => {
+    reviewStoreError.set(false);
+    reviewStoreResponse.set("");
+  });
 </script>
 
-<section class="reviews">
-  <h2 class="reviews__heading">Reviews</h2>
-  {#if reviewsList.length === 0}
-    <p class="reviews__error">There is no reviews yet</p>
-  {:else}
-    {#each reviewsList as review (review.review_id)}
-      <div class="reviews__review">
-        <Rating rating={review.rating} />
-        <p class="review__content">{review.content}</p>
-        <p class="review__date">
-          {review.user_id}, {review.created_at.getDate()}.{review.created_at.getMonth() +
-            1}.{review.created_at.getFullYear()}
-        </p>
-      </div>
-    {/each}
-  {/if}
-</section>
+{#if $reviewStoreResponse}
+  <p
+    class={`server-response ${
+      $reviewStoreError ? "server-response--error" : undefined
+    }`}
+  >
+    {$reviewStoreResponse}
+  </p>
+{/if}
+{#if !isLoading}
+  <section class="reviews">
+    <h2 class="reviews__heading">Reviews</h2>
+    {#if $reviewStore.length === 0}
+      <p class="reviews__error">There is no reviews yet</p>
+      <ReviewForm />
+    {:else}
+      <ReviewForm />
+      {#each $reviewStore as review (review.review_id)}
+        <div class="reviews__review">
+          <Rating rating={review.rating} />
+          <p class="review__content">{review.content}</p>
+          <p class="review__date">
+            {review.user_id.name}, {formatDate(review.created_at)}
+          </p>
+        </div>
+      {/each}
+    {/if}
+  </section>
+{/if}
 
 <style>
   .reviews {

@@ -1,6 +1,6 @@
 import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { Manga } from 'src/entities/manga.entity';
-import { MangasService } from 'src/services/mangas.service';
+import { MangasService } from 'src/manga/services/mangas.service';
 
 @Controller('mangas')
 export class MangasController {

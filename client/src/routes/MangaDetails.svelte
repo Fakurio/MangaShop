@@ -84,7 +84,7 @@
       </div>
     </div>
 
-    <Reviews />
+    <Reviews manga_id={manga.manga_id} />
   </main>
 {/if}
 
