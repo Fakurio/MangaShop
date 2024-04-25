@@ -1,4 +1,4 @@
-import * as bcrypt from 'bcrypt';
+var bcrypt = require('bcryptjs');
 
 export class HashService {
   private saltRounds = 10;

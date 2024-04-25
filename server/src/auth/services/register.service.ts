@@ -23,7 +23,6 @@ export class RegisterService {
         HttpStatus.BAD_REQUEST,
       );
     }
-
     let userExists = await this.usersService.checkUser(email);
     if (userExists) {
       throw new HttpException(
@@ -31,15 +30,14 @@ export class RegisterService {
         HttpStatus.CONFLICT,
       );
     }
-
-    let hashedPassword = await this.hashService.hashPassword(password);
     try {
+      let hashedPassword = await this.hashService.hashPassword(password);
       await this.usersService.addNewUser(username, email, hashedPassword);
-
       return {
         message: 'User registered successfully',
       };
     } catch (err) {
+      console.log(err);
       throw new HttpException(
         'Failed to register user',
         HttpStatus.UNPROCESSABLE_ENTITY,

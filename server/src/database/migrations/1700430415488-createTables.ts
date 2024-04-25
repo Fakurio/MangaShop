@@ -20,7 +20,7 @@ export class CreateTables1700430415488 implements MigrationInterface {
       `CREATE TABLE \`order\` (\`order_id\` int NOT NULL AUTO_INCREMENT, \`order_date\` date NOT NULL, \`order_status\` enum ('Pending', 'Completed') NOT NULL DEFAULT 'Pending', \`total_price\` decimal(6,2) NOT NULL, \`user_id\` int NULL, \`payment_method_id\` int NULL, PRIMARY KEY (\`order_id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
-      `CREATE TABLE \`user\` (\`user_id\` int NOT NULL AUTO_INCREMENT, \`name\` varchar(30) NOT NULL, \`email\` varchar(30) NOT NULL, \`password\` varchar(200) NOT NULL, UNIQUE INDEX \`IDX_e12875dfb3b1d92d7d7c5377e2\` (\`email\`), PRIMARY KEY (\`user_id\`)) ENGINE=InnoDB`,
+      `CREATE TABLE \`user\` (\`user_id\` int NOT NULL AUTO_INCREMENT, \`name\` varchar(30) NOT NULL, \`email\` varchar(30) NOT NULL, \`password\` varchar(200) NOT NULL, UNIQUE INDEX \`IDX_e12875dfb3b1d92d7d7c5377e2\` (\`email\`), \`refresh_token\` varchar(512) NULL, PRIMARY KEY (\`user_id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
       `CREATE TABLE \`cart\` (\`cart_id\` int NOT NULL AUTO_INCREMENT, \`status\` enum ('Active', 'Inactive') NOT NULL DEFAULT 'Active', \`user_id\` int NULL, PRIMARY KEY (\`cart_id\`)) ENGINE=InnoDB`,

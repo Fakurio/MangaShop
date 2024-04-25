@@ -1,0 +1,51 @@
+version: "3"
+services:
+  svelte-app:
+    container_name: svelte-app
+    build:
+      context: ./client
+    ports:
+      - "8080:80"
+    networks:
+      - frontend
+    restart: on-failure
+    depends_on:
+      - nestjs-app
+
+  nestjs-app:
+    container_name: nestjs-app
+    build:
+      context: ./server
+    depends_on:
+      - mysql
+    ports:
+      - "3000:3000"
+    networks:
+      - backend
+      - frontend
+
+  # migration:
+  #   build:
+  #     context: ./server
+  #   command: npm run typeorm migration:run
+  #   depends_on:
+  #     - mysql
+  #   networks:
+  #     - backend
+  #   restart: on-failure
+
+  mysql:
+    container_name: mysql
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 2137
+      MYSQL_DATABASE: manga_shop
+    ports:
+      - "3306:3306"
+    networks:
+      - backend
+    restart: on-failure
+
+networks:
+  backend:
+  frontend:
