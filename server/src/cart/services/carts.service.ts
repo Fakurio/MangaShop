@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import type {CartItemT} from '../types/cart-item.ts';
 import {Cart, Status} from '../../entities/cart.entity';
-import {Repository} from 'typeorm';
+import {In, Not, Repository} from 'typeorm';
 import {CartItem} from '../../entities/cart-item.entity';
 import {InjectRepository} from "@nestjs/typeorm";
 
@@ -43,34 +43,11 @@ export class CartsService {
   }
 
   async saveCart(cart: CartItemT[], user_id: number) {
-    let userCart = await this.getUserCart(user_id);
-
-    if (userCart) {
-      await this.cartItemsRepository.delete({
-        cart_id: userCart.cart_id,
-      });
-
-      let cartID = userCart.cart_id;
-      userCart.cartItems = cart.map((item) => {
-        return {
-          cart_id: cartID,
-          ...item,
-        };
-      });
-
-      await this.cartsRepository.save(userCart);
+    let userCartFromDB = await this.getUserCart(user_id);
+    if (userCartFromDB) {
+      await this.updateCartInDatabase(cart, userCartFromDB);
     } else {
-      let newCart = new Cart();
-      newCart.user_id = user_id;
-      newCart.status = Status.ACTIVE;
-      newCart.cartItems = [];
-      cart.forEach((item) => {
-        let cartItem = new CartItem();
-        cartItem.manga_id = item.manga_id;
-        cartItem.quantity = item.quantity;
-        newCart.cartItems.push(cartItem);
-      });
-
+      const newCart = this.createCart(cart, user_id)
       await this.cartsRepository.save(newCart);
     }
   }
@@ -80,5 +57,41 @@ export class CartsService {
       user_id: user_id,
       status: Status.ACTIVE,
     });
+  }
+
+  private async updateCartInDatabase(cart: CartItemT[], userCartFromDB: Cart) {
+    const clientCurrentCart = cart.map(item => {
+      const cartItem = new CartItem()
+      cartItem.quantity = item.quantity;
+      cartItem.manga_id = item.manga_id;
+      cartItem.cart_id = userCartFromDB!.cart_id
+      return cartItem;
+    })
+    await this.cartItemsRepository.upsert(clientCurrentCart, {
+      conflictPaths: ["manga_id", "cart_id"]
+    })
+    const mangaIDs = cart.map(item => item.manga_id)
+    await this.cartItemsRepository.remove(
+        await this.cartItemsRepository.find({
+          where: {
+            cart_id: userCartFromDB!.cart_id,
+            manga_id: Not(In(mangaIDs))
+          }
+        })
+    )
+  }
+
+  private createCart(cart: CartItemT[], user_id: number) {
+    let newCart = new Cart();
+    newCart.user_id = user_id;
+    newCart.status = Status.ACTIVE;
+    newCart.cartItems = [];
+    cart.forEach((item) => {
+      let cartItem = new CartItem();
+      cartItem.manga_id = item.manga_id;
+      cartItem.quantity = item.quantity;
+      newCart.cartItems.push(cartItem);
+    });
+    return newCart;
   }
 }
