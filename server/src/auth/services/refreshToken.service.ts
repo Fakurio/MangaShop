@@ -1,8 +1,8 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-import { Response } from 'express';
-import { UsersService } from 'src/user/services/users.service';
+import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
+import {ConfigService} from '@nestjs/config';
+import {JwtService} from '@nestjs/jwt';
+import {Response} from 'express';
+import {UsersService} from 'src/user/services/users.service';
 
 @Injectable()
 export class RefreshTokenService {
@@ -12,7 +12,7 @@ export class RefreshTokenService {
     private configService: ConfigService,
   ) {}
 
-  async refreshToken(req, res: Response) {
+  private async validateToken(req: any) {
     const cookies = req.cookies;
 
     if (!cookies?.jwt) {
@@ -20,38 +20,50 @@ export class RefreshTokenService {
     }
 
     const refreshToken = cookies.jwt;
+
     const foundUser = await this.usersService.findByRefreshToken(refreshToken);
     if (!foundUser) {
       throw new HttpException('Unauthorized user', HttpStatus.FORBIDDEN);
     }
 
     try {
-      const rTpayload = await this.jwtService.verifyAsync(refreshToken, {
+      return await this.jwtService.verifyAsync(refreshToken, {
         secret: this.configService.get('JWT_SECRET'),
       });
-      const { sub, email, username } = rTpayload;
-      const newPayload = {
-        sub: sub,
-        email: email,
-        username: username,
-      };
-      const newAccessToken = await this.jwtService.signAsync(newPayload);
-      const newRefreshToken = await this.jwtService.signAsync(newPayload, {
-        expiresIn: '1d',
-      });
-
-      this.usersService.updateRefreshToken(rTpayload.sub, newRefreshToken);
-
-      res.cookie('jwt', newRefreshToken, {
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000,
-      });
-      return {
-        username: username,
-        access_token: newAccessToken,
-      };
     } catch {
       throw new HttpException('Bad token', HttpStatus.UNAUTHORIZED);
     }
+  }
+
+  private async generateTokens(token: { sub: string, email: string, username: string }) {
+    const { sub, email, username } = token;
+    const newPayload = {
+      sub: sub,
+      email: email,
+      username: username,
+    };
+    const newAccessToken = await this.jwtService.signAsync(newPayload);
+    const newRefreshToken = await this.jwtService.signAsync(newPayload, {
+      expiresIn: this.configService.get("JWT_REFRESH_EXPIRES_IN"),
+    });
+
+    return { newAccessToken, newRefreshToken };
+  }
+
+  async refreshToken(req, res: Response) {
+    const token = await this.validateToken(req);
+    const { newAccessToken, newRefreshToken } = await this.generateTokens(token);
+
+    await this.usersService.updateRefreshToken(token.sub, newRefreshToken);
+
+    res.cookie('jwt', newRefreshToken, {
+        httpOnly: true,
+        maxAge: this.configService.get("COOKIE_MAX_AGE"),
+    });
+
+    return {
+      username: token.username,
+      access_token: newAccessToken,
+    };
   }
 }

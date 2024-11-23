@@ -3,33 +3,36 @@ import { RegisterUserDto } from '../dto/register-user.dto';
 import { UsersService } from 'src/user/services/users.service';
 import RegisterUserSchema from '../dto/register-user.dto';
 import { HashService } from './hash.service';
-import { DataSource } from 'typeorm';
-import { User } from 'src/entities/user.entity';
 
 @Injectable()
 export class RegisterService {
   constructor(
     private usersService: UsersService,
     private hashService: HashService,
-    private dataSource: DataSource,
   ) {}
 
-  async registerUser(registerUserDto: RegisterUserDto) {
-    const { username, email, password } = registerUserDto;
+  private async validateUser(registerUserDto: RegisterUserDto) {
+    const { email } = registerUserDto;
 
     if (!RegisterUserSchema.safeParse(registerUserDto).success) {
       throw new HttpException(
-        'Incorrect registration data',
-        HttpStatus.BAD_REQUEST,
+          'Incorrect registration data',
+          HttpStatus.BAD_REQUEST,
       );
     }
     let userExists = await this.usersService.checkUser(email);
     if (userExists) {
       throw new HttpException(
-        'User with given e-mail already exists',
-        HttpStatus.CONFLICT,
+          'User with given e-mail already exists',
+          HttpStatus.CONFLICT,
       );
     }
+
+    return registerUserDto;
+  }
+
+  async registerUser(registerUserDto: RegisterUserDto) {
+    const { email, password, username } = await this.validateUser(registerUserDto);
     try {
       let hashedPassword = await this.hashService.hashPassword(password);
       await this.usersService.addNewUser(username, email, hashedPassword);

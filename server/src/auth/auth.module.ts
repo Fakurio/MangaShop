@@ -26,7 +26,7 @@ import { CartModule } from 'src/cart/cart.module';
       global: true,
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get('JWT_SECRET'),
-        signOptions: { expiresIn: '15m' },
+        signOptions: { expiresIn: configService.get("JWT_EXPIRES_IN") },
       }),
       inject: [ConfigService],
     }),

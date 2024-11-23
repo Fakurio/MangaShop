@@ -1,12 +1,6 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
+import {CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable,} from '@nestjs/common';
+import {ConfigService} from '@nestjs/config';
+import {JwtService} from '@nestjs/jwt';
 
 @Injectable()
 export class JwtGuard implements CanActivate {
@@ -25,10 +19,9 @@ export class JwtGuard implements CanActivate {
 
     const token = authorization.replace(/bearer/gim, '').trim();
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
+      request['user'] = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get('JWT_SECRET'),
       });
-      request['user'] = payload;
     } catch {
       throw new HttpException('Bad token', HttpStatus.UNAUTHORIZED);
     }

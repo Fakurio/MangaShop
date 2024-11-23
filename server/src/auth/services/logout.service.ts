@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Response } from 'express';
+import {Response} from 'express';
 import { CartsService } from 'src/cart/services/carts.service';
 import { CartItemT } from 'src/cart/types/cart-item';
 import { UsersService } from 'src/user/services/users.service';
@@ -11,7 +11,7 @@ export class LogoutService {
     private cartsService: CartsService,
   ) {}
 
-  async logoutUser(req, res: Response, cart: CartItemT[]) {
+  private async validateUser(req: any, res: Response) {
     const cookies = req.cookies;
 
     if (!cookies?.jwt) {
@@ -24,8 +24,12 @@ export class LogoutService {
       res.clearCookie('jwt', { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
       throw new HttpException('Unauthorized user', HttpStatus.FORBIDDEN);
     }
+  }
 
+  async logoutUser(req, res: Response, cart: CartItemT[]) {
+    await this.validateUser(req, res);
     await this.usersService.updateRefreshToken(req.user.sub, '');
+
     res.clearCookie('jwt', { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
 
     if (cart.length !== 0) {
