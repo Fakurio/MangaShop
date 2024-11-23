@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Genre } from './genre.entity';
 import { Review } from './review.entity';
+import {OrderStatus} from "./order.entity";
 
 @Entity()
 export class Manga {
@@ -29,7 +30,7 @@ export class Manga {
   @Column('varchar', { length: 50 })
   author: string;
 
-  @Column('text')
+  @Column('varchar', { length: 5000, default: "" })
   description: string;
 
   @ManyToMany(() => Genre, (genre) => genre.mangas)

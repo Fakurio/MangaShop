@@ -2,13 +2,14 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 
 export const dataSourceOptions: DataSourceOptions = {
   type: 'mysql',
-  host: 'mysql',
+  host: 'localhost',
   port: 3306,
   username: 'root',
-  password: '2137',
+  password: 'root',
   database: 'manga_shop',
   entities: ['dist/**/*.entity{.ts,.js}'],
   migrations: ['dist/database/migrations/*{.ts,.js}'],
+  synchronize: true,
 };
 
 const dataSource = new DataSource(dataSourceOptions);
