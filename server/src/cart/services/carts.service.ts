@@ -21,14 +21,14 @@ export class CartsService {
     });
   }
 
-  removeCartID(cart: CartItemT[] | undefined) {
+  removeCartID(cart: CartItem[] | undefined) {
     return cart?.map((item) => ({
       manga_id: item.manga_id,
       quantity: item.quantity,
     }));
   }
 
-  mergeCarts(cart: CartItemT[] | undefined, cartDB: Cart) {
+  mergeCarts(cart: CartItemT[] | undefined, cartDB: Cart) : CartItem[] | undefined {
     return cart?.reduce((acc, item) => {
       let existingItem = acc.find(
           (i: CartItem) => i.manga_id === item.manga_id,
@@ -36,10 +36,14 @@ export class CartsService {
       if (existingItem) {
         existingItem.quantity = existingItem.quantity + item.quantity;
       } else {
-        acc.push({cart_id: cartDB.cart_id, ...item});
+        const newItem = new CartItem();
+        newItem.manga_id = item.manga_id;
+        newItem.quantity = item.quantity;
+        newItem.cart_id = cartDB.cart_id;
+        acc.push(newItem);
       }
       return acc;
-    }, cartDB.cartItems);
+    }, cartDB.cartItems) as CartItem[];
   }
 
   async saveCart(cart: CartItemT[], user_id: number) {

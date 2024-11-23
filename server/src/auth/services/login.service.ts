@@ -52,8 +52,8 @@ export class LoginService {
     const userCart = await this.cartService.getUserCart(user.user_id);
     let finalCart = cart;
     if (userCart) {
-      finalCart = this.cartService.mergeCarts(cart, userCart);
-      finalCart = this.cartService.removeCartID(finalCart);
+      const mergedCart = this.cartService.mergeCarts(cart, userCart);
+      finalCart = this.cartService.removeCartID(mergedCart);
     }
     return finalCart;
   }
