@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import {Response} from 'express';
-import { CartsService } from 'src/cart/services/carts.service';
-import { CartItemT } from 'src/cart/types/cart-item';
-import { UsersService } from 'src/user/services/users.service';
+import { CartsService } from '../../cart/services/carts.service';
+import { CartItemT } from '../../cart/types/cart-item';
+import { UsersService } from '../../user/services/users.service';
 
 @Injectable()
 export class LogoutService {

@@ -15,7 +15,7 @@ import { RefreshTokenService } from '../services/refreshToken.service';
 import { JwtGuard } from '../guards/jwt.guard';
 import { Response } from 'express';
 import { LogoutService } from '../services/logout.service';
-import { CartItemT } from 'src/cart/types/cart-item';
+import { CartItemT } from '../../cart/types/cart-item';
 
 @Controller('auth')
 export class AuthController {

@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { RegisterUserDto } from '../dto/register-user.dto';
-import { UsersService } from 'src/user/services/users.service';
+import { UsersService } from '../../user/services/users.service';
 import RegisterUserSchema from '../dto/register-user.dto';
 import { HashService } from './hash.service';
 

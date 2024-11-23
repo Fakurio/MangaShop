@@ -1,11 +1,11 @@
-import { UsersService } from 'src/user/services/users.service';
+import { UsersService } from '../../user/services/users.service';
 import { HashService } from './hash.service';
 import LoginUserSchema from '../dto/login-user.dto';
 import { LoginUserDto } from '../dto/login-user.dto';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
-import { CartsService } from 'src/cart/services/carts.service';
+import { CartsService } from '../../cart/services/carts.service';
 import {User} from "../../entities/user.entity";
 import {ConfigService} from "@nestjs/config";
 
@@ -48,7 +48,7 @@ export class LoginService {
     return user;
   }
 
-  private async updateUserCart(user: User, cart: { manga_id: number, quantity: number }[] | undefined) {
+  private async updateUserCart(user: User, cart: LoginUserDto["cart"]) {
     const userCart = await this.cartService.getUserCart(user.user_id);
     let finalCart = cart;
     if (userCart) {

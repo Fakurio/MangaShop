@@ -2,7 +2,7 @@ import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
 import {JwtService} from '@nestjs/jwt';
 import {Response} from 'express';
-import {UsersService} from 'src/user/services/users.service';
+import {UsersService} from '../../user/services/users.service';
 
 @Injectable()
 export class RefreshTokenService {

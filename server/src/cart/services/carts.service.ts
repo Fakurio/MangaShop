@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import type { CartItemT } from '../types/cart-item.ts';
-import { Cart, Status } from 'src/entities/cart.entity';
+import { Cart, Status } from '../../entities/cart.entity';
 import { DataSource } from 'typeorm';
-import { CartItem } from 'src/entities/cart-item.entity';
+import { CartItem } from '../../entities/cart-item.entity';
 
 @Injectable()
 export class CartsService {
