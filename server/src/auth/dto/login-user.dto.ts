@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 const LoginUserSchema = z.object({
   email: z.string().email(),
-  password: z.string(),
+  password: z.string().min(1),
   cart: z
     .array(z.object({ manga_id: z.number(), quantity: z.number() }))
     .optional(),

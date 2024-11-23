@@ -1,14 +1,17 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { User } from '../../entities/user.entity';
-import { DataSource } from 'typeorm';
+import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
+import {User} from '../../entities/user.entity';
+import {Repository} from 'typeorm';
+import {InjectRepository} from "@nestjs/typeorm";
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(
+      @InjectRepository(User)
+      private readonly usersRepository: Repository<User>
+  ) {}
 
   async getUserName(user_id: number): Promise<User> {
-    const user = await this.dataSource
-      .getRepository(User)
+    const user = await this.usersRepository
       .createQueryBuilder('user')
       .select('user.name')
       .where('user.user_id = :user_id', { user_id: user_id })
@@ -22,33 +25,26 @@ export class UsersService {
   }
 
   async findOne(email: string): Promise<User | null> {
-    const user = await this.dataSource
-      .getRepository(User)
-      .createQueryBuilder('user')
-      .where('user.email = :email', { email: email })
-      .getOne();
-
-    return user;
+    return await this.usersRepository
+        .createQueryBuilder('user')
+        .where('user.email = :email', {email: email})
+        .getOne();
   }
 
   async findByRefreshToken(rT: string) {
-    return await this.dataSource
-      .getRepository(User)
+    return await this.usersRepository
       .createQueryBuilder('user')
       .where('user.refresh_token = :rT', { rT: rT })
       .getOne();
   }
 
   async checkUser(email: string): Promise<boolean> {
-    const user = await this.dataSource
-      .getRepository(User)
-      .exist({ where: { email: email } });
-
-    return user;
+    return await this.usersRepository
+        .exist({where: {email: email}});
   }
 
   async addNewUser(username: string, email: string, password: string) {
-    return await this.dataSource
+    return await this.usersRepository
       .createQueryBuilder()
       .insert()
       .into(User)
@@ -57,7 +53,7 @@ export class UsersService {
   }
 
   async updateRefreshToken(id: number, rf: string) {
-    return await this.dataSource
+    return await this.usersRepository
       .createQueryBuilder()
       .update(User)
       .set({ refresh_token: rf })
