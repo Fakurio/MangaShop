@@ -6,9 +6,9 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { OrderService } from '../../order/services/order.service';
-import { JwtGuard } from 'src/auth/guards/jwt.guard';
-import { CreateOrderT } from '../../order/dto/create-order.dto';
+import { OrderService } from '../services/order.service';
+import { JwtGuard } from '../../auth/guards/jwt.guard';
+import { CreateOrderDTO } from '../dto/create-order.dto';
 
 @Controller('order')
 export class OrderController {
@@ -16,14 +16,14 @@ export class OrderController {
 
   @UseGuards(JwtGuard)
   @Post('create')
-  createOrder(@Request() req, @Body() order: CreateOrderT) {
+  createOrder(@Request() req, @Body() order: CreateOrderDTO) {
     return this.orderService.createOrder(req, order);
   }
 
   @UseGuards(JwtGuard)
   @Get('status')
-  getOrderStauts() {
-    return this.orderService.getOrderStatus();
+  getOrderStatuses() {
+    return this.orderService.getOrderStatuses();
   }
 
   @UseGuards(JwtGuard)

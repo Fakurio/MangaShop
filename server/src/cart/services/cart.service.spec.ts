@@ -21,6 +21,7 @@ describe('CartsService', () => {
         upsert: jest.fn(),
         remove: jest.fn(),
         find: jest.fn(),
+        delete: jest.fn(),
     }
 
     beforeEach(async () => {
@@ -35,6 +36,10 @@ describe('CartsService', () => {
         cartsRepository = moduleRef.get(getRepositoryToken(Cart));
         cartItemsRepository = moduleRef.get(getRepositoryToken(CartItem));
     });
+
+    afterEach(async () => {
+        jest.clearAllMocks()
+    })
 
    it("should return user cart from db", async () => {
        jest.spyOn(cartsRepository, "findOne").mockResolvedValue({
@@ -177,5 +182,35 @@ describe('CartsService', () => {
         await cartService.deleteCart(1)
 
         expect(cartsRepository.delete).toHaveBeenCalledTimes(1)
+    })
+
+    it("should update cart status", async () => {
+        const request = {
+            user: {
+                user_id: 1
+            }
+        }
+        jest.spyOn(cartService, "getUserCart").mockResolvedValue(
+            { status: Status.ACTIVE } as Cart
+        )
+
+        await cartService.updateCartStatus(request)
+
+        expect(cartsRepository.save).toHaveBeenCalledWith({status: Status.INACTIVE})
+        expect(cartItemsRepository.delete).toHaveBeenCalledTimes(1)
+    })
+
+    it("shouldn't update cart status -> cart doesn't exist", async () => {
+        const request = {
+            user: {
+                user_id: 1
+            }
+        }
+        jest.spyOn(cartService, "getUserCart").mockResolvedValue(null)
+
+        await cartService.updateCartStatus(request)
+
+        expect(cartsRepository.save).toHaveBeenCalledTimes(0)
+        expect(cartItemsRepository.delete).toHaveBeenCalledTimes(0)
     })
 });

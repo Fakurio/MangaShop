@@ -77,7 +77,7 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
-    "verbose": true,
+    "verbose": false,
     "slowTestThreshold": 7
   }
 }

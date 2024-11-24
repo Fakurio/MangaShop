@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { PaymentService } from '../../order/services/payment.service';
+import { PaymentService } from '../services/payment.service';
 
 @Controller('payment')
 export class PaymentController {
@@ -7,6 +7,6 @@ export class PaymentController {
 
   @Get('/')
   async getPaymentMethods() {
-    return await this.paymentService.getPaymentMethods();
+    return this.paymentService.getPaymentMethods();
   }
 }

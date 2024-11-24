@@ -63,6 +63,18 @@ export class CartsService {
     });
   }
 
+  async updateCartStatus(req: any) {
+    let userCart = await this.getUserCart(req.user.user_id);
+
+    if (userCart) {
+      userCart.status = Status.INACTIVE;
+      await this.cartItemsRepository.delete({
+        cart_id: userCart.cart_id,
+      });
+      await this.cartsRepository.save(userCart);
+    }
+  }
+
   private async updateCartInDatabase(cart: CartItemT[], userCartFromDB: Cart) {
     const clientCurrentCart = cart.map(item => {
       const cartItem = new CartItem()
