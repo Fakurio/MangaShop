@@ -1,18 +1,19 @@
-import { Injectable } from '@nestjs/common';
-import { Genre } from 'src/entities/genre.entity';
-import { DataSource } from 'typeorm';
+import {Injectable} from '@nestjs/common';
+import {Genre} from '../../entities/genre.entity';
+import {Repository} from 'typeorm';
+import {InjectRepository} from "@nestjs/typeorm";
 
 @Injectable()
 export class GenresService {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(
+      @InjectRepository(Genre)
+      private genresRepository: Repository<Genre>
+  ) {}
 
   async getAllGenres(): Promise<Genre[]> {
-    const genres = await this.dataSource
-      .getRepository(Genre)
-      .createQueryBuilder('genre')
-      .select(['genre.genre_id', 'genre.name'])
-      .getMany();
-
-    return genres;
+    return await this.genresRepository
+        .createQueryBuilder('genre')
+        .select(['genre.genre_id', 'genre.name'])
+        .getMany();
   }
 }

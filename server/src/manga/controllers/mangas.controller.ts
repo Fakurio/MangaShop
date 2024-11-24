@@ -1,6 +1,6 @@
 import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
-import { Manga } from 'src/entities/manga.entity';
-import { MangasService } from 'src/manga/services/mangas.service';
+import { Manga } from '../../entities/manga.entity';
+import { MangasService } from '../services/mangas.service';
 
 @Controller('mangas')
 export class MangasController {
@@ -12,7 +12,7 @@ export class MangasController {
   }
 
   @Get(':id')
-  getOne(@Param('id', ParseIntPipe) id: number): Promise<Manga> {
+  getOne(@Param('id', ParseIntPipe) id: number): Promise<Manga | null> {
     return this.mangasService.getOne(id);
   }
 }
