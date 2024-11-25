@@ -44,20 +44,18 @@ export class UsersService {
   }
 
   async addNewUser(username: string, email: string, password: string) {
-    return await this.usersRepository
-      .createQueryBuilder()
-      .insert()
-      .into(User)
-      .values({ name: username, email: email, password: password })
-      .execute();
+    const user = new User;
+    user.email = email;
+    user.password = password;
+    user.name = username;
+
+    return await this.usersRepository.save(user);
   }
 
   async updateRefreshToken(id: number, rf: string) {
-    return await this.usersRepository
-      .createQueryBuilder()
-      .update(User)
-      .set({ refresh_token: rf })
-      .where('user_id = :id', { id: id })
-      .execute();
+    return await this.usersRepository.update(
+        { user_id: id },
+        { refresh_token: rf }
+    )
   }
 }

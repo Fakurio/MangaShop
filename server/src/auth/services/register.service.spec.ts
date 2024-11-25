@@ -2,7 +2,6 @@ import {RegisterService} from "./register.service";
 import {Test} from "@nestjs/testing";
 import {UsersService} from "../../user/services/users.service";
 import {HashService} from "./hash.service";
-import {InsertResult} from "typeorm";
 import {getRepositoryToken} from "@nestjs/typeorm";
 import {User} from "../../entities/user.entity";
 import {HttpException} from "@nestjs/common";
@@ -35,7 +34,7 @@ describe('RegisterService', () => {
 
         }
         jest.spyOn(usersService, "checkUser").mockResolvedValue(false)
-        jest.spyOn(usersService, "addNewUser").mockResolvedValue({} as InsertResult)
+        jest.spyOn(usersService, "addNewUser").mockResolvedValue({} as User)
         jest.spyOn(hashService, "hashPassword").mockImplementation((pas) => {
             return Promise.resolve(pas)
         })
