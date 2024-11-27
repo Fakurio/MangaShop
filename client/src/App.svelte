@@ -18,15 +18,13 @@
   let isLoading = true;
 
   const verifyRefreshToken = async () => {
-    if (!get(authStore)) {
-      try {
-        await refreshToken();
-      } finally {
-        return true;
-      }
-    } else {
-      return true;
-    }
+    if (get(authStore)) return true;
+
+    try {
+      await refreshToken();
+    } catch (error) {}
+
+    return true;
   };
 
   const isLoggedIn = () => {

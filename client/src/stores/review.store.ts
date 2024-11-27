@@ -1,6 +1,6 @@
 import { writable } from "svelte/store";
 import type { Review, addReviewDto } from "../types/review";
-import { usePrivateInterceptor } from "../inteceptors/private";
+import { usePrivateInterceptor } from "../api/inteceptors/private";
 
 const reviewStore = writable<Review[]>([]);
 const reviewStoreResponse = writable("");

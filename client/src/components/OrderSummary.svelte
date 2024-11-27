@@ -5,7 +5,7 @@
   import { get } from "svelte/store";
   import { authStore } from "../stores/auth.store";
   import { replace } from "svelte-spa-router";
-  import { usePrivateInterceptor } from "../inteceptors/private";
+  import { usePrivateInterceptor } from "../api/inteceptors/private";
 
   let totalValue: string;
   let paymentMethod: string;

@@ -1,14 +1,14 @@
 import { get } from "svelte/store";
-import { authStore, refreshToken } from "../stores/auth.store";
+import { authStore, refreshToken } from "../../stores/auth.store";
 
 const usePrivateInterceptor = async (
   url: string,
   method: string,
   body?: any,
-  credentials?: RequestCredentials
+  credentials?: RequestCredentials,
 ) => {
   const makeRequest = async () => {
-    return await fetch(`http://localhost:3000/${url}`, {
+    return await fetch(`${import.meta.env.VITE_SERVER_HOST}/${url}`, {
       method: method,
       headers: {
         authorization: `Bearer ${get(authStore)?.access_token}`,

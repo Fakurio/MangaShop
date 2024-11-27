@@ -2,7 +2,7 @@
   import Header from "../components/Header.svelte";
   import Button from "../components/Button.svelte";
   import OrderList from "../components/OrderList.svelte";
-  import { usePrivateInterceptor } from "../inteceptors/private";
+  import { usePrivateInterceptor } from "../api/inteceptors/private";
   import { statusFilter, sortFilter, SortFilter } from "../stores/order.store";
 
   let selectedStatusFilter: string;

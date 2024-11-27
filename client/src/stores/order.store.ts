@@ -1,6 +1,6 @@
 import { writable, derived } from "svelte/store";
 import type { Order } from "../types/order";
-import { usePrivateInterceptor } from "../inteceptors/private";
+import { usePrivateInterceptor } from "../api/inteceptors/private";
 
 enum SortFilter {
   DATE_ASC,
@@ -21,22 +21,22 @@ const filteredOrderStore = derived(
     switch ($sortFilter) {
       case SortFilter.DATE_ASC:
         return filtered.sort(
-          (a, b) => a.order_date.getTime() - b.order_date.getTime()
+          (a, b) => a.order_date.getTime() - b.order_date.getTime(),
         );
       case SortFilter.DATE_DESC:
         return filtered.sort(
-          (a, b) => a.order_date.getTime() + b.order_date.getTime()
+          (a, b) => a.order_date.getTime() + b.order_date.getTime(),
         );
       case SortFilter.PRICE_ASC:
         return filtered.sort((a, b) =>
-          a.total_price > b.total_price ? 1 : -1
+          a.total_price > b.total_price ? 1 : -1,
         );
       case SortFilter.PRICE_DESC:
         return filtered.sort((a, b) =>
-          a.total_price < b.total_price ? 1 : -1
+          a.total_price < b.total_price ? 1 : -1,
         );
     }
-  }
+  },
 );
 
 const fetchUserOrders = async () => {

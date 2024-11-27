@@ -1,6 +1,6 @@
 <script lang="ts">
   import Button from "./Button.svelte";
-  import { usePrivateInterceptor } from "../inteceptors/private";
+  import { usePrivateInterceptor } from "../api/inteceptors/private";
   import { location } from "svelte-spa-router";
   import { authStore } from "../stores/auth.store";
   import { get } from "svelte/store";
