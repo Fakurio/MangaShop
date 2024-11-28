@@ -3,8 +3,8 @@
   import MangaCard from "../components/MangaCard.svelte";
   import Header from "../components/Header.svelte";
   import SearchBar from "../components/SearchBar.svelte";
-  import FilterPanel from "../components/FilterPanel.svelte";
   import { onDestroy } from "svelte";
+  import FilterPanelMQ from "../components/FilterPanelMQ.svelte";
 
   onDestroy(() => serverError.set({ isError: false, message: "" }));
 </script>
@@ -14,7 +14,7 @@
 {:else}
   <Header />
   <main>
-    <FilterPanel />
+    <FilterPanelMQ/>
     <SearchBar />
     <section class="mangas">
       {#each $filteredMangaStore as manga (manga.manga_id)}

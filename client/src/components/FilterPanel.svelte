@@ -1,53 +1,39 @@
 <script lang="ts">
-  import { Button } from "$lib/components/ui/button";
+  import {Button} from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
   import { Checkbox } from "$lib/components/ui/checkbox";
   import { Label } from "$lib/components/ui/label/index.js";
-  import {
-    fetchMangaDetails,
-    mangaStore,
-    filteredGenres,
-    filteredPriceRange,
-    fetchGenres
-  } from "../stores/manga.store";
-  import { get } from "svelte/store";
+  import { Skeleton } from "$lib/components/ui/skeleton/index.js";
+  import {fetchGenres} from "../stores/manga.store";
   import type { PriceRange } from "../types/price-range";
 
-  let selectedGenres: string[] = [];
-  let selectedPriceRange: PriceRange = { from: 0, to: 200 };
-
-
-  const applyFilters = async () => {
-    for (let manga of get(mangaStore)) {
-      await fetchMangaDetails(manga.manga_id);
-    }
-    filteredGenres.set(selectedGenres);
-    if (!selectedPriceRange.from) {
-      selectedPriceRange.from = 0;
-    }
-    if (!selectedPriceRange.to) {
-      selectedPriceRange.to = 200;
-    }
-    filteredPriceRange.set(selectedPriceRange);
-  };
-
-  const addGenre = (genre: string) => {
-    selectedGenres.push(genre);
-    console.log(selectedGenres);
+  interface FilterPanelProps {
+    selectedPriceRange: PriceRange;
+    selectedGenres: string[];
+    addGenre: (genre: string) => void;
+    removeGenre: (genre: string) => void;
+    applyFilters: () => void;
+    toggleDialog?: () => void;
   }
 
-  const removeGenre = (genre: string) => {
-    selectedGenres = selectedGenres.filter(item => item !== genre);
-    console.log(selectedGenres);
-  }
+  let {
+    addGenre,
+    removeGenre,
+    applyFilters,
+    selectedGenres,
+    selectedPriceRange = $bindable(),
+    toggleDialog,
+  }: FilterPanelProps = $props();
+
+
 </script>
 
-<aside class="filter-panel bg-secondary-foreground border">
+<aside class="filter-panel bg-card border-2 border-border">
   <section>
     {#await fetchGenres()}
-      Loading...
+      <Skeleton class="h-64 w-[250px]" />
     {:then genres}
-      <h2 class="text-xl text-white">Genre</h2>
+      <h2 class="text-xl text-card-foreground">Genre</h2>
       <div class="mt-4 flex flex-col gap-4">
         {#each genres as genre (genre.genre_id)}
           <div class="flex items-center gap-2">
@@ -57,8 +43,8 @@
                 } else {
                   removeGenre(genre.name);
                 }
-              }} id={genre.name} value={genre.name} class="border-amber-600"></Checkbox>
-            <Label class="text-white" for={genre.name}>{genre.name}</Label>
+              }} checked={selectedGenres.includes(genre.name)} id={genre.name} value={genre.name}></Checkbox>
+            <Label class="text-card-foreground" for={genre.name}>{genre.name}</Label>
           </div>
         {/each}
       </div>
@@ -66,14 +52,19 @@
       <p class="error error--server">{error}</p>
     {/await}
   </section>
-  <section class="mt-4">
-    <h2 class="text-white text-xl">Price</h2>
-    <div class="flex gap-4 mt-2 relative">
+  <section class="mt-6">
+    <h2 class="text-card-foreground text-xl">Price</h2>
+    <div class="flex gap-4 mt-2">
       <Input placeholder="Min" type="number" bind:value={selectedPriceRange.from}></Input>
       <Input placeholder="Max" type="number" bind:value={selectedPriceRange.to}></Input>
     </div>
   </section>
-  <Button on:click={applyFilters} class="mt-4">Apply Filters</Button>
+  <Button on:click={() => {
+    applyFilters()
+    if(toggleDialog) {
+      toggleDialog();
+    }
+  }} class="mt-4">Apply Filters</Button>
 </aside>
 
 <style>
