@@ -15,19 +15,18 @@ export class OrderController {
   constructor(private orderService: OrderService) {}
 
   @UseGuards(JwtGuard)
-  @Post('create')
+  @Post()
   createOrder(@Request() req, @Body() order: CreateOrderDTO) {
     return this.orderService.createOrder(req, order);
   }
 
-  @UseGuards(JwtGuard)
   @Get('status')
   getOrderStatuses() {
     return this.orderService.getOrderStatuses();
   }
 
   @UseGuards(JwtGuard)
-  @Get('all')
+  @Get()
   getAllOrders(@Request() req) {
     return this.orderService.getAllOrders(req.user.sub);
   }

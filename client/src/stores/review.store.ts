@@ -1,46 +1,49 @@
 import { writable } from "svelte/store";
 import type { Review, addReviewDto } from "../types/review";
-import { usePrivateInterceptor } from "../api/inteceptors/private";
+import { catchError } from "../api/catchError";
+import { makeRequest } from "../api/makeRequest";
+import { makePrivateRequest } from "../api/makePrivateRequest";
+import { UnauthorizedError } from "../api/errors/UnauthorizedError";
+import { authStore } from "./auth.store";
+import cartStore from "./cart.store";
+import { replace } from "svelte-spa-router";
 
 const reviewStore = writable<Review[]>([]);
 const reviewStoreResponse = writable("");
 const reviewStoreError = writable(false);
 
 const fetchReviews = async (manga_id: number) => {
-  try {
-    reviewStoreError.set(false);
+  const [error, data] = await catchError<Review[]>(
+    makeRequest(`/review/${manga_id}`, "GET"),
+  );
 
-    let response = await fetch(`http://localhost:3000/review/${manga_id}`);
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch reviews");
-    }
-
-    let reviews = await response.json();
-    reviewStore.set(reviews);
-  } catch (e: any) {
+  if (error) {
     reviewStoreError.set(true);
-    reviewStoreResponse.set(e.message);
+    reviewStoreResponse.set(error.message);
+  } else {
+    reviewStore.set(data);
   }
 };
 
 const addReview = async (review: addReviewDto) => {
-  try {
-    reviewStoreError.set(false);
+  reviewStoreError.set(false);
+  reviewStoreResponse.set("");
+  const [error, data] = await catchError(
+    makePrivateRequest("/review", "POST", undefined, review),
+  );
 
-    let response = await usePrivateInterceptor("review/add", "POST", review);
-
-    if (!response.ok) {
-      let err = await response.json();
-      throw new Error(err.message);
+  if (error) {
+    if (error instanceof UnauthorizedError) {
+      authStore.set(null);
+      cartStore.set([]);
+      await replace("/login");
+    } else {
+      reviewStoreError.set(true);
+      reviewStoreResponse.set(error.message);
     }
-
-    let msg = await response.json();
-    fetchReviews(review.manga_id);
-    reviewStoreResponse.set(msg.message);
-  } catch (e: any) {
-    reviewStoreError.set(true);
-    reviewStoreResponse.set(e.message);
+  } else {
+    await fetchReviews(review.manga_id);
+    reviewStoreResponse.set(data.message);
   }
 };
 

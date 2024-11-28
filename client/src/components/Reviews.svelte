@@ -12,14 +12,8 @@
 
   export let manga_id: number;
 
-  let isLoading = true;
-
   onMount(async () => {
-    try {
-      await fetchReviews(manga_id);
-    } finally {
-      isLoading = false;
-    }
+    await fetchReviews(manga_id);
   });
 
   onDestroy(() => {
@@ -28,16 +22,18 @@
   });
 </script>
 
+
+
+
 {#if $reviewStoreResponse}
-  <p
-    class={`server-response ${
-      $reviewStoreError ? "server-response--error" : undefined
-    }`}
-  >
-    {$reviewStoreResponse}
-  </p>
+    <p
+        class={`server-response ${
+          $reviewStoreError ? "server-response--error" : undefined
+        }`}
+    >
+      {$reviewStoreResponse}
+    </p>
 {/if}
-{#if !isLoading}
   <section class="reviews">
     <h2 class="reviews__heading">Reviews</h2>
     {#if $reviewStore.length === 0}
@@ -56,7 +52,6 @@
       {/each}
     {/if}
   </section>
-{/if}
 
 <style>
   .reviews {

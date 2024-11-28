@@ -21,7 +21,7 @@ export class ReviewController {
     return this.reviewService.getReview(manga_id);
   }
 
-  @Post('add')
+  @Post()
   @UseGuards(JwtGuard)
   addReview(@Request() req, @Body() review: addReviewDto) {
     return this.reviewService.addReview(req.user.sub, review);

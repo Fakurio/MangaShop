@@ -1,6 +1,5 @@
 <script lang="ts">
   import Button from "./Button.svelte";
-  import { usePrivateInterceptor } from "../api/inteceptors/private";
   import { location } from "svelte-spa-router";
   import { authStore } from "../stores/auth.store";
   import { get } from "svelte/store";
@@ -26,8 +25,7 @@
         manga_id: getMangaIDFromURL(),
         created_at: new Date(),
       };
-
-      addReview(payload);
+      await addReview(payload);
     }
   };
 </script>
