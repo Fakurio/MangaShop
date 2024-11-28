@@ -2,17 +2,10 @@
   import Header from "../components/Header.svelte";
   import Button from "../components/Button.svelte";
   import OrderList from "../components/OrderList.svelte";
-  import { usePrivateInterceptor } from "../api/inteceptors/private";
-  import { statusFilter, sortFilter, SortFilter } from "../stores/order.store";
+  import {sortFilter, SortFilter, statusFilter, fetchOrderStatuses} from "../stores/order.store";
 
   let selectedStatusFilter: string;
   let selectedSortFilter: SortFilter;
-
-  const fetchOrderStatuses = async () => {
-    let response = await usePrivateInterceptor("order/status", "GET");
-    let orderStatuses = await response.json();
-    return orderStatuses;
-  };
 
   const applyStatusFilter = () => {
     statusFilter.set(selectedStatusFilter);
@@ -68,9 +61,8 @@
   .container {
     max-width: 1300px;
     width: 100%;
-    margin: 0 auto;
     color: white;
-    margin-top: 2rem;
+    margin: 2rem auto 0;
     padding-bottom: 1rem;
     padding-inline: 1rem;
   }

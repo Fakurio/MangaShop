@@ -7,20 +7,28 @@ import cartStore from "./cart.store";
 import { catchError } from "../api/catchError";
 import { makeRequest } from "../api/makeRequest";
 import { makePrivateRequest } from "../api/makePrivateRequest";
+import { ForbiddenError } from "../api/errors/ForbiddenError";
 
 const authStore = writable<LoggedInUser | null>(null);
 
 const refreshToken = async () => {
-  const [_, data] = await catchError<LoggedInUser>(
+  const [error, data] = await catchError<LoggedInUser>(
     makeRequest("/auth/refresh", "GET", "include"),
   );
 
-  authStore.update(() => {
-    return {
-      username: data!.username,
-      access_token: data!.access_token,
-    };
-  });
+  if (error instanceof ForbiddenError) {
+    console.log("Refresh token failed -> need to login again");
+    throw error;
+  }
+
+  if (!error) {
+    authStore.update(() => {
+      return {
+        username: data!.username,
+        access_token: data!.access_token,
+      };
+    });
+  }
 };
 
 const login = async (user: LoginUser, cart: CartItem[]) => {
@@ -43,10 +51,6 @@ const logout = async () => {
   const [error, _] = await catchError(
     makePrivateRequest("/auth/logout", "POST", "include", [...get(cartStore)]),
   );
-
-  if (error) {
-    console.log(error.message);
-  }
 
   authStore.set(null);
   cartStore.set([]);

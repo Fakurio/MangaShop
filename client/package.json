@@ -20,7 +20,7 @@
     "vite": "^5.0.0"
   },
   "dependencies": {
-    "svelte-spa-router": "^3.3.0",
+    "svelte-spa-router": "^4.0.1",
     "uuid": "^9.0.1",
     "zod": "^3.22.4",
     "zod-validation-error": "^2.1.0"

@@ -2,70 +2,24 @@
   import { getTotalValue } from "../stores/cart.store";
   import cartStore from "../stores/cart.store";
   import Button from "./Button.svelte";
-  import { get } from "svelte/store";
-  import { authStore } from "../stores/auth.store";
-  import { replace } from "svelte-spa-router";
-  import { usePrivateInterceptor } from "../api/inteceptors/private";
+  import {derived} from "svelte/store";
+  import {fetchPaymentMethods, createOrder} from "../stores/order.store";
 
-  let totalValue: string;
+
+  const totalValue = derived(cartStore, _ => {
+    return getTotalValue()
+  })
   let paymentMethod: string;
   let serverResponse: string = "";
   let isServerError: boolean = false;
 
-  const fetchPaymentMethods = async () => {
-    let response = await fetch("http://localhost:3000/payment");
-    if (response.ok) {
-      let paymentMethods = await response.json();
-      return paymentMethods;
-    } else {
-      let error = await response.json();
-      throw new Error(error.message);
-    }
-  };
-
-  const updateTotalValue = () => {
-    totalValue = getTotalValue();
-  };
-
-  $: $cartStore, updateTotalValue();
-
-  const createOrder = async () => {
-    serverResponse = "";
-    isServerError = false;
-
-    if (!get(authStore)) {
-      replace("/login");
-    }
-
-    try {
-      let payload = {
-        cart: get(cartStore),
-        payment_method: paymentMethod,
-        total: Number.parseFloat(totalValue),
-      };
-
-      let response = await usePrivateInterceptor(
-        "order/create",
-        "POST",
-        payload
-      );
-
-      if (!response.ok) {
-        let error = await response.json();
-        throw new Error(error.message);
-      }
-
-      let msg = await response.json();
-      serverResponse = msg;
-      setTimeout(() => {
-        localStorage.removeItem("cart");
-        cartStore.set([]);
-      }, 2700);
-    } catch (e: any) {
-      serverResponse = e.message;
+  const handleCreatingOrder = async () => {
+    const [isError, message] = await createOrder(paymentMethod, $totalValue);
+    if (isError) {
       isServerError = true;
     }
-  };
+    serverResponse = message
+  }
 </script>
 
 {#if serverResponse}
@@ -94,8 +48,8 @@
         <option value={method.name}>{method.name}</option>
       {/each}
     </select>
-    <h2 class="order-summary__total">Order total: {totalValue} PLN</h2>
-    <Button text="Checkout" onClick={() => createOrder()} />
+    <h2 class="order-summary__total">Order total: {$totalValue} PLN</h2>
+    <Button text="Checkout" onClick={handleCreatingOrder} />
   </div>
 {:catch error}
   <p class="error error--server">{error}</p>

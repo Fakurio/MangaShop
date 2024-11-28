@@ -1,3 +1,6 @@
+import { ForbiddenError } from "./errors/ForbiddenError";
+import { UnauthorizedError } from "./errors/UnauthorizedError";
+
 export const makeRequest = async (
   endpoint: string,
   method: string,
@@ -18,6 +21,12 @@ export const makeRequest = async (
 
   if (!response.ok) {
     const error = await response.json();
+    if (response.status === 403) {
+      throw new ForbiddenError(error.message);
+    }
+    if (response.status === 401) {
+      throw new UnauthorizedError(error.message);
+    }
     throw new Error(error.message);
   }
 

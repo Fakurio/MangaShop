@@ -1,6 +1,13 @@
-import { writable, derived } from "svelte/store";
+import { derived, get, writable } from "svelte/store";
 import type { Order } from "../types/order";
-import { usePrivateInterceptor } from "../api/inteceptors/private";
+import { catchError } from "../api/catchError";
+import { makePrivateRequest } from "../api/makePrivateRequest";
+import { replace } from "svelte-spa-router";
+import { authStore } from "./auth.store";
+import cartStore from "./cart.store";
+import { makeRequest } from "../api/makeRequest";
+import type { PaymentMethod } from "../types/payment-method";
+import { UnauthorizedError } from "../api/errors/UnauthorizedError";
 
 enum SortFilter {
   DATE_ASC,
@@ -39,14 +46,67 @@ const filteredOrderStore = derived(
   },
 );
 
+const fetchOrderStatuses = async () => {
+  return await makeRequest("/order/status", "GET");
+};
+
 const fetchUserOrders = async () => {
-  let response = await usePrivateInterceptor("order/all", "GET");
-  let orders = await response.json();
-  orders.map((order: any) => {
-    order.order_date = new Date(order.order_date);
-    order.total_price = Number.parseFloat(order.total_price);
-  });
-  orderStore.set(orders);
+  const [error, data] = await catchError<Order[]>(
+    makePrivateRequest("/order", "GET", "include"),
+  );
+
+  if (!error) {
+    data.map((order) => {
+      order.order_date = new Date(order.order_date);
+      order.total_price = Number.parseFloat(order.total_price as string);
+    });
+    orderStore.set(data);
+  } else {
+    authStore.set(null);
+    cartStore.set([]);
+    await replace("/login");
+  }
+};
+
+const fetchPaymentMethods = async () => {
+  const [error, data] = await catchError<PaymentMethod[]>(
+    makeRequest("/payment", "GET"),
+  );
+
+  if (error) {
+    throw error;
+  } else {
+    return data;
+  }
+};
+
+const createOrder = async (
+  paymentMethod: string,
+  totalValue: string,
+): Promise<[boolean | undefined, string]> => {
+  const payload = {
+    cart: get(cartStore),
+    payment_method: paymentMethod,
+    total: Number.parseFloat(totalValue),
+  };
+  const [error, data] = await catchError(
+    makePrivateRequest("/order", "POST", undefined, payload),
+  );
+
+  if (error) {
+    if (error instanceof UnauthorizedError) {
+      authStore.set(null);
+      cartStore.set([]);
+      await replace("/login");
+    }
+    return [true, error.message];
+  } else {
+    setTimeout(() => {
+      localStorage.removeItem("cart");
+      cartStore.set([]);
+    }, 2700);
+    return [false, data];
+  }
 };
 
 export {
@@ -56,4 +116,7 @@ export {
   statusFilter,
   filteredOrderStore,
   fetchUserOrders,
+  fetchOrderStatuses,
+  fetchPaymentMethods,
+  createOrder,
 };
