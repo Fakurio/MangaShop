@@ -94,6 +94,7 @@
     width: 300px;
     height: 100px;
     margin-top: 1rem;
+    color: black;
   }
 
   .review-form__rating {

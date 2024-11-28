@@ -1,6 +1,9 @@
 import { get, writable, derived } from "svelte/store";
 import type { Manga } from "../types/manga";
 import type { PriceRange } from "../types/price-range";
+import { catchError } from "../api/catchError";
+import { makeRequest } from "../api/makeRequest";
+import type { Genre } from "../types/genre";
 
 const mangaStore = writable<Manga[]>([]);
 const serverError = writable({ isError: false, message: "" });
@@ -34,8 +37,20 @@ const filteredMangaStore = derived(
       .filter((manga) => {
         return manga.title.toLowerCase().includes($filteredText.toLowerCase());
       });
-  }
+  },
 );
+
+const fetchGenres = async () => {
+  const [error, data] = await catchError<Genre[]>(
+    makeRequest("/genres", "GET"),
+  );
+
+  if (!error) {
+    return data;
+  } else {
+    throw error;
+  }
+};
 
 const fetchMangas = async () => {
   try {
@@ -96,5 +111,6 @@ export {
   filteredGenres,
   filteredPriceRange,
   fetchMangas,
+  fetchGenres,
   getMangaPrice,
 };

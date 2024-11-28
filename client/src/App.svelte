@@ -1,6 +1,7 @@
 <script>
+  import "./app.css";
   // @ts-nocheck
-
+  
   import Home from "./routes/Home.svelte";
   import Router, {replace} from "svelte-spa-router";
   import MangaDetails from "./routes/MangaDetails.svelte";
@@ -14,24 +15,24 @@
   import {getCartFromLocalStorage} from "./stores/cart.store";
   import {fetchMangas} from "./stores/manga.store";
   import {onMount} from "svelte";
-
+  
   const verifyRefreshToken = async () => {
     if (get(authStore)) return true;
     await refreshToken();
     return true;
   };
-
+  
   const isLoggedIn = () => {
     if (!get(authStore)) {
       replace("/login");
     }
     return true;
   };
-
+  
   onMount(async () => {
     await fetchMangas();
   });
-
+  
   let routes = {
       "/": wrap({
           component: Home,

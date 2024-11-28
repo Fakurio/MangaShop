@@ -2,7 +2,7 @@
   export let rating: number;
 </script>
 
-<div>
+<div class="stars">
   {#each Array(5) as _, i}
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -22,6 +22,10 @@
 </div>
 
 <style>
+  .stars {
+    display: flex;
+  }
+
   .star {
     width: 30px;
   }
