@@ -53,38 +53,34 @@ const fetchGenres = async () => {
 };
 
 const fetchMangas = async () => {
-  try {
-    const response = await fetch("http://localhost:3000/mangas");
-    if (!response.ok) {
-      let error = await response.json();
-      throw new Error(error.message);
-    }
-    const mangas = await response.json();
-    mangaStore.set(mangas);
-  } catch (e: any) {
-    serverError.set({ isError: true, message: e.message });
+  const [error, data] = await catchError(makeRequest("/mangas", "GET"));
+
+  if (error) {
+    serverError.set({ isError: true, message: error.message });
+  } else {
+    mangaStore.set(data);
   }
 };
 
 const fetchMangaDetails = async (manga_id: number) => {
   if (!get(mangaStore).find((manga) => manga.manga_id === manga_id)?.fetched) {
-    try {
-      const response = await fetch(`http://localhost:3000/mangas/${manga_id}`);
-      if (!response.ok) {
-        let error = await response.json();
-        throw new Error(error.message);
-      }
-      const mangaData = await response.json();
+    const [error, data] = await catchError<Manga>(
+      makeRequest(`/mangas/${manga_id}`, "GET"),
+    );
+
+    if (error) {
+      serverError.set({ isError: true, message: error.message });
+    } else {
       mangaStore.update((mangas: Manga[]) => {
         return mangas.map((manga) => {
           if (manga.manga_id === manga_id) {
             return {
               ...manga,
-              description: mangaData.description,
-              author: mangaData.author,
-              genres: mangaData.genres,
-              reviews: mangaData.reviews,
-              stock_quantity: mangaData.stock_quantity,
+              description: data.description,
+              author: data.author,
+              genres: data.genres,
+              reviews: data.reviews,
+              stock_quantity: data.stock_quantity,
               fetched: true,
             };
           } else {
@@ -92,8 +88,6 @@ const fetchMangaDetails = async (manga_id: number) => {
           }
         });
       });
-    } catch (e: any) {
-      serverError.set({ isError: true, message: e.message });
     }
   }
 };
