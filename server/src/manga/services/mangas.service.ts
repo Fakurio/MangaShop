@@ -1,13 +1,13 @@
-import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
-import {Manga} from '../../entities/manga.entity';
-import {Repository} from 'typeorm';
-import {InjectRepository} from "@nestjs/typeorm";
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Manga } from '../../entities/manga.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class MangasService {
   constructor(
-      @InjectRepository(Manga)
-      private mangasRepository: Repository<Manga>
+    @InjectRepository(Manga)
+    private mangasRepository: Repository<Manga>,
   ) {}
 
   async getAll(): Promise<Manga[]> {
@@ -26,11 +26,16 @@ export class MangasService {
 
   async getOne(id: number) {
     return await this.mangasRepository
-        .createQueryBuilder('manga')
-        .select(['manga.manga_id', 'manga.description', 'manga.author', 'manga.stock_quantity'])
-        .innerJoinAndSelect('manga.genres', 'genres')
-        .leftJoinAndSelect('manga.reviews', 'reviews')
-        .where('manga.manga_id = :id', {id: id})
-        .getOne();
+      .createQueryBuilder('manga')
+      .select([
+        'manga.manga_id',
+        'manga.description',
+        'manga.author',
+        'manga.stock_quantity',
+      ])
+      .innerJoinAndSelect('manga.genres', 'genres')
+      .leftJoinAndSelect('manga.reviews', 'reviews')
+      .where('manga.manga_id = :id', { id: id })
+      .getOne();
   }
 }

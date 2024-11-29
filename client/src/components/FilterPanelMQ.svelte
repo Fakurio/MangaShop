@@ -38,6 +38,8 @@
     const resetFilters = () => {
         selectedPriceRange = {from: 0, to: 200};
         selectedGenres = [];
+        localStorage.removeItem("selectedGenres");
+        localStorage.removeItem("selectedPriceRange");
         applyFilters()
     }
 
@@ -65,7 +67,7 @@
 <MediaQuery query="(max-width: 920px)" let:matches bind:selectedPriceRange>
     {#if matches}
         <Dialog.Root bind:open={isDialogOpen}>
-            <Dialog.Trigger class={buttonVariants({variant: "default"})}>Open Filters</Dialog.Trigger>
+            <Dialog.Trigger class={`${buttonVariants({variant: "default"})} mt-6`}>Open Filters</Dialog.Trigger>
             <Dialog.Content>
                 <FilterPanel {selectedGenres} {addGenre}
                              {removeGenre} {applyFilters}

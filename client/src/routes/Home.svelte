@@ -11,7 +11,9 @@
 </script>
 
 {#if $serverError.isError}
-  <p class="error error--server">{$serverError.message}</p>
+  <Alert.Root class="w-3/5 text-center m-auto mt-5" variant="destructive">
+    <Alert.Title>{$serverError.message}</Alert.Title>
+  </Alert.Root>
 {:else}
   <Header />
   <main>
@@ -56,7 +58,7 @@
   @media (max-width: 920px) {
     main {
       grid-template-columns: 1fr;
-      grid-template-rows: 100px min-content 1fr;
+      grid-template-rows: min-content min-content 1fr;
     }
 
     .mangas {
@@ -70,11 +72,11 @@
     main {
       padding-inline: 2rem;
     }
+  }
 
-    @media (max-width: 380px) {
-      main {
-        padding-inline: 0.5rem;
-      }
+  @media (max-width: 380px) {
+    main {
+      padding-inline: 1rem;
     }
   }
 </style>
