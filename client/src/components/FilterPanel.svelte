@@ -14,6 +14,7 @@
     removeGenre: (genre: string) => void;
     applyFilters: () => void;
     toggleDialog?: () => void;
+    resetFilters: () => void;
   }
 
   let {
@@ -23,12 +24,13 @@
     selectedGenres,
     selectedPriceRange = $bindable(),
     toggleDialog,
+    resetFilters,
   }: FilterPanelProps = $props();
 
 
 </script>
 
-<aside class="filter-panel bg-card border-2 border-border">
+<aside class="bg-card border-2 border-border flex flex-col p-6 rounded-3xl h-min w-[300px] filter-panel">
   <section>
     {#await fetchGenres()}
       <Skeleton class="h-64 w-[250px]" />
@@ -65,18 +67,10 @@
       toggleDialog();
     }
   }} class="mt-4">Apply Filters</Button>
+  <Button on:click={resetFilters} variant="secondary" class="mt-4">Reset</Button>
 </aside>
 
 <style>
-  .filter-panel {
-    display: flex;
-    flex-direction: column;
-    padding: 1.5rem;
-    border-radius: 1.5rem;
-    height: min-content;
-    width: 300px;
-  }
-
   @media (max-width: 920px) {
     .filter-panel {
       grid-column: 1 / 1;

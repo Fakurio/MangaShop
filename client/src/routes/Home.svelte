@@ -5,6 +5,7 @@
   import SearchBar from "../components/SearchBar.svelte";
   import { onDestroy } from "svelte";
   import FilterPanelMQ from "../components/FilterPanelMQ.svelte";
+  import * as Alert from "$lib/components/ui/alert";
 
   onDestroy(() => serverError.set({ isError: false, message: "" }));
 </script>
@@ -17,6 +18,11 @@
     <FilterPanelMQ/>
     <SearchBar />
     <section class="mangas">
+      {#if $filteredMangaStore.length === 0}
+          <Alert.Root class="w-3/5 text-center">
+              <Alert.Title>No manga meets criteria</Alert.Title>
+          </Alert.Root>
+      {:else}
       {#each $filteredMangaStore as manga (manga.manga_id)}
         <MangaCard
           manga_id={manga.manga_id}
@@ -25,6 +31,7 @@
           price={manga.price}
         />
       {/each}
+      {/if}
     </section>
   </main>
 {/if}

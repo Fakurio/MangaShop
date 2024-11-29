@@ -6,6 +6,7 @@
     import type {PriceRange} from "../types/price-range";
     import {get} from "svelte/store";
     import {fetchMangaDetails, filteredGenres, filteredPriceRange, mangaStore} from "../stores/manga.store";
+    import {onDestroy, onMount} from "svelte";
 
 
     let selectedGenres = $state<string[]>([])
@@ -28,20 +29,40 @@
 
     const addGenre = (genre: string) => {
         selectedGenres.push(genre);
-        console.log(selectedGenres);
     }
 
     const removeGenre = (genre: string) => {
         selectedGenres = selectedGenres.filter(item => item !== genre);
-        console.log(selectedGenres);
+    }
+
+    const resetFilters = () => {
+        selectedPriceRange = {from: 0, to: 200};
+        selectedGenres = [];
+        applyFilters()
     }
 
     const toggleDialog = () => {
         isDialogOpen = !isDialogOpen;
     }
+
+    onMount(() => {
+        const lcGenres = localStorage.getItem("selectedGenres");
+        const lcPriceRange = localStorage.getItem("selectedPriceRange");
+        if(lcGenres) {
+            selectedGenres = JSON.parse(lcGenres);
+        }
+        if(lcPriceRange) {
+            selectedPriceRange = JSON.parse(lcPriceRange);
+        }
+    })
+
+    onDestroy(() => {
+        localStorage.setItem("selectedGenres", JSON.stringify(selectedGenres));
+        localStorage.setItem("selectedPriceRange", JSON.stringify(selectedPriceRange));
+    })
 </script>
 
-<MediaQuery query="(max-width: 800px)" let:matches bind:selectedPriceRange>
+<MediaQuery query="(max-width: 920px)" let:matches bind:selectedPriceRange>
     {#if matches}
         <Dialog.Root bind:open={isDialogOpen}>
             <Dialog.Trigger class={buttonVariants({variant: "default"})}>Open Filters</Dialog.Trigger>
@@ -50,16 +71,18 @@
                              {removeGenre} {applyFilters}
                              bind:selectedPriceRange
                              {toggleDialog}
+                             {resetFilters}
                              />
             </Dialog.Content>
         </Dialog.Root>
     {/if}
 </MediaQuery>
-<MediaQuery query="(min-width: 801px)" let:matches bind:selectedPriceRange>
+<MediaQuery query="(min-width: 921px)" let:matches bind:selectedPriceRange>
     {#if matches}
         <FilterPanel {selectedGenres} {addGenre}
                      {removeGenre} {applyFilters}
                      bind:selectedPriceRange
+                     {resetFilters}
                      />
     {/if}
 </MediaQuery>
