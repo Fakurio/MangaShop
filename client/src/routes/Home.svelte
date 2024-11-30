@@ -1,13 +1,16 @@
 <script lang="ts">
-  import { filteredMangaStore, serverError } from "../stores/manga.store";
+  import {fetchMangas, filteredMangaStore, mangaStore, serverError} from "../stores/manga.store";
   import MangaCard from "../components/MangaCard.svelte";
   import Header from "../components/Header.svelte";
   import SearchBar from "../components/SearchBar.svelte";
-  import { onDestroy } from "svelte";
+  import {onDestroy, onMount} from "svelte";
   import FilterPanelMQ from "../components/FilterPanelMQ.svelte";
   import * as Alert from "$lib/components/ui/alert";
+  import {Skeleton} from "$lib/components/ui/skeleton";
 
-  onDestroy(() => serverError.set({ isError: false, message: "" }));
+  onDestroy(() => {
+    serverError.set({ isError: false, message: "" })
+  });
 </script>
 
 {#if $serverError.isError}
@@ -17,9 +20,14 @@
 {:else}
   <Header />
   <main>
-    <FilterPanelMQ/>
-    <SearchBar />
+    {#if $mangaStore.length > 0}
+      <FilterPanelMQ/>
+      <SearchBar />
+    {/if}
     <section class="mangas">
+      {#await fetchMangas()}
+        <Skeleton class="h-64 w-full m-auto"/>
+      {:then _}
       {#if $filteredMangaStore.length === 0}
           <Alert.Root class="w-3/5 text-center">
               <Alert.Title>No manga meets criteria</Alert.Title>
@@ -34,6 +42,7 @@
         />
       {/each}
       {/if}
+        {/await}
     </section>
   </main>
 {/if}
@@ -44,6 +53,7 @@
     grid-template-columns: 1fr 3fr;
     grid-template-rows: 100px 1fr 1fr;
     padding: 1.5rem 5rem;
+    column-gap: 2rem;
   }
 
   .mangas {

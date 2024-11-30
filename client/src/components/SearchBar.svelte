@@ -20,6 +20,7 @@
     const lcQuery = localStorage.getItem("searchQuery");
     if(lcQuery) {
       query = JSON.parse(lcQuery);
+      filterMangasByTitle();
     }
   })
 

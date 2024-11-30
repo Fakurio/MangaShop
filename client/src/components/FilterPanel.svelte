@@ -27,13 +27,12 @@
     resetFilters,
   }: FilterPanelProps = $props();
 
-
 </script>
 
 <aside class="bg-card border-2 border-border flex flex-col p-6 rounded-3xl h-min w-[300px] filter-panel">
   <section>
     {#await fetchGenres()}
-      <Skeleton class="h-64 w-[250px]" />
+      <Skeleton class="h-64 w-full" />
     {:then genres}
       <h2 class="text-xl text-card-foreground">Genre</h2>
       <div class="mt-4 flex flex-col gap-4">

@@ -53,6 +53,10 @@ const fetchGenres = async () => {
 };
 
 const fetchMangas = async () => {
+  if (get(mangaStore).length > 0) {
+    return;
+  }
+
   const [error, data] = await catchError(makeRequest("/mangas", "GET"));
 
   if (error) {

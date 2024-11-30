@@ -47,6 +47,7 @@
         isDialogOpen = !isDialogOpen;
     }
 
+
     onMount(() => {
         const lcGenres = localStorage.getItem("selectedGenres");
         const lcPriceRange = localStorage.getItem("selectedPriceRange");
@@ -55,6 +56,9 @@
         }
         if(lcPriceRange) {
             selectedPriceRange = JSON.parse(lcPriceRange);
+        }
+        if(lcGenres || lcPriceRange) {
+            applyFilters();
         }
     })
 

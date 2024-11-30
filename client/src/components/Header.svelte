@@ -13,11 +13,11 @@
 <header class="header">
   <nav class="desktop-nav flex justify-between w-full">
     <div>
-      <Button variant="link">
+      <Button variant="link" class="text-md">
         <a href="/" use:link>Home</a>
       </Button>
       {#if $authStore}
-        <Button variant="link">
+        <Button variant="link" class="text-md">
           <a href="/orders" use:link>My orders</a>
         </Button>
       {/if}

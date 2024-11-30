@@ -13,8 +13,6 @@
   import {authStore, refreshToken} from "./stores/auth.store";
   import {get} from "svelte/store";
   import {getCartFromLocalStorage} from "./stores/cart.store";
-  import {fetchMangas} from "./stores/manga.store";
-  import {onMount} from "svelte";
   
   const verifyRefreshToken = async () => {
     if (get(authStore)) return true;
@@ -28,10 +26,6 @@
     }
     return true;
   };
-  
-  onMount(async () => {
-    await fetchMangas();
-  });
   
   let routes = {
       "/": wrap({

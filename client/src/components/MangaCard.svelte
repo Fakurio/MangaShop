@@ -1,76 +1,52 @@
 <script lang="ts">
   import { link } from "svelte-spa-router";
-  import Button from "./Button.svelte";
   import { addToCart } from "../stores/cart.store";
+  import {Skeleton} from "$lib/components/ui/skeleton";
+  import {onMount} from "svelte";
+  import {Button} from "$lib/components/ui/button";
 
-  export let title: string;
-  export let img_url: string;
-  export let price: number;
-  export let manga_id: number;
+  interface MangaCardProps  {
+    title: string;
+    img_url: string;
+    price: number;
+    manga_id: number;
+  }
+
+  let {title, img_url, price, manga_id} : MangaCardProps = $props()
+  let isLoading = $state(true)
+
+  onMount(() => {
+    const img = new Image();
+    img.src = img_url;
+    isLoading = true;
+
+    img.onload = () => {
+      isLoading = false;
+    };
+  })
+
 </script>
 
-<div class="manga-card">
-  <img src={img_url} alt={title} class="manga-card__img" />
-  <h2 class="manga-card__title">
-    <a href="/manga/{manga_id}" use:link>{title}</a>
-  </h2>
-  <div class="manga-card__footer">
-    <span class="manga-card__price">{price} PLN</span>
-    <Button
-      onClick={() => addToCart({ manga_id, quantity: 1 })}
-      text="Buy"
-      className="manga-card__btn"
-    />
-  </div>
+<div class="bg-card border-2 border-border p-6 rounded-3xl w-[300px] relative min-h-80">
+  {#if isLoading}
+    <Skeleton class="absolute inset-5"/>
+  {:else}
+    <a href="/manga/{manga_id}" class="hover:text-primary" use:link>
+      <div class="manga-card">
+        <img src={img_url}  class="rounded-3xl h-full w-full" alt={title}/>
+        <h2 class="mt-4 text-xl ">{title}</h2>
+      </div>
+    </a>
+    <div class="mt-2 flex justify-between items-center">
+      <span class="text-lg font-bold">{price} PLN</span>
+      <Button class="w-3/5" onclick={() => addToCart({manga_id, quantity: 1})}>Buy</Button>
+    </div>
+  {/if}
 </div>
 
 <style>
   .manga-card {
-    background-color: #282628;
-    padding: 1.5rem;
-    border-radius: 1.5rem;
-    width: 300px;
     display: grid;
-    grid-template-rows: 340px 1fr min-content;
-  }
-
-  .manga-card__img {
-    border-radius: 1.5rem;
-    height: 340px;
-    width: 250px;
-  }
-
-  .manga-card__title {
-    color: white;
-    margin-top: 0.8rem;
-  }
-
-  .manga-card__title:hover {
-    color: #e58e27;
-  }
-
-  .manga-card__footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 2rem;
-  }
-
-  .manga-card__price {
-    color: #e58e27;
-    font-weight: 700;
-    font-size: 1.3rem;
-  }
-
-  .manga-card :global(.manga-card__btn) {
-    padding-inline: 3rem;
-    margin-top: 0;
-  }
-
-  @media (max-width: 400px) {
-    .manga-card__footer {
-      flex-direction: column;
-      gap: 1rem;
-    }
+    grid-template-rows: 340px 70px;
   }
 </style>
