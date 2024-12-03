@@ -1,246 +1,157 @@
 <script lang="ts">
-  import { fetchMangaDetails, serverError } from "../stores/manga.store";
+  import {fetchMangaDetails, fetchMangas, serverError} from "../stores/manga.store";
   import { mangaStore } from "../stores/manga.store";
-  import { onDestroy, onMount } from "svelte";
+  import { onDestroy } from "svelte";
   import type { Manga } from "../types/manga";
   import Header from "../components/Header.svelte";
-  import Button from "../components/Button.svelte";
   import Reviews from "../components/Reviews.svelte";
+  import * as Alert from "$lib/components/ui/alert";
   import { addToCart } from "../stores/cart.store";
+  import {Skeleton} from "$lib/components/ui/skeleton";
+  import {Button, buttonVariants} from "$lib/components/ui/button";
+  import {Input} from "$lib/components/ui/input";
+  import * as Dialog from "$lib/components/ui/dialog";
 
-  export let params: { id: string } = {} as any;
-  let manga: Manga | undefined;
-  let isLoading = true;
-  let addToCartValue: number = 0;
+  let { params } : { params : { id: string } } = $props();
+  let manga = $state<Manga | undefined>()
+  let addToCartValue = $state<number>(0)
 
   const updateCartContent = () => {
     if (!manga) return;
     addToCart({ manga_id: manga.manga_id, quantity: addToCartValue });
   };
 
-  onMount(async () => {
-    try {
-      await fetchMangaDetails(parseInt(params.id));
-    } finally {
-      isLoading = false;
-    }
-  });
+  const fetchContent = async () => {
+    await fetchMangas()
+    await fetchMangaDetails(parseInt(params.id));
+  }
+
+  $effect(() => {
+    manga = $mangaStore.find(item => item.manga_id === parseInt(params.id));
+  })
 
   onDestroy(() => serverError.set({ isError: false, message: "" }));
-
-  $: manga = $mangaStore.find((item) => item.manga_id === parseInt(params.id));
 </script>
 
 {#if $serverError.isError}
-  <p class="error error--server">{$serverError.message}</p>
-{:else if !isLoading && manga}
-  <Header />
-  <main>
-    <div class="manga-logo">
-      <img src={manga.img_url} alt={manga.title} />
-    </div>
+  <Alert.Root class="w-3/5 text-center m-auto mt-5" variant="destructive">
+    <Alert.Title>{$serverError.message}</Alert.Title>
+  </Alert.Root>
+{:else}
+  {#await fetchContent()}
+    <Skeleton class="h-[95vh] m-3 border border-card-foreground"/>
+  {:then _}
+    {#if !manga}
+      <Alert.Root class="w-3/5 text-center m-auto mt-5" variant="destructive">
+        <Alert.Title>Manga not found</Alert.Title>
+      </Alert.Root>
+      {:else}
+      <Header />
+      <main class="px-3 min-[500px]:px-20 min-[700px]:py-6">
+        <div class="main border border-card-foreground rounded-3xl p-6">
+          <div class="row-span-full manga-img">
+            <img src={manga.img_url} alt={manga.title} class="w-full h-full object-cover"/>
+          </div>
 
-    <div class="manga-header">
-      <h1 class="manga-header__title">{manga.title}</h1>
-      <p class="manga-header__description">{manga.description}</p>
-    </div>
+          <div class="ml-4 manga-bio">
+            <h1 class="text-[2.5rem]">{manga.title}</h1>
+            <p class="text-lg hidden min-[1200px]:block">{manga.description}</p>
+            <Dialog.Root>
+              <Dialog.Trigger class={`${buttonVariants({variant: "default"})} min-[1200px]:hidden`}>Show description</Dialog.Trigger>
+              <Dialog.Content class="p-8">
+               <p class="text-lg">{manga.description}</p>
+              </Dialog.Content>
+            </Dialog.Root>
+          </div>
 
-    <div class="manga-footer">
-      <p>
-        <span class="accent">Genres:</span>
-        <span>
-          {#each manga.genres as genre (genre.genre_id)}
-            {genre.name}{" "}
-          {/each}
-        </span>
-      </p>
-      <p><span class="accent">Author:</span> {manga.author}</p>
-      <p><span class="accent">In the stock:</span> {manga.stock_quantity}</p>
-    </div>
+          <div class="col-start-2 col-end-3 ml-4 mt-2 flex flex-col gap-2 manga-tags">
+            <p>
+              <span class="text-primary">Genres:</span>
+              <span>
+                {#each manga.genres as genre (genre.genre_id)}
+                  {genre.name}{" "}
+                {/each}
+              </span>
+            </p>
+            <p><span class="text-primary">Author:</span> {manga.author}</p>
+            <p><span class="text-primary">In the stock:</span> {manga.stock_quantity}</p>
+          </div>
 
-    <div class="cart-adder">
-      <h2 class="cart-adder__price">{manga.price} PLN</h2>
-      <div>
-        <div class="cart-adder__adder">
-          <button
-            on:click={() =>
-              addToCartValue - 1 < 0
-                ? (addToCartValue = 0)
-                : (addToCartValue -= 1)}>-</button
-          >
-          <input type="text" bind:value={addToCartValue} readonly />
-          <button
-            on:click={() =>
-              manga?.stock_quantity && addToCartValue + 1 > manga.stock_quantity
-                ? (addToCartValue = manga.stock_quantity)
-                : (addToCartValue += 1)}>+</button
-          >
+          <div class="max-w-fit row-start-1 -col-start-1 manga-price ml-4 flex flex-col gap-y-2">
+            <h2 class="font-bold text-4xl text-primary">{manga.price} PLN</h2>
+            <div>
+              <div class="flex items-center space-x-2">
+                <Button class="flex-shrink-0 text-2xl" onclick={() => addToCartValue - 1 < 0 ? (addToCartValue = 0) : (addToCartValue -= 1)}
+                >-</Button>
+                <Input bind:value={addToCartValue} class="text-center flex-grow max-w-[80px] text-lg"/>
+                <Button class="flex-shrink-0 text-2xl" onclick={() => manga?.stock_quantity && addToCartValue + 1 > manga.stock_quantity
+                ? (addToCartValue = manga.stock_quantity) : addToCartValue += 1}>+</Button>
+              </div>
+            </div>
+            <Button onclick={updateCartContent} class="w-full">Add to cart</Button>
+          </div>
         </div>
-        <Button
-          text="Add to cart"
-          className="cart-adder__btn"
-          onClick={() => updateCartContent()}
-        />
-      </div>
-    </div>
-
-    <Reviews manga_id={manga.manga_id} />
-  </main>
+        <Reviews manga_id={manga.manga_id} />
+      </main>
+    {/if}
+  {/await}
 {/if}
 
 <style>
-  main {
+  .main {
     display: grid;
-    grid-template-columns: 400px 1fr min-content;
+    grid-template-columns: max-content 1fr max-content;
     grid-template-rows: min-content min-content min-content;
-    padding: 1.5rem 5rem;
+
   }
 
-  .manga-logo {
-    max-width: 400px;
-    width: 100%;
-    grid-column: 1 / 2;
-    grid-row: 1 / 3;
-  }
-
-  .manga-logo img {
-    object-fit: cover;
-    width: 100%;
-  }
-
-  .manga-header {
-    grid-column: 2 / 3;
-    color: white;
-    margin-left: 1rem;
-  }
-
-  .manga-header__title {
-    font-size: 2.5rem;
-  }
-
-  .manga-header__description {
-    font-size: 1.1rem;
-    line-height: 1.5;
-    margin-top: 1rem;
-  }
-
-  .manga-footer {
-    grid-column: 2 / 3;
-    color: white;
-    margin-left: 1rem;
-    margin-top: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-  }
-
-  .manga-footer .accent {
-    color: #e58e27;
-  }
-
-  .cart-adder {
-    grid-column: 3 / -1;
-    grid-row: 1 / 2;
-    color: white;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    margin-top: 2rem;
-    min-width: 300px;
-  }
-
-  .cart-adder__price {
-    color: #e58e27;
-    font-weight: 700;
-    font-size: 2.5rem;
-  }
-
-  .cart-adder__adder button {
-    color: white;
-    padding: 0.5em;
-    font-size: 2rem;
-    background-color: #383638;
-    border-radius: 0.5rem;
-    width: 50px;
-    margin-top: 1rem;
-    cursor: pointer;
-  }
-
-  .cart-adder__adder input {
-    background-color: #383638;
-    border: none;
-    border-radius: 0.5rem;
-    padding: 1rem;
-    font-size: 2rem;
-    width: 100px;
-    margin-inline: 1rem;
-    color: white;
-    text-align: center;
-  }
-
-  .cart-adder :global(.cart-adder__btn) {
-    width: 100%;
-  }
-
-  @media (max-width: 1200px) {
-    main {
-      grid-template-columns: 400px 1fr;
-      grid-template-rows: 1fr min-content;
+  @media(max-width: 900px) {
+    .main {
+      grid-template-columns: max-content 1fr;
     }
 
-    .manga-logo {
-      grid-row: 1 / 2;
-      max-width: 400px;
-    }
-    .manga-header {
-      grid-row: 2 / 3;
-      grid-column: 1 / -1;
+    .manga-img {
+      grid-column: 1 / 2;
+      grid-row: 1 / -1;
     }
 
-    .manga-footer {
-      grid-row: 3 / 4;
-      grid-column: 1 / -1;
-    }
-
-    .cart-adder {
-      grid-row: 1 / 2;
+    .manga-tags {
       grid-column: 2 / -1;
+      grid-row: 2 / 3;
+    }
+
+    .manga-price {
+      grid-column: 2 / -1;
+      grid-row: 3 / -1;
     }
   }
 
-  @media (max-width: 850px) {
-    main {
+  @media(max-width: 700px) {
+    .main {
       grid-template-columns: 1fr;
+      row-gap: 1rem;
     }
 
-    .manga-logo {
-      max-width: 300px;
-    }
-
-    .manga-logo,
-    .manga-header,
-    .manga-footer,
-    .cart-adder {
+    .manga-img {
       grid-column: 1 / -1;
+      grid-row: 1 / 2;
+      justify-self: center;
+
     }
 
-    .manga-header {
-      margin-top: 2rem;
+    .manga-bio {
+      grid-column: 1 / -1;
+      grid-row: 2 / 3;
     }
 
-    .cart-adder {
+    .manga-tags {
+      grid-column: 1 / -1;
+      grid-row: 3 / 4;
+    }
+
+    .manga-price {
+      grid-column: 1 / -1;
       grid-row: 4 / 5;
-      margin-top: 3rem;
-    }
-  }
-
-  @media (max-width: 500px) {
-    main {
-      padding-inline: 0.5rem;
-    }
-
-    .manga-logo {
-      margin: 0 auto;
     }
   }
 </style>
