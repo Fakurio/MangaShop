@@ -5,6 +5,10 @@ import { getMangaPrice } from "./manga.store";
 
 const cartStore = writable<CartItem[]>([]);
 
+window.addEventListener("beforeunload", () => {
+  localStorage.setItem("cart", JSON.stringify(get(cartStore)));
+});
+
 const checkCart = () => {
   get(cartStore).forEach((item) => {
     let manga = get(mangaStore).find((m) => m.manga_id === item.manga_id);

@@ -57,9 +57,7 @@
         if(lcPriceRange) {
             selectedPriceRange = JSON.parse(lcPriceRange);
         }
-        if(lcGenres || lcPriceRange) {
-            applyFilters();
-        }
+        applyFilters();
     })
 
     onDestroy(() => {

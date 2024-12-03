@@ -40,6 +40,15 @@ const filteredMangaStore = derived(
   },
 );
 
+window.addEventListener("beforeunload", () => {
+  localStorage.setItem("selectedGenres", JSON.stringify(get(filteredGenres)));
+  localStorage.setItem(
+    "selectedPriceRange",
+    JSON.stringify(get(filteredPriceRange)),
+  );
+  localStorage.setItem("searchQuery", JSON.stringify(get(filteredText)));
+});
+
 const fetchGenres = async () => {
   const [error, data] = await catchError<Genre[]>(
     makeRequest("/genres", "GET"),
