@@ -95,15 +95,13 @@
         <Reviews manga_id={manga.manga_id} />
         <Toaster theme="dark" toastOptions={{
           classes: {
-            toast: "border-2 md:text-lg",
+            toast: "border-2 text-lg",
           }
         }}/>
       </main>
     {/if}
   {/await}
 {/if}
-
-<!--TODO clean css styles-->
 
 <style>
   .main {
@@ -120,12 +118,6 @@
 
     .manga-img {
       grid-column: 1 / 2;
-      grid-row: 1 / -1;
-    }
-
-    .manga-tags {
-      grid-column: 2 / -1;
-      grid-row: 2 / 3;
     }
 
     .manga-price {
@@ -141,20 +133,13 @@
     }
 
     .manga-img {
-      grid-column: 1 / -1;
       grid-row: 1 / 2;
       justify-self: center;
 
     }
 
-    .manga-bio {
-      grid-column: 1 / -1;
-      grid-row: 2 / 3;
-    }
-
     .manga-tags {
       grid-column: 1 / -1;
-      grid-row: 3 / 4;
     }
 
     .manga-price {

@@ -2,10 +2,10 @@
   import {Button} from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
   import { Checkbox } from "$lib/components/ui/checkbox";
-  import { Label } from "$lib/components/ui/label/index.js";
-  import { Skeleton } from "$lib/components/ui/skeleton/index.js";
+  import { Skeleton } from "$lib/components/ui/skeleton";
   import {fetchGenres} from "../stores/manga.store";
   import type { PriceRange } from "../types/price-range";
+  import { Label } from "$lib/components/ui/label/index.js";
 
   interface FilterPanelProps {
     selectedPriceRange: PriceRange;
@@ -45,7 +45,7 @@
                   removeGenre(genre.name);
                 }
               }} checked={selectedGenres.includes(genre.name)} id={genre.name} value={genre.name}></Checkbox>
-            <Label class="text-card-foreground" for={genre.name}>{genre.name}</Label>
+            <Label class="text-primary-foreground" for={genre.name}>{genre.name}</Label>
           </div>
         {/each}
       </div>
@@ -60,13 +60,13 @@
       <Input placeholder="Max" type="number" bind:value={selectedPriceRange.to}></Input>
     </div>
   </section>
-  <Button on:click={() => {
+  <Button onclick={() => {
     applyFilters()
     if(toggleDialog) {
       toggleDialog();
     }
   }} class="mt-4">Apply Filters</Button>
-  <Button on:click={resetFilters} variant="secondary" class="mt-4">Reset</Button>
+  <Button onclick={resetFilters} variant="secondary" class="mt-4">Reset</Button>
 </aside>
 
 <style>
