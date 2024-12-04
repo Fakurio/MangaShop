@@ -11,6 +11,7 @@
   import {Button, buttonVariants} from "$lib/components/ui/button";
   import {Input} from "$lib/components/ui/input";
   import * as Dialog from "$lib/components/ui/dialog";
+  import { Toaster } from "$lib/components/ui/sonner";
 
   let { params } : { params : { id: string } } = $props();
   let manga = $state<Manga | undefined>()
@@ -92,10 +93,17 @@
           </div>
         </div>
         <Reviews manga_id={manga.manga_id} />
+        <Toaster theme="dark" toastOptions={{
+          classes: {
+            toast: "border-2 md:text-lg",
+          }
+        }}/>
       </main>
     {/if}
   {/await}
 {/if}
+
+<!--TODO clean css styles-->
 
 <style>
   .main {

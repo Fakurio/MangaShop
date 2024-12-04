@@ -1,8 +1,8 @@
 <script lang="ts">
-  export let rating: number;
+  let { rating } : { rating: number } = $props()
 </script>
 
-<div class="stars">
+<div class="flex">
   {#each Array(5) as _, i}
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -10,7 +10,7 @@
       viewBox="0 0 24 24"
       stroke-width="1.5"
       stroke="currentColor"
-      class="star {i + 1 <= rating ? 'color' : undefined}"
+      class="w-[30px] {i + 1 <= rating ? 'text-primary fill-primary' : undefined}"
     >
       <path
         stroke-linecap="round"
@@ -20,18 +20,3 @@
     </svg>
   {/each}
 </div>
-
-<style>
-  .stars {
-    display: flex;
-  }
-
-  .star {
-    width: 30px;
-  }
-
-  .color {
-    fill: gold;
-    color: gold;
-  }
-</style>

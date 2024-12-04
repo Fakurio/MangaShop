@@ -5,47 +5,34 @@
   import {
     reviewStore,
     fetchReviews,
-    reviewStoreResponse,
-    reviewStoreError,
   } from "../stores/review.store";
-  import { onDestroy, onMount } from "svelte";
+  import { onMount } from "svelte";
+  import {Button} from "$lib/components/ui/button";
+  import * as Alert from "$lib/components/ui/alert";
 
-  export let manga_id: number;
+  let { manga_id } : { manga_id: number } = $props()
+  let isFormVisible = $state<boolean>(false)
 
   onMount(async () => {
     await fetchReviews(manga_id);
   });
-
-  onDestroy(() => {
-    reviewStoreError.set(false);
-    reviewStoreResponse.set("");
-  });
 </script>
 
-
-
-
-{#if $reviewStoreResponse}
-    <p
-        class={`server-response ${
-          $reviewStoreError ? "server-response--error" : undefined
-        }`}
-    >
-      {$reviewStoreResponse}
-    </p>
-{/if}
-  <section class="reviews">
-    <h2 class="reviews__heading">Reviews</h2>
+  <section class="bg-card border border-card-foreground rounded-3xl mt-16 p-4">
+    <h2 class="text-4xl">Reviews</h2>
+    <Button class="mt-4" onclick={() => {isFormVisible = !isFormVisible}}>Add review</Button>
     {#if $reviewStore.length === 0}
-      <p class="reviews__error">There is no reviews yet</p>
-      <ReviewForm />
+      <ReviewForm {isFormVisible}/>
+      <Alert.Root class="text-center mt-5 border-border border-2">
+        <Alert.Title>There is no reviews yet</Alert.Title>
+      </Alert.Root>
     {:else}
-      <ReviewForm />
+      <ReviewForm {isFormVisible}/>
       {#each $reviewStore as review (review.review_id)}
-        <div class="reviews__review">
+        <div class="border-2 border-secondary rounded-lg mt-8 p-4">
           <Rating rating={review.rating} />
-          <p class="review__content">{review.content}</p>
-          <p class="review__date">
+          <p class="mt-4">{review.content}</p>
+          <p class="mt-4 text-right">
             {review.user_id.name}, {formatDate(review.created_at)}
           </p>
         </div>
@@ -54,43 +41,4 @@
   </section>
 
 <style>
-  .reviews {
-    background-color: #282628;
-    color: white;
-    grid-column: 1 / -1;
-    margin-top: 4rem;
-    border-radius: 1rem;
-    padding-inline: 1rem;
-    padding-bottom: 1.5rem;
-  }
-
-  .reviews__heading {
-    text-align: center;
-    font-size: 2rem;
-    margin-top: 1rem;
-  }
-
-  .reviews__review {
-    background-color: #383638;
-    border-radius: 0.5rem;
-    margin-top: 2rem;
-    padding: 1.5rem;
-  }
-
-  .review__content {
-    margin-top: 1rem;
-  }
-
-  .review__date {
-    margin-top: 1rem;
-    text-align: right;
-  }
-
-  .reviews__error {
-    text-align: center;
-    color: rgb(184, 40, 40);
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-top: 2rem;
-  }
 </style>

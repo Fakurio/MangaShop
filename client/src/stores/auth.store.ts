@@ -8,6 +8,7 @@ import { catchError } from "../api/catchError";
 import { makeRequest } from "../api/makeRequest";
 import { makePrivateRequest } from "../api/makePrivateRequest";
 import { ForbiddenError } from "../api/errors/ForbiddenError";
+import { UnauthorizedError } from "../api/errors/UnauthorizedError";
 
 const authStore = writable<LoggedInUser | null>(null);
 
@@ -16,7 +17,7 @@ const refreshToken = async () => {
     makeRequest("/auth/refresh", "GET", "include"),
   );
 
-  if (error instanceof ForbiddenError) {
+  if (error instanceof ForbiddenError || error instanceof UnauthorizedError) {
     console.log("Refresh token failed -> need to login again");
     throw error;
   }

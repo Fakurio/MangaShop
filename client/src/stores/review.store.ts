@@ -9,7 +9,6 @@ import cartStore from "./cart.store";
 import { replace } from "svelte-spa-router";
 
 const reviewStore = writable<Review[]>([]);
-const reviewStoreResponse = writable("");
 const reviewStoreError = writable(false);
 
 const fetchReviews = async (manga_id: number) => {
@@ -19,7 +18,6 @@ const fetchReviews = async (manga_id: number) => {
 
   if (error) {
     reviewStoreError.set(true);
-    reviewStoreResponse.set(error.message);
   } else {
     reviewStore.set(data);
   }
@@ -27,8 +25,7 @@ const fetchReviews = async (manga_id: number) => {
 
 const addReview = async (review: addReviewDto) => {
   reviewStoreError.set(false);
-  reviewStoreResponse.set("");
-  const [error, data] = await catchError(
+  const [error, _] = await catchError(
     makePrivateRequest("/review", "POST", undefined, review),
   );
 
@@ -39,18 +36,10 @@ const addReview = async (review: addReviewDto) => {
       await replace("/login");
     } else {
       reviewStoreError.set(true);
-      reviewStoreResponse.set(error.message);
     }
   } else {
     await fetchReviews(review.manga_id);
-    reviewStoreResponse.set(data.message);
   }
 };
 
-export {
-  reviewStore,
-  reviewStoreResponse,
-  reviewStoreError,
-  fetchReviews,
-  addReview,
-};
+export { reviewStore, reviewStoreError, fetchReviews, addReview };

@@ -16,7 +16,9 @@
   
   const verifyRefreshToken = async () => {
     if (get(authStore)) return true;
-    await refreshToken();
+    try {
+        await refreshToken();
+    } catch (error) {}
     return true;
   };
   
@@ -30,7 +32,7 @@
   let routes = {
       "/": wrap({
           component: Home,
-          conditions: [() => getCartFromLocalStorage(), () => {verifyRefreshToken(); return true;}],
+          conditions: [() => getCartFromLocalStorage(), () => verifyRefreshToken()],
       }),
       "/manga/:id": wrap({
           component: MangaDetails,
