@@ -6,6 +6,7 @@
   import {fetchMangaDetails, fetchMangas} from "../stores/manga.store";
   import {Skeleton} from "$lib/components/ui/skeleton";
   import {get} from "svelte/store";
+  import {Toaster} from "$lib/components/ui/sonner";
 
   const fetchContent = async () => {
     await fetchMangas()
@@ -27,6 +28,11 @@
     {/if}
   {/await}
 </main>
+<Toaster theme="dark" toastOptions={{
+  classes: {
+    toast: "border-2 text-lg",
+  }}}
+/>
 
 <style>
   @media (max-width: 1200px) {

@@ -1,87 +1,58 @@
 <script lang="ts">
   import { getTotalValue } from "../stores/cart.store";
   import cartStore from "../stores/cart.store";
-  import Button from "./Button.svelte";
   import {derived} from "svelte/store";
   import {fetchPaymentMethods, createOrder} from "../stores/order.store";
+  import {toast} from "svelte-sonner";
+  import {Skeleton} from "$lib/components/ui/skeleton";
+  import * as Select from "$lib/components/ui/select";
+  import * as Alert from "$lib/components/ui/alert/index.js";
+  import {Button} from "$lib/components/ui/button";
 
 
   const totalValue = derived(cartStore, _ => {
     return getTotalValue()
   })
-  let paymentMethod: string;
-  let serverResponse: string = "";
-  let isServerError: boolean = false;
+  let paymentMethod = $state<string>("");
+  let formError = $state<boolean>(false)
 
   const handleCreatingOrder = async () => {
+    if(!paymentMethod) {
+      formError = true
+      return
+    }
     const [isError, message] = await createOrder(paymentMethod, $totalValue);
     if (isError) {
-      isServerError = true;
+      console.log("Order: ", message);
+      toast.error("Failed to create order")
+    } else {
+      toast.success("Order created successfully");
     }
-    serverResponse = message
   }
 </script>
 
-{#if serverResponse}
-  <p
-    class={`server-response ${
-      isServerError ? "server-response--error" : undefined
-    }`}
-  >
-    {serverResponse}
-  </p>
-{/if}
 {#await fetchPaymentMethods()}
-  <p>Loading...</p>
+  <Skeleton class="h-[300px] border border-card-foreground w-full lg:w-[300px]"/>
 {:then paymentMethods}
-  <div class="order-summary">
-    <h1 class="order-summary__heading">Order Summary</h1>
-    <label for="payment-method" class="order-summary__label"
-      >Payment method</label
-    >
-    <select
-      id="payment-method"
-      class="order-summary__select"
-      bind:value={paymentMethod}
-    >
-      {#each paymentMethods as method (method.payment_method_id)}
-        <option value={method.name}>{method.name}</option>
-      {/each}
-    </select>
-    <h2 class="order-summary__total">Order total: {$totalValue} PLN</h2>
-    <Button text="Checkout" onClick={handleCreatingOrder} />
+  <div class="border-2 border-border w-full min-[1200px]:max-w-[350px] p-6 rounded-3xl">
+    <h1 class="font-bold text-xl">Order Summary</h1>
+    <Select.Root type="single" bind:value={paymentMethod}>
+      <Select.Trigger class="mt-4" id="payment-method" onclick={() => formError = false}>
+        {paymentMethod || "Select payment method"}
+      </Select.Trigger>
+      <Select.Content>
+        {#each paymentMethods as method (method.payment_method_id)}
+          <Select.Item value={method.name}>{method.name}</Select.Item>
+        {/each}
+      </Select.Content>
+    </Select.Root>
+    {#if formError}
+      <Alert.Root class="mt-4 p-3" variant="destructive">
+        <Alert.Title>Payment method is required</Alert.Title>
+      </Alert.Root>
+    {/if}
+    <h2 class="mt-4 text-lg">Order total: {$totalValue} PLN</h2>
+    <Button onclick={handleCreatingOrder} class="mt-4">Checkout</Button>
   </div>
-{:catch error}
-  <p class="error error--server">{error}</p>
 {/await}
 
-<style>
-  .order-summary {
-    background-color: #282628;
-    border-radius: 0.5rem;
-    padding: 2rem;
-    color: white;
-    max-width: 350px;
-    width: 100%;
-  }
-
-  .order-summary__label {
-    display: block;
-    margin-top: 1.5rem;
-  }
-
-  .order-summary__select {
-    font-size: 1rem;
-    margin-top: 0.5rem;
-  }
-
-  .order-summary__total {
-    margin-top: 1.5rem;
-  }
-
-  @media (max-width: 1200px) {
-    .order-summary {
-      max-width: unset;
-    }
-  }
-</style>

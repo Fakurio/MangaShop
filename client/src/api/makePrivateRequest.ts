@@ -23,6 +23,9 @@ export const makePrivateRequest = async (
 
   if (!response.ok) {
     // console.log("Access token failed");
+    if (response.status !== 401 && response.status !== 403) {
+      throw await response.json();
+    }
     try {
       await refreshToken();
     } catch (error: any) {

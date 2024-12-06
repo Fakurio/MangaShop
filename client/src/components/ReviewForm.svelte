@@ -74,7 +74,7 @@
         <div class="mt-4">
             <Label for="rating" class="text-md">Select rating</Label>
             <Select.Root type="single" bind:value={reviewForm.rating}>
-                <Select.Trigger class="w-[180px] mt-2">
+                <Select.Trigger class="w-[180px] mt-2" id="rating">
                     {reviewForm.rating}
                 </Select.Trigger>
                 <Select.Content>

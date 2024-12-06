@@ -101,10 +101,11 @@ const createOrder = async (
     }
     return [true, error.message];
   } else {
-    setTimeout(() => {
-      localStorage.removeItem("cart");
-      cartStore.set([]);
-    }, 2700);
+    localStorage.removeItem("cart");
+    cartStore.set([]);
+    // setTimeout(() => {
+    //
+    // }, 2700);
     return [false, data];
   }
 };

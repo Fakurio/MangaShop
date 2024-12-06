@@ -1,29 +1,33 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import {Repository} from 'typeorm';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
+import { Repository } from 'typeorm';
 import { CreateOrderDTO } from '../dto/create-order.dto';
 import { createOrderSchema } from '../dto/create-order.dto';
 import { CartsService } from '../../cart/services/carts.service';
 import { Order, OrderStatus } from '../../entities/order.entity';
 import { OrderDetail } from '../../entities/order-detail.entity';
 import { PaymentService } from './payment.service';
-import {InjectRepository} from "@nestjs/typeorm";
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class OrderService {
   constructor(
-      @InjectRepository(Order)
-      private ordersRepository: Repository<Order>,
-      private cartsService: CartsService,
-      private paymentService: PaymentService,
+    @InjectRepository(Order)
+    private ordersRepository: Repository<Order>,
+    private cartsService: CartsService,
+    private paymentService: PaymentService,
   ) {}
-
 
   async createOrder(req, order: CreateOrderDTO) {
     if (!createOrderSchema.safeParse(order).success) {
       throw new HttpException('Invalid order data', HttpStatus.BAD_REQUEST);
     }
 
-    await this.cartsService.updateCartStatus(req)
+    await this.cartsService.updateCartStatus(req);
 
     const newOrder = new Order();
     newOrder.user_id = req.user.sub;
@@ -42,6 +46,8 @@ export class OrderService {
     );
     if (paymentMethod) {
       newOrder.payment_method_id = paymentMethod.payment_method_id;
+    } else {
+      throw new BadRequestException('Given payment method doesnt exist');
     }
 
     newOrder.total_price = order.total;
@@ -52,7 +58,7 @@ export class OrderService {
   }
 
   getOrderStatuses() {
-    return Object.keys(OrderStatus).map(key => OrderStatus[key]);
+    return Object.keys(OrderStatus).map((key) => OrderStatus[key]);
   }
 
   async getAllOrders(user_id: number) {
