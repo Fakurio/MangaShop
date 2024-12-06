@@ -22,7 +22,7 @@ export const makePrivateRequest = async (
   let response = await makeRequest();
 
   if (!response.ok) {
-    console.log("Access token failed");
+    // console.log("Access token failed");
     try {
       await refreshToken();
     } catch (error: any) {

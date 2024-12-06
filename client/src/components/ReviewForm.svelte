@@ -59,11 +59,10 @@
   };
 </script>
 
-{#if get(authStore)}
-  {#if isFormVisible}
+{#if isFormVisible}
     <form
-      class="py-6"
-      onsubmit={(e) => handleAddReview(e)}
+            class="py-6"
+            onsubmit={(e) => handleAddReview(e)}
     >
         <Label for="content" class="text-md">What do you think about this manga?</Label>
         <Textarea id="content" class="mt-2" required bind:value={reviewForm.content} onclick={cleanErrors}/>
@@ -87,8 +86,7 @@
                 </Select.Content>
             </Select.Root>
         </div>
-      <Button type="submit" class="mt-4">Submit review</Button>
+        <Button type="submit" class="mt-4">Submit review</Button>
     </form>
-  {/if}
 {/if}
 

@@ -18,7 +18,7 @@ const refreshToken = async () => {
   );
 
   if (error instanceof ForbiddenError || error instanceof UnauthorizedError) {
-    console.log("Refresh token failed -> need to login again");
+    // console.log("Refresh token failed -> need to login again");
     throw error;
   }
 

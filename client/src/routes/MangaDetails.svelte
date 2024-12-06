@@ -82,10 +82,10 @@
             <h2 class="font-bold text-4xl text-primary">{manga.price} PLN</h2>
             <div>
               <div class="flex items-center space-x-2">
-                <Button class="flex-shrink-0 text-2xl" onclick={() => addToCartValue - 1 < 0 ? (addToCartValue = 0) : (addToCartValue -= 1)}
+                <Button class="w-[40px] text-2xl" onclick={() => addToCartValue - 1 < 0 ? (addToCartValue = 0) : (addToCartValue -= 1)}
                 >-</Button>
                 <Input bind:value={addToCartValue} class="text-center flex-grow max-w-[80px] text-lg"/>
-                <Button class="flex-shrink-0 text-2xl" onclick={() => manga?.stock_quantity && addToCartValue + 1 > manga.stock_quantity
+                <Button class="w-[40px] text-2xl" onclick={() => manga?.stock_quantity && addToCartValue + 1 > manga.stock_quantity
                 ? (addToCartValue = manga.stock_quantity) : addToCartValue += 1}>+</Button>
               </div>
             </div>

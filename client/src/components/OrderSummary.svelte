@@ -79,7 +79,7 @@
     margin-top: 1.5rem;
   }
 
-  @media (max-width: 1000px) {
+  @media (max-width: 1200px) {
     .order-summary {
       max-width: unset;
     }

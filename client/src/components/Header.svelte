@@ -38,7 +38,7 @@
         </Button>
       {:else}
         <span class="font-bold text-primary-foreground">{$authStore.username}</span>
-        <Button on:click={logout} class="font-bold">Logout</Button>
+        <Button onclick={logout} class="font-bold">Logout</Button>
       {/if}
     </div>
   </nav>
@@ -75,7 +75,7 @@
               <a href="/login" use:link>Login</a>
             </Button>
           {:else}
-            <Button on:click={logout}>Logout</Button>
+            <Button onclick={logout}>Logout</Button>
           {/if}
         </nav>
       </Sheet.Content>
