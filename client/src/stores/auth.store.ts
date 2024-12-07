@@ -1,7 +1,7 @@
 import { writable, get } from "svelte/store";
 import type { LoggedInUser } from "../types/logged-in-user";
 import { replace } from "svelte-spa-router";
-import type { LoginUser } from "../types/user-login";
+import type { LoginForm } from "../types/user-login";
 import type { CartItem } from "../types/cart-item";
 import cartStore from "./cart.store";
 import { catchError } from "../api/catchError";
@@ -33,7 +33,7 @@ const refreshToken = async () => {
   }
 };
 
-const login = async (user: LoginUser, cart: CartItem[]) => {
+const login = async (user: LoginForm, cart: CartItem[]) => {
   const [error, data] = await catchError<
     LoggedInUser & { new_cart: CartItem[] }
   >(

@@ -63,7 +63,7 @@
     </div>
     <div class="mt-6">
       <Label for="email">Email</Label>
-      <Input class="mt-2" id="email" bind:value={registerForm.email} onclick={cleanErrors} required />
+      <Input class="mt-2" id="email" type="email" bind:value={registerForm.email} onclick={cleanErrors} required />
       {#if registerFormErrors.email}
         <Alert.Root class="mt-5" variant="destructive">
           <Alert.Title>{registerFormErrors.email}</Alert.Title>

@@ -1,16 +1,11 @@
 import { z } from "zod";
 
-const LoginSchema = z.object({
+const LoginFormSchema = z.object({
   email: z.string().email({ message: "Enter email in proper format" }),
   password: z.string(),
 });
 
-type LoginUser = z.infer<typeof LoginSchema>;
+type LoginForm = z.infer<typeof LoginFormSchema>;
 
-type LoginError = {
-  email: string;
-  password: string;
-};
-
-export type { LoginUser, LoginError };
-export default LoginSchema;
+export type { LoginForm };
+export default LoginFormSchema;

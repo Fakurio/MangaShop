@@ -1,179 +1,77 @@
 <script lang="ts">
-  import Button from "../components/Button.svelte";
   import Header from "../components/Header.svelte";
-  import type { LoginError, LoginUser } from "../types/user-login";
-  import LoginSchema from "../types/user-login";
-  import { fromZodError } from "zod-validation-error";
+  import type { LoginForm } from "../types/user-login";
+  import LoginFormSchema from "../types/user-login";
   import { login } from "../stores/auth.store";
   import cartStore from "../stores/cart.store";
   import { get } from "svelte/store";
+  import {Toaster} from "$lib/components/ui/sonner";
+  import {Label} from "$lib/components/ui/label";
+  import {Input} from "$lib/components/ui/input";
+  import * as Alert from "$lib/components/ui/alert/index.js";
+  import {Button} from "$lib/components/ui/button";
+  import {getErrorsFromZod} from "../utils/getErrorsFromZod";
+  import {toast} from "svelte-sonner";
 
-  const cleanErrors = {
+  let loginForm = $state<LoginForm>({
     password: "",
     email: "",
-  };
-
-  let user: LoginUser = {
+  })
+  let loginFormErrors = $state<Partial<LoginForm>>({
     password: "",
     email: "",
+  });
+
+  const cleanErrors = () => {
+    loginFormErrors = {
+      email: "",
+      password: "",
+    }
   };
 
-  let errors: LoginError = cleanErrors;
-  let serverResponse: string = "";
-  let isServerError: boolean = false;
-
-  const resetErrors = () => {
-    errors = cleanErrors;
-  };
-
-  const handleFormSubmit = async () => {
-    let parsedUser = LoginSchema.safeParse(user);
-    if (!parsedUser.success) {
-      fromZodError(parsedUser.error).details.forEach((error) => {
-        switch (error.path.join("")) {
-          case "email": {
-            errors = { ...errors, email: error.message };
-            break;
-          }
-        }
-      });
+  const handleFormSubmit = async (e: SubmitEvent) => {
+    e.preventDefault()
+    const parsedLoginForm = LoginFormSchema.safeParse(loginForm)
+    const errors = getErrorsFromZod(parsedLoginForm)
+    if(errors) {
+      loginFormErrors = errors;
     } else {
-      serverResponse = "";
-      isServerError = false;
       try {
-        await login(user, get(cartStore));
-      } catch (e: any) {
-        serverResponse = e.message;
-        isServerError = true;
+        await login(loginForm, get(cartStore))
+      } catch (error: any) {
+        toast.error(error.message)
       }
     }
   };
 </script>
 
-{#if serverResponse}
-  <p
-    class={`server-response ${
-      isServerError ? "server-response--error" : undefined
-    }`}
-  >
-    {serverResponse}
-  </p>
-{/if}
 <Header />
-<main>
-  <form class="login-form" on:submit|preventDefault={handleFormSubmit}>
-    <h1 class="login-form__heading">Login</h1>
-    <div class="login-form__field">
-      <label for="email">Email</label>
-      <input
-        id="email"
-        type="email"
-        bind:value={user.email}
-        on:input={() => resetErrors()}
-        required
-      />
-      {#if errors.email}
-        <span class="error">{errors.email}</span>
+<main class="flex justify-center items-center mt-4 p-4">
+  <form class="flex flex-col border-border border-2 rounded-3xl bg-card p-8 w-full max-w-[400px]" onsubmit={(e) => handleFormSubmit(e)}>
+    <h1 class="text-center text-4xl font-bold">Login</h1>
+    <div class="mt-6">
+      <Label for="email">Email</Label>
+      <Input class="mt-2" id="email" bind:value={loginForm.email} onclick={cleanErrors} required />
+      {#if loginFormErrors.email}
+        <Alert.Root class="mt-5" variant="destructive">
+          <Alert.Title>{loginFormErrors.email}</Alert.Title>
+        </Alert.Root>
       {/if}
     </div>
-    <div class="login-form__field">
-      <label for="password">Password</label>
-      <input
-        id="password"
-        type="password"
-        bind:value={user.password}
-        on:input={() => resetErrors()}
-        required
-      />
-      {#if errors.password}
-        <span class="error">{errors.password}</span>
+    <div class="mt-6">
+      <Label for="password">Password</Label>
+      <Input class="mt-2" id="password" type="password" bind:value={loginForm.password} onclick={cleanErrors} required />
+      {#if loginFormErrors.password}
+        <Alert.Root class="mt-5" variant="destructive">
+          <Alert.Title>{loginFormErrors.password}</Alert.Title>
+        </Alert.Root>
       {/if}
     </div>
-    <Button text="Login" />
+    <Button type="submit" class="mt-6">Login</Button>
   </form>
 </main>
+<Toaster theme="dark" toastOptions={{
+  classes: {
+    toast: "border-2 text-lg",
+}}}/>
 
-<style>
-  .server-response {
-    background-color: green;
-    color: white;
-    padding: 1rem;
-    font-weight: 700;
-    font-size: 1.3rem;
-    text-align: center;
-    animation:
-      slideIn 0.3s ease-in-out,
-      slideOut 0.3s ease-in-out 2s forwards;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-  }
-
-  .server-response--error {
-    background-color: rgb(197, 40, 40);
-  }
-
-  @keyframes slideIn {
-    from {
-      transform: translateY(-100%);
-    }
-    to {
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes slideOut {
-    from {
-      transform: translateY(0);
-    }
-    to {
-      transform: translateY(-100%);
-    }
-  }
-
-  main {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    margin-top: 3rem;
-    padding: 1rem;
-  }
-
-  .login-form {
-    display: flex;
-    flex-direction: column;
-    color: white;
-    max-width: 400px;
-    width: 100%;
-    background-color: #282628;
-    padding: 2rem;
-    border-radius: 0.5rem;
-    gap: 2rem;
-  }
-
-  .login-form__heading {
-    text-align: center;
-    font-size: 2.5rem;
-  }
-
-  .login-form__field {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .login-form__field input {
-    background-color: #383638;
-    border: none;
-    padding: 0.5rem;
-    color: white;
-    font-size: 1rem;
-    margin-top: 0.5rem;
-    border-radius: 0.5rem;
-  }
-
-  .login-form__field label {
-    font-weight: 700;
-    font-size: 1.2rem;
-  }
-</style>
