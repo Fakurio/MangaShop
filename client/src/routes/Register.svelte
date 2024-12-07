@@ -4,6 +4,7 @@
   import type { RegisterUser, RegisterError } from "../types/user-register";
   import RegisterSchema from "../types/user-register";
   import { fromZodError } from "zod-validation-error";
+  import {getErrorsFromZod} from "../utils/getErrorsFromZod";
 
   const cleanErrors = {
     username: "",
@@ -25,47 +26,49 @@
     errors = cleanErrors;
   };
 
-  const handleFormSubmit = async () => {
-    let parsedUser = RegisterSchema.safeParse(user);
-    if (!parsedUser.success) {
-      fromZodError(parsedUser.error).details.forEach((error) => {
-        switch (error.path.join("")) {
-          case "email": {
-            errors = { ...errors, email: error.message };
-            break;
-          }
-          case "username": {
-            errors = { ...errors, username: error.message };
-            break;
-          }
-          case "password": {
-            errors = { ...errors, password: error.message };
-            break;
-          }
-        }
-      });
-    } else {
-      serverResponse = "";
-      isServerError = false;
-      try {
-        let response = await fetch("http://localhost:3000/auth/register", {
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-          },
-          body: JSON.stringify(user),
-        });
-        if (!response.ok) {
-          let err = await response.json();
-          throw new Error(err.message);
-        }
-        let msg = await response.json();
-        serverResponse = msg.message;
-      } catch (e: any) {
-        serverResponse = e.message;
-        isServerError = true;
-      }
-    }
+  const handleFormSubmit = async (e: SubmitEvent) => {
+    e.preventDefault();
+    const parsedUser = RegisterSchema.safeParse(user);
+    const errors = getErrorsFromZod(parsedUser)
+    // if (!parsedUser.success) {
+    //   fromZodError(parsedUser.error).details.forEach((error) => {
+    //     switch (error.path.join("")) {
+    //       case "email": {
+    //         errors = { ...errors, email: error.message };
+    //         break;
+    //       }
+    //       case "username": {
+    //         errors = { ...errors, username: error.message };
+    //         break;
+    //       }
+    //       case "password": {
+    //         errors = { ...errors, password: error.message };
+    //         break;
+    //       }
+    //     }
+    //   });
+    // } else {
+    //   serverResponse = "";
+    //   isServerError = false;
+    //   try {
+    //     let response = await fetch("http://localhost:3000/auth/register", {
+    //       method: "POST",
+    //       headers: {
+    //         "content-type": "application/json",
+    //       },
+    //       body: JSON.stringify(user),
+    //     });
+    //     if (!response.ok) {
+    //       let err = await response.json();
+    //       throw new Error(err.message);
+    //     }
+    //     let msg = await response.json();
+    //     serverResponse = msg.message;
+    //   } catch (e: any) {
+    //     serverResponse = e.message;
+    //     isServerError = true;
+    //   }
+    // }
   };
 </script>
 
@@ -80,7 +83,7 @@
 {/if}
 <Header />
 <main>
-  <form class="register-form" on:submit|preventDefault={handleFormSubmit}>
+  <form class="register-form" onsubmit={(e) => handleFormSubmit(e)}>
     <h1 class="register-form__heading">Register</h1>
     <div class="register-form__field">
       <label for="username">Username</label>
@@ -88,7 +91,7 @@
         id="username"
         type="text"
         bind:value={user.username}
-        on:input={() => resetErrors()}
+        oninput={() => resetErrors()}
         required
       />
       {#if errors.username}
@@ -101,7 +104,7 @@
         id="email"
         type="email"
         bind:value={user.email}
-        on:input={() => resetErrors()}
+        oninput={() => resetErrors()}
         required
       />
       {#if errors.email}
@@ -114,7 +117,7 @@
         id="password"
         type="password"
         bind:value={user.password}
-        on:input={() => resetErrors()}
+        oninput={() => resetErrors()}
         required
       />
       {#if errors.password}
