@@ -1,176 +1,89 @@
 <script lang="ts">
-  import Button from "../components/Button.svelte";
   import Header from "../components/Header.svelte";
-  import type { RegisterUser, RegisterError } from "../types/user-register";
-  import RegisterSchema from "../types/user-register";
-  import { fromZodError } from "zod-validation-error";
+  import type { RegisterForm } from "../types/user-register";
+  import RegisterFormSchema from "../types/user-register";
   import {getErrorsFromZod} from "../utils/getErrorsFromZod";
+  import {register} from "../stores/auth.store";
+  import {toast} from "svelte-sonner";
+  import {Toaster} from "$lib/components/ui/sonner";
+  import {Label} from "$lib/components/ui/label";
+  import {Input} from "$lib/components/ui/input/index.js";
+  import * as Alert from "$lib/components/ui/alert/index.js";
+  import {Button} from "$lib/components/ui/button";
 
-  const cleanErrors = {
+  let registerForm = $state<RegisterForm> ({
     username: "",
     password: "",
     email: "",
-  };
-
-  let user: RegisterUser = {
+  });
+  let registerFormErrors = $state<Partial<RegisterForm>>({
     username: "",
     password: "",
     email: "",
-  };
+  });
 
-  let errors: RegisterError = cleanErrors;
-  let serverResponse: string = "";
-  let isServerError: boolean = false;
-
-  const resetErrors = () => {
-    errors = cleanErrors;
+  const cleanErrors = () => {
+    registerFormErrors = {
+      username: "",
+      password: "",
+      email: "",
+    }
   };
 
   const handleFormSubmit = async (e: SubmitEvent) => {
     e.preventDefault();
-    const parsedUser = RegisterSchema.safeParse(user);
-    const errors = getErrorsFromZod(parsedUser)
-    // if (!parsedUser.success) {
-    //   fromZodError(parsedUser.error).details.forEach((error) => {
-    //     switch (error.path.join("")) {
-    //       case "email": {
-    //         errors = { ...errors, email: error.message };
-    //         break;
-    //       }
-    //       case "username": {
-    //         errors = { ...errors, username: error.message };
-    //         break;
-    //       }
-    //       case "password": {
-    //         errors = { ...errors, password: error.message };
-    //         break;
-    //       }
-    //     }
-    //   });
-    // } else {
-    //   serverResponse = "";
-    //   isServerError = false;
-    //   try {
-    //     let response = await fetch("http://localhost:3000/auth/register", {
-    //       method: "POST",
-    //       headers: {
-    //         "content-type": "application/json",
-    //       },
-    //       body: JSON.stringify(user),
-    //     });
-    //     if (!response.ok) {
-    //       let err = await response.json();
-    //       throw new Error(err.message);
-    //     }
-    //     let msg = await response.json();
-    //     serverResponse = msg.message;
-    //   } catch (e: any) {
-    //     serverResponse = e.message;
-    //     isServerError = true;
-    //   }
-    // }
+    const parsedRegisterForm = RegisterFormSchema.safeParse(registerForm);
+    const errors = getErrorsFromZod(parsedRegisterForm)
+    if(errors) {
+      registerFormErrors = errors;
+    } else {
+      try {
+        const data = await register(registerForm);
+        toast.success(data.message)
+      } catch (error: any) {
+        toast.error(error.message)
+      }
+    }
   };
 </script>
 
-{#if serverResponse}
-  <p
-    class={`server-response ${
-      isServerError ? "server-response--error" : undefined
-    }`}
-  >
-    {serverResponse}
-  </p>
-{/if}
+
 <Header />
-<main>
-  <form class="register-form" onsubmit={(e) => handleFormSubmit(e)}>
-    <h1 class="register-form__heading">Register</h1>
-    <div class="register-form__field">
-      <label for="username">Username</label>
-      <input
-        id="username"
-        type="text"
-        bind:value={user.username}
-        oninput={() => resetErrors()}
-        required
-      />
-      {#if errors.username}
-        <span class="error">{errors.username}</span>
+<main class="flex justify-center items-center mt-4 p-4">
+  <form class="flex flex-col border-border border-2 rounded-3xl bg-card p-8 w-full max-w-[400px]" onsubmit={(e) => handleFormSubmit(e)}>
+    <h1 class="text-center text-4xl font-bold">Register</h1>
+    <div class="mt-6">
+      <Label for="username">Username</Label>
+      <Input class="mt-2" id="username" bind:value={registerForm.username} onclick={cleanErrors} required />
+      {#if registerFormErrors.username}
+        <Alert.Root class="mt-5" variant="destructive">
+          <Alert.Title>{registerFormErrors.username}</Alert.Title>
+        </Alert.Root>
       {/if}
     </div>
-    <div class="register-form__field">
-      <label for="email">Email</label>
-      <input
-        id="email"
-        type="email"
-        bind:value={user.email}
-        oninput={() => resetErrors()}
-        required
-      />
-      {#if errors.email}
-        <span class="error">{errors.email}</span>
+    <div class="mt-6">
+      <Label for="email">Email</Label>
+      <Input class="mt-2" id="email" bind:value={registerForm.email} onclick={cleanErrors} required />
+      {#if registerFormErrors.email}
+        <Alert.Root class="mt-5" variant="destructive">
+          <Alert.Title>{registerFormErrors.email}</Alert.Title>
+        </Alert.Root>
       {/if}
     </div>
-    <div class="register-form__field">
-      <label for="password">Password</label>
-      <input
-        id="password"
-        type="password"
-        bind:value={user.password}
-        oninput={() => resetErrors()}
-        required
-      />
-      {#if errors.password}
-        <span class="error">{errors.password}</span>
+    <div class="mt-6">
+      <Label for="password">Password</Label>
+      <Input class="mt-2" id="password" type="password" bind:value={registerForm.password} onclick={cleanErrors} required />
+      {#if registerFormErrors.password}
+        <Alert.Root class="mt-5" variant="destructive">
+          <Alert.Title>{registerFormErrors.password}</Alert.Title>
+        </Alert.Root>
       {/if}
     </div>
-    <Button text="Register" />
+    <Button type="submit" class="mt-6">Register</Button>
   </form>
 </main>
+<Toaster theme="dark" toastOptions={{
+  classes: {
+    toast: "border-2 text-lg",
+}}}/>
 
-<style>
-  main {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    margin-top: 5rem;
-    padding: 1rem;
-  }
-
-  .register-form {
-    display: flex;
-    flex-direction: column;
-    color: white;
-    max-width: 400px;
-    width: 100%;
-    background-color: #282628;
-    padding: 2rem;
-    border-radius: 0.5rem;
-    gap: 2rem;
-  }
-
-  .register-form__heading {
-    text-align: center;
-    font-size: 2.5rem;
-  }
-
-  .register-form__field {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .register-form__field input {
-    background-color: #383638;
-    border: none;
-    padding: 0.5rem;
-    color: white;
-    font-size: 1rem;
-    margin-top: 0.5rem;
-    border-radius: 0.5rem;
-  }
-
-  .register-form__field label {
-    font-weight: 700;
-    font-size: 1.2rem;
-  }
-</style>

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const RegisterSchema = z.object({
+const RegisterFormSchema = z.object({
   username: z.string().refine((name) => name.trim().length > 0, {
     message: "Username is required",
   }),
@@ -9,22 +9,16 @@ const RegisterSchema = z.object({
     .string()
     .regex(
       new RegExp(
-        "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$"
+        "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$",
       ),
       {
         message:
           "Minimum 8 characters, at least one letter, one number and one special character",
-      }
+      },
     ),
 });
 
-type RegisterUser = z.infer<typeof RegisterSchema>;
+type RegisterForm = z.infer<typeof RegisterFormSchema>;
 
-type RegisterError = {
-  username: string;
-  email: string;
-  password: string;
-};
-
-export type { RegisterUser, RegisterError };
-export default RegisterSchema;
+export type { RegisterForm };
+export default RegisterFormSchema;

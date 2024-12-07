@@ -9,6 +9,7 @@ import { makeRequest } from "../api/makeRequest";
 import { makePrivateRequest } from "../api/makePrivateRequest";
 import { ForbiddenError } from "../api/errors/ForbiddenError";
 import { UnauthorizedError } from "../api/errors/UnauthorizedError";
+import type { RegisterForm } from "../types/user-register";
 
 const authStore = writable<LoggedInUser | null>(null);
 
@@ -59,4 +60,14 @@ const logout = async () => {
   await replace("/");
 };
 
-export { authStore, refreshToken, logout, login };
+const register = async (registerForm: RegisterForm) => {
+  const [error, data] = await catchError<{ message: string }>(
+    makeRequest("/auth/register", "POST", "omit", registerForm),
+  );
+  if (error) {
+    throw error;
+  }
+  return data;
+};
+
+export { authStore, refreshToken, logout, login, register };
