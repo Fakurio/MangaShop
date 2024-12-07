@@ -4,6 +4,7 @@
   import {Skeleton} from "$lib/components/ui/skeleton";
   import {onMount} from "svelte";
   import {Button} from "$lib/components/ui/button";
+  import {toast} from "svelte-sonner";
 
   interface MangaCardProps  {
     title: string;
@@ -14,6 +15,11 @@
 
   let {title, img_url, price, manga_id} : MangaCardProps = $props()
   let isLoading = $state(true)
+
+  const handleAddingToCart = () => {
+    toast.success("Manga added to cart")
+    addToCart({manga_id, quantity: 1})
+  }
 
   onMount(() => {
     const img = new Image();
@@ -39,7 +45,7 @@
     </a>
     <div class="mt-2 flex justify-between items-center">
       <span class="text-lg font-bold">{price} PLN</span>
-      <Button class="w-3/5" onclick={() => addToCart({manga_id, quantity: 1})}>Buy</Button>
+      <Button class="w-3/5" onclick={handleAddingToCart}>Buy</Button>
     </div>
   {/if}
 </div>

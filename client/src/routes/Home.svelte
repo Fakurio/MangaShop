@@ -7,6 +7,7 @@
   import FilterPanelMQ from "../components/FilterPanelMQ.svelte";
   import * as Alert from "$lib/components/ui/alert";
   import {Skeleton} from "$lib/components/ui/skeleton";
+  import {Toaster} from "$lib/components/ui/sonner";
 
   onDestroy(() => {
     serverError.set({ isError: false, message: "" })
@@ -45,6 +46,11 @@
         {/await}
     </section>
   </main>
+  <Toaster theme="dark" toastOptions={{
+    classes: {
+      toast: "border-2 text-lg",
+    }}}
+  />
 {/if}
 
 <style>

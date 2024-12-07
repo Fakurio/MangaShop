@@ -12,6 +12,7 @@
   import {Input} from "$lib/components/ui/input";
   import * as Dialog from "$lib/components/ui/dialog";
   import { Toaster } from "$lib/components/ui/sonner";
+  import {toast} from "svelte-sonner";
 
   let { params } : { params : { id: string } } = $props();
   let manga = $state<Manga | undefined>()
@@ -19,7 +20,8 @@
 
   const updateCartContent = () => {
     if (!manga) return;
-    addToCart({ manga_id: manga.manga_id, quantity: addToCartValue });
+    toast.success("Manga added to cart")
+    addToCart({ manga_id: manga.manga_id, quantity: addToCartValue === 0 ? 1 : addToCartValue });
   };
 
   const fetchContent = async () => {

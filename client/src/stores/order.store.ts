@@ -96,16 +96,12 @@ const createOrder = async (
   if (error) {
     if (error instanceof UnauthorizedError) {
       authStore.set(null);
-      cartStore.set([]);
       await replace("/login");
     }
     return [true, error.message];
   } else {
     localStorage.removeItem("cart");
     cartStore.set([]);
-    // setTimeout(() => {
-    //
-    // }, 2700);
     return [false, data];
   }
 };

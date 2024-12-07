@@ -3,7 +3,7 @@
   // @ts-nocheck
   
   import Home from "./routes/Home.svelte";
-  import Router, {replace} from "svelte-spa-router";
+  import Router from "svelte-spa-router";
   import MangaDetails from "./routes/MangaDetails.svelte";
   import Register from "./routes/Register.svelte";
   import Login from "./routes/Login.svelte";
@@ -13,19 +13,12 @@
   import {authStore, refreshToken} from "./stores/auth.store";
   import {get} from "svelte/store";
   import {getCartFromLocalStorage} from "./stores/cart.store";
-  
+
   const verifyRefreshToken = async () => {
     if (get(authStore)) return true;
     try {
         await refreshToken();
     } catch (error) {}
-    return true;
-  };
-  
-  const isLoggedIn = () => {
-    if (!get(authStore)) {
-      replace("/login");
-    }
     return true;
   };
   
@@ -47,8 +40,7 @@
         component: Orders,
         conditions: [
             () => getCartFromLocalStorage(),
-            async () => await verifyRefreshToken(),
-            () => isLoggedIn(),
+            () => verifyRefreshToken(),
         ],
       }),
       "/login": Login,
