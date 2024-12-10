@@ -46,6 +46,5 @@
       "/login": Login,
   };
 </script>
-
-<Router {routes} restoreScrollState={true}/>
+<Router {routes}/>
 

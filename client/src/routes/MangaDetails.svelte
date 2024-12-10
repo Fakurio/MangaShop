@@ -1,7 +1,7 @@
 <script lang="ts">
   import {fetchMangaDetails, fetchMangas, serverError} from "../stores/manga.store";
   import { mangaStore } from "../stores/manga.store";
-  import { onDestroy } from "svelte";
+  import {onDestroy, onMount} from "svelte";
   import type { Manga } from "../types/manga";
   import Header from "../components/Header.svelte";
   import Reviews from "../components/Reviews.svelte";
@@ -32,6 +32,8 @@
   $effect(() => {
     manga = $mangaStore.find(item => item.manga_id === parseInt(params.id));
   })
+
+  onMount(() => window.scrollTo(0, 0));
 
   onDestroy(() => serverError.set({ isError: false, message: "" }));
 </script>

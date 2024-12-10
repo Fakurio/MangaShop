@@ -3,14 +3,42 @@
   import MangaCard from "../components/MangaCard.svelte";
   import Header from "../components/Header.svelte";
   import SearchBar from "../components/SearchBar.svelte";
-  import {onDestroy, onMount} from "svelte";
+  import {onDestroy} from "svelte";
   import FilterPanelMQ from "../components/FilterPanelMQ.svelte";
   import * as Alert from "$lib/components/ui/alert";
   import {Skeleton} from "$lib/components/ui/skeleton";
   import {Toaster} from "$lib/components/ui/sonner";
+  let scrollPos = $state<number>(0)
+  let loadedCards = $state<{title: string, loaded: boolean}[]>([])
+
+
+  const scrollHandler = () => {
+    scrollPos = window.scrollY;
+  }
+
+  const handleCardLoad = (title: string) => {
+    loadedCards = loadedCards.map(item => {
+      return item.title === title ? {...item, loaded: true} : item;
+    })
+    const areAllLoaded = loadedCards.every(item => item.loaded)
+    if(areAllLoaded) {
+      scrollTo(0, Number(localStorage.getItem("scrollPos")!))
+    }
+  }
+
+  window.addEventListener("scroll", scrollHandler);
+  window.addEventListener("beforeunload", () => localStorage.removeItem("scrollPos"));
+
+  $effect(() => {
+    loadedCards = $filteredMangaStore.map(manga => {
+      return {title: manga.title, loaded: false}
+    })
+  })
 
   onDestroy(() => {
+    localStorage.setItem("scrollPos", scrollPos.toString())
     serverError.set({ isError: false, message: "" })
+    window.removeEventListener("scroll", scrollHandler);
   });
 </script>
 
@@ -40,10 +68,11 @@
           title={manga.title}
           img_url={manga.img_url}
           price={manga.price}
+          {handleCardLoad}
         />
       {/each}
       {/if}
-        {/await}
+      {/await}
     </section>
   </main>
   <Toaster theme="dark" toastOptions={{

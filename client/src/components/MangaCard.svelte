@@ -11,9 +11,10 @@
     img_url: string;
     price: number;
     manga_id: number;
+    handleCardLoad: (title: string) => void
   }
 
-  let {title, img_url, price, manga_id} : MangaCardProps = $props()
+  let {title, img_url, price, manga_id, handleCardLoad} : MangaCardProps = $props()
   let isLoading = $state(true)
 
   const handleAddingToCart = () => {
@@ -28,6 +29,7 @@
 
     img.onload = () => {
       isLoading = false;
+      handleCardLoad(title)
     };
   })
 
