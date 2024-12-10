@@ -1,11 +1,13 @@
 <script lang="ts">
   import Header from "../components/Header.svelte";
-  import Button from "../components/Button.svelte";
   import OrderList from "../components/OrderList.svelte";
-  import {sortFilter, SortFilter, statusFilter, fetchOrderStatuses} from "../stores/order.store";
+  import {fetchOrderStatuses, SortFilter, sortFilter, statusFilter} from "../stores/order.store";
+  import {Button} from "$lib/components/ui/button";
+  import * as Select from "$lib/components/ui/select";
+  import {Skeleton} from "$lib/components/ui/skeleton";
 
-  let selectedStatusFilter: string;
-  let selectedSortFilter: SortFilter;
+  let selectedStatusFilter = $state<string>("Pending");
+  let selectedSortFilter = $state<SortFilter>(SortFilter.DATE_DESC);
 
   const applyStatusFilter = () => {
     statusFilter.set(selectedStatusFilter);
@@ -17,98 +19,48 @@
 </script>
 
 <Header />
-<div class="container">
-  <main>
-    <header>
-      <h1>My Orders</h1>
-      <div class="filters">
-        <div class="filters__left">
-          <Button
-            text="Filter"
-            className="filter-btn"
-            onClick={() => applyStatusFilter()}
-          />
-          {#await fetchOrderStatuses()}
-            <p>Loading...</p>
-          {:then statuses}
-            <select bind:value={selectedStatusFilter}>
+<main class="max-w-[1300px] mx-auto mt-8 px-4 pb-4">
+  <header class="text-center border-border border-2 rounded-2xl p-4">
+    <h1 class="font-bold text-xl">My Orders</h1>
+    <div class="flex justify-evenly items-center mt-5 filters">
+      <div class="flex justify-center items-center gap-4">
+        {#await fetchOrderStatuses()}
+          <Skeleton class="h-[40px] border border-card-foreground w-[200px]"/>
+        {:then statuses}
+          <Button onclick={applyStatusFilter}>Filter</Button>
+          <Select.Root type="single" bind:value={selectedStatusFilter}>
+            <Select.Trigger class="w-[180px]">
+              {selectedStatusFilter || "Select status filter"}
+            </Select.Trigger>
+            <Select.Content>
               {#each statuses as status}
-                <option value={status}>{status}</option>
+                <Select.Item value={status}>{status}</Select.Item>
               {/each}
-            </select>
-          {/await}
-        </div>
-        <div class="filters__right">
-          <Button
-            text="Sort"
-            className="filter-btn"
-            onClick={() => applySortFilter()}
-          />
-          <select bind:value={selectedSortFilter}>
-            <option value={SortFilter.DATE_DESC}>By date descending</option>
-            <option value={SortFilter.DATE_ASC}>By date ascending</option>
-            <option value={SortFilter.PRICE_DESC}>By price descending</option>
-            <option value={SortFilter.PRICE_ASC}>By price ascending</option>
-          </select>
-        </div>
+            </Select.Content>
+          </Select.Root>
+        {/await}
       </div>
-    </header>
-    <OrderList />
-  </main>
-</div>
+      <div class="flex justify-center items-center gap-4">
+        <Select.Root type="single" bind:value={selectedSortFilter}>
+          <Select.Trigger class="w-[180px]">
+            {selectedSortFilter || "Select sort filter"}
+          </Select.Trigger>
+          <Select.Content>
+            <Select.Item value={SortFilter.DATE_DESC}>{SortFilter.DATE_DESC}</Select.Item>
+            <Select.Item value={SortFilter.DATE_ASC}>{SortFilter.DATE_ASC}</Select.Item>
+            <Select.Item value={SortFilter.PRICE_DESC}>{SortFilter.PRICE_DESC}</Select.Item>
+            <Select.Item value={SortFilter.PRICE_ASC}>{SortFilter.PRICE_ASC}</Select.Item>
+          </Select.Content>
+        </Select.Root>
+        <Button onclick={applySortFilter}>Sort</Button>
+      </div>
+    </div>
+  </header>
+  <OrderList />
+</main>
 
 <style>
-  .container {
-    max-width: 1300px;
-    width: 100%;
-    color: white;
-    margin: 2rem auto 0;
-    padding-bottom: 1rem;
-    padding-inline: 1rem;
-  }
-
-  header {
-    text-align: center;
-    background-color: #383638;
-    border-radius: 0.5rem;
-    padding-block: 1rem;
-  }
-
-  .filters {
-    display: flex;
-    justify-content: center;
-
-    align-items: center;
-    margin-top: 2rem;
-    gap: 10rem;
-  }
-
-  .filters__left {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem;
-  }
-
-  .filters__right {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem;
-  }
-
-  .filters :global(.filter-btn) {
-    margin-top: 0;
-    padding: 0.3em 0.5em;
-    width: 60px;
-  }
-
-  .filters select {
-    padding: 0.3em;
-    width: 150px;
-  }
-
-  @media (max-width: 500px) {
+  @media (max-width: 800px) {
     .filters {
       flex-wrap: wrap;
       gap: 2rem;

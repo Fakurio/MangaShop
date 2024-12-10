@@ -1,40 +1,18 @@
 <script lang="ts">
   import OrderItem from "./OrderItem.svelte";
   import { filteredOrderStore, fetchUserOrders } from "../stores/order.store";
-  import { onMount } from "svelte";
-
-  let isLoading = true;
-
-  onMount(async () => {
-    try {
-      await fetchUserOrders();
-    } finally {
-      isLoading = false;
-    }
-  });
+  import {Skeleton} from "$lib/components/ui/skeleton";
 </script>
 
-{#if !isLoading}
-  <div class="order-list">
+{#await fetchUserOrders()}
+  <Skeleton class="h-[300px] border border-card-foreground w-full mt-4"/>
+{:then _}
+  <div class="mt-4 flex flex-col gap-10">
     {#each $filteredOrderStore as order (order.order_id)}
       <OrderItem
-        total={order.total_price}
-        status={order.order_status}
-        orderItems={order.orderItems}
-        date={order.order_date}
-      />
+              total={order.total_price}
+              status={order.order_status} orderItems={order.orderItems} date={order.order_date}/>
     {/each}
   </div>
-{/if}
+{/await}
 
-<style>
-  .order-list {
-    margin-top: 3rem;
-    display: flex;
-    flex-direction: column;
-    gap: 3rem;
-    background-color: #282628;
-    padding: 1rem;
-    border-radius: 0.5rem;
-  }
-</style>

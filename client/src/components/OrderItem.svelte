@@ -1,153 +1,70 @@
 <script lang="ts">
   import type { OrderItem } from "../types/order-item";
-  import { v4 as uuidv4 } from "uuid";
-  import { mangaStore } from "../stores/manga.store";
+  import {fetchMangas, mangaStore} from "../stores/manga.store";
   import { get } from "svelte/store";
-  import { onMount } from "svelte";
   import { formatDate } from "../utils/formatDate";
+  import {Skeleton} from "$lib/components/ui/skeleton";
+  import type {Manga} from "../types/manga";
 
-  export let status: string;
-  export let date: Date;
-  export let total: number;
-  export let orderItems: OrderItem[];
+  interface OrderItemProps {
+    status: string;
+    date: Date;
+    total: string | number;
+    orderItems: OrderItem[];
+  }
 
-  let mangaImgs: string[] = [];
-  let mangaPrices: number[] = [];
-  let isLoading = true;
+  type OrderItemManga = Pick<Manga, "manga_id" | "img_url" | "price" | "title"> & {
+    quantity: number;
+  }
 
-  const getMangaInfo = () => {
-    orderItems.forEach((item) => {
-      let manga = get(mangaStore).find(
-        (manga) => manga.manga_id === item.manga_id
-      );
+  const {status, date, total, orderItems} : OrderItemProps = $props()
 
-      if (manga) {
-        mangaImgs.push(manga.img_url);
-        mangaPrices.push(manga.price);
+  let orderItemsMangas = $state<OrderItemManga[]>([])
+
+  const prepareContent = async () => {
+    await fetchMangas()
+    orderItems.forEach(orderItem => {
+      const foundManga = get(mangaStore).find(manga => manga.manga_id === orderItem.manga_id)
+      if(foundManga) {
+        orderItemsMangas.push({...foundManga, quantity: orderItem.quantity})
       }
-    });
-    isLoading = false;
-  };
-
-  onMount(() => {
-    getMangaInfo();
-  });
+    })
+  }
 </script>
 
-{#if !isLoading}
-  <details class="order-item">
-    <summary class="item__summary">
-      <div class="item__left-block">
-        <p class="left-block__info">
-          Status: <span class="accent">{status}</span>
-        </p>
-        <p class="left-block__info">
-          Order value: <span class="accent">{total} PLN</span>
-        </p>
-        <p class="left-block__info">
-          Order date: <span class="accent">{formatDate(date)}</span>
-        </p>
-      </div>
-      <div class="item__right-block">
-        {#each mangaImgs as img (uuidv4())}
-          <div>
-            <img src={img} alt="" />
-          </div>
+{#await prepareContent()}
+  <Skeleton class="h-[100px] border border-card-foreground w-full"/>
+{:then _}
+    <details class="rounded-md p-4 cursor-pointer border-2 border-border">
+      <summary class="flex flex-wrap gap-10">
+        <div class="flex flex-col justify-evenly gap-4">
+          <p>
+            Status: <span class="text-primary font-bold">{status}</span>
+          </p>
+          <p>
+            Order value: <span class="text-primary font-bold">{total} PLN</span>
+          </p>
+          <p>
+            Order date: <span class="text-primary font-bold">{formatDate(date)}</span>
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-5">
+          {#each orderItemsMangas as manga (manga.manga_id)}
+            <div>
+              <img src={manga.img_url} alt={manga.title} class="w-[100px] h-[150px]"/>
+            </div>
+          {/each}
+        </div>
+      </summary>
+      <div class="mt-8 flex flex-col gap-5 text-[1.1rem]">
+        {#each orderItemsMangas as manga (manga.manga_id)}
+            <div class="border-border border-2 rounded-xl p-4 flex justify-between items-center max-[500px]:flex-col max-[500px]:gap-4">
+              <img src={manga.img_url} alt={manga.title} class="w-[100px] h-[150px]"/>
+              <p>Quantity: {manga.quantity}</p>
+              <p>Price: {manga.price} PLN</p>
+            </div>
         {/each}
       </div>
-    </summary>
-    <div class="item__body">
-      {#each orderItems as item, index (uuidv4())}
-        <div class="item__body__details">
-          <img src={mangaImgs[index]} alt="" />
-          <p>Quantity: {item.quantity}</p>
-          <p>Price: {mangaPrices[index]} PLN</p>
-        </div>
-      {/each}
-    </div>
-  </details>
-{/if}
+    </details>
+{/await}
 
-<style>
-  .order-item {
-    background-color: #383638;
-    border-radius: 0.5rem;
-    padding: 0.5rem;
-    cursor: pointer;
-  }
-
-  .item__summary {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5rem;
-  }
-
-  .item__left-block {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    gap: 1rem;
-  }
-
-  .left-block__info {
-    font-size: 1.1rem;
-    font-weight: 700;
-  }
-
-  .accent {
-    color: #e58e27;
-  }
-
-  .item__right-block {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 3rem;
-  }
-
-  .item__body {
-    margin-top: 2rem;
-    background-color: #282628;
-    border-radius: 0.5rem;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    font-size: 1.1rem;
-  }
-
-  .item__body__details {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .item__right-block img,
-  .item__body img {
-    height: 150px;
-    width: 100px;
-  }
-
-  @media (max-width: 500px) {
-    .item__summary {
-      gap: 2rem;
-    }
-
-    .item__left-block {
-      margin: 0 auto;
-    }
-
-    .item__right-block {
-      justify-content: center;
-      width: 100%;
-    }
-
-    .item__body {
-      gap: 3rem;
-    }
-
-    .item__body__details {
-      flex-direction: column;
-      gap: 1rem;
-    }
-  }
-</style>

@@ -10,10 +10,10 @@ import type { PaymentMethod } from "../types/payment-method";
 import { UnauthorizedError } from "../api/errors/UnauthorizedError";
 
 enum SortFilter {
-  DATE_ASC,
-  DATE_DESC,
-  PRICE_ASC,
-  PRICE_DESC,
+  DATE_ASC = "By date ascending",
+  DATE_DESC = "By date descending",
+  PRICE_ASC = "By price ascending",
+  PRICE_DESC = "By price descending",
 }
 
 const orderStore = writable<Order[]>([]);
@@ -27,13 +27,11 @@ const filteredOrderStore = derived(
     });
     switch ($sortFilter) {
       case SortFilter.DATE_ASC:
-        return filtered.sort(
-          (a, b) => a.order_date.getTime() - b.order_date.getTime(),
-        );
+        // @ts-ignore
+        return filtered.sort((a, b) => a.order_date - b.order_date);
       case SortFilter.DATE_DESC:
-        return filtered.sort(
-          (a, b) => a.order_date.getTime() + b.order_date.getTime(),
-        );
+        // @ts-ignore
+        return filtered.sort((a, b) => a.order_date + b.order_date);
       case SortFilter.PRICE_ASC:
         return filtered.sort((a, b) =>
           a.total_price > b.total_price ? 1 : -1,

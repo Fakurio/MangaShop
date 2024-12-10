@@ -36,7 +36,7 @@
           placeholder="Search..."
           class="border-2 pl-8"
           bind:value={query}
-          on:keydown={handleEnterKey}
+          onkeydown={handleEnterKey}
   />
 </div>
 

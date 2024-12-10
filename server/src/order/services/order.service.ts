@@ -65,6 +65,9 @@ export class OrderService {
     return await this.ordersRepository.find({
       where: { user_id: user_id },
       relations: ['orderItems'],
+      order: {
+        order_date: 'DESC',
+      },
     });
   }
 }
