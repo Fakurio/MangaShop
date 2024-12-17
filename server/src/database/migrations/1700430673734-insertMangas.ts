@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
-import { Manga } from 'src/entities/manga.entity';
-import { Genre } from 'src/entities/genre.entity';
+import { Manga } from '../../entities/manga.entity';
+import { Genre } from '../../entities/genre.entity';
 import { mangas } from '../starting-data';
 
 export class InsertMangas1700430673734 implements MigrationInterface {

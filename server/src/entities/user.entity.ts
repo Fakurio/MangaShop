@@ -1,7 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
 import { Cart } from './cart.entity';
 import { Review } from './review.entity';
 import { Order } from './order.entity';
+import { Role } from './role.entity';
+
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -15,6 +24,14 @@ export class User {
 
   @Column('varchar', { length: 200 })
   password: string;
+
+  @ManyToMany(() => Role, (role) => role.users)
+  @JoinTable({
+    name: 'user_role',
+    joinColumn: { name: 'user_id' },
+    inverseJoinColumn: { name: 'role_id' },
+  })
+  roles: Role[];
 
   @Column('varchar', { length: 512, nullable: true })
   refresh_token: string;

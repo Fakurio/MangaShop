@@ -24,6 +24,12 @@ export class MangasService {
     return mangas;
   }
 
+  async getAllForAdmin(): Promise<Manga[]> {
+    return this.mangasRepository.find({
+      relations: ['genres'],
+    });
+  }
+
   async getOne(id: number) {
     return await this.mangasRepository
       .createQueryBuilder('manga')

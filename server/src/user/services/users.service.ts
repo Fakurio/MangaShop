@@ -1,13 +1,13 @@
-import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
-import {User} from '../../entities/user.entity';
-import {Repository} from 'typeorm';
-import {InjectRepository} from "@nestjs/typeorm";
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { User } from '../../entities/user.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class UsersService {
   constructor(
-      @InjectRepository(User)
-      private readonly usersRepository: Repository<User>
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
   ) {}
 
   async getUserName(user_id: number): Promise<User> {
@@ -26,9 +26,10 @@ export class UsersService {
 
   async findOne(email: string): Promise<User | null> {
     return await this.usersRepository
-        .createQueryBuilder('user')
-        .where('user.email = :email', {email: email})
-        .getOne();
+      .createQueryBuilder('user')
+      .innerJoinAndSelect('user.roles', 'roles')
+      .where('user.email = :email', { email: email })
+      .getOne();
   }
 
   async findByRefreshToken(rT: string) {
@@ -39,12 +40,11 @@ export class UsersService {
   }
 
   async checkUser(email: string): Promise<boolean> {
-    return await this.usersRepository
-        .exist({where: {email: email}});
+    return await this.usersRepository.exist({ where: { email: email } });
   }
 
   async addNewUser(username: string, email: string, password: string) {
-    const user = new User;
+    const user = new User();
     user.email = email;
     user.password = password;
     user.name = username;
@@ -54,8 +54,8 @@ export class UsersService {
 
   async updateRefreshToken(id: number, rf: string) {
     return await this.usersRepository.update(
-        { user_id: id },
-        { refresh_token: rf }
-    )
+      { user_id: id },
+      { refresh_token: rf },
+    );
   }
 }

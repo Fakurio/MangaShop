@@ -1,5 +1,7 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 
+const isCompiled = __dirname.includes('dist');
+
 export const dataSourceOptions: DataSourceOptions = {
   type: 'mysql',
   host: 'localhost',
@@ -7,8 +9,12 @@ export const dataSourceOptions: DataSourceOptions = {
   username: 'root',
   password: 'root',
   database: 'manga_shop',
-  entities: ['dist/**/*.entity{.ts,.js}'],
-  migrations: ['dist/database/migrations/*{.ts,.js}'],
+  entities: isCompiled
+    ? ['dist/**/*.entity{.ts,.js}']
+    : ['src/**/*.entity{.ts,.js}'],
+  migrations: isCompiled
+    ? ['dist/database/migrations/*{.ts,.js}']
+    : ['src/database/migrations/*{.ts,.js}'],
   synchronize: true,
 };
 

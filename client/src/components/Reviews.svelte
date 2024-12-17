@@ -19,7 +19,7 @@
   });
 </script>
 
-<section class="bg-card border border-card-foreground rounded-3xl mt-16 p-6">
+<section class="bg-card border-2 border-border rounded-3xl mt-16 p-6">
   <h2 class="text-4xl">Reviews</h2>
   {#if $authStore}
     <Button class="mt-4" onclick={() => {isFormVisible = !isFormVisible}} variant="secondary">

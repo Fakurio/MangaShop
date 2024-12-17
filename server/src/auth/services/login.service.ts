@@ -6,8 +6,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { CartsService } from '../../cart/services/carts.service';
-import {User} from "../../entities/user.entity";
-import {ConfigService} from "@nestjs/config";
+import { User } from '../../entities/user.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class LoginService {
@@ -28,27 +28,24 @@ export class LoginService {
 
     const user = await this.usersService.findOne(email);
     if (!user) {
-      console.log("User does not exist");
-      throw new HttpException(
-          "Incorrect login data",
-          HttpStatus.BAD_REQUEST,
-      );
+      console.log('User does not exist');
+      throw new HttpException('Incorrect login data', HttpStatus.BAD_REQUEST);
     }
 
     const isPasswordMatch = await this.hashService.verifyPassword(
-        password,
-        user.password,
+      password,
+      user.password,
     );
 
     if (!isPasswordMatch) {
-      console.log("Bad password")
+      console.log('Bad password');
       throw new HttpException('Incorrect login data', HttpStatus.UNAUTHORIZED);
     }
 
     return user;
   }
 
-  private async updateUserCart(user: User, cart: LoginUserDto["cart"]) {
+  private async updateUserCart(user: User, cart: LoginUserDto['cart']) {
     const userCart = await this.cartService.getUserCart(user.user_id);
     let finalCart = cart;
     if (userCart) {
@@ -63,23 +60,27 @@ export class LoginService {
       sub: user.user_id,
       email: user.email,
       username: user.name,
+      roles: user.roles.map((role) => role.name),
     };
     const aT = await this.jwtService.signAsync(payload);
     const rT = await this.jwtService.signAsync(payload, {
-      expiresIn: this.configService.get("JWT_REFRESH_EXPIRES_IN"),
+      expiresIn: this.configService.get('JWT_REFRESH_EXPIRES_IN'),
     });
 
-    return { aT, rT }
+    return { aT, rT };
   }
 
   async loginUser(loginUserDto: LoginUserDto, response: Response) {
     const user = await this.validateUser(loginUserDto);
-    const finalCart = await this.updateUserCart(user, loginUserDto.cart)
+    const finalCart = await this.updateUserCart(user, loginUserDto.cart);
     const { aT, rT } = await this.generateTokens(user);
 
     await this.usersService.updateRefreshToken(user.user_id, rT);
 
-    response.cookie('jwt', rT, { httpOnly: true, maxAge: Number(this.configService.get("COOKIE_MAX_AGE")) });
+    response.cookie('jwt', rT, {
+      httpOnly: true,
+      maxAge: Number(this.configService.get('COOKIE_MAX_AGE')),
+    });
     return {
       username: user.name,
       new_cart: finalCart,

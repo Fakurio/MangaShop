@@ -1,4 +1,4 @@
-import { Genre } from 'src/entities/genre.entity';
+import { Genre } from '../../entities/genre.entity';
 import { MigrationInterface, QueryRunner } from 'typeorm';
 import { genres } from '../starting-data';
 

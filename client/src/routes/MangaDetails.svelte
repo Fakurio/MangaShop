@@ -53,7 +53,7 @@
       {:else}
       <Header />
       <main class="px-3 min-[500px]:px-20 min-[700px]:py-6">
-        <div class="main border border-card-foreground rounded-3xl p-6">
+        <div class="main border-2 border-secondary rounded-3xl p-6">
           <div class="row-span-full manga-img">
             <img src={manga.img_url} alt={manga.title} class="w-full h-full object-cover"/>
           </div>
