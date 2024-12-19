@@ -27,6 +27,10 @@ export class MangasService {
   async getAllForAdmin(): Promise<Manga[]> {
     return this.mangasRepository.find({
       relations: ['genres'],
+      order: {
+        stock_quantity: 'ASC',
+        title: 'ASC',
+      },
     });
   }
 

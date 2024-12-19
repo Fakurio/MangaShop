@@ -83,6 +83,7 @@ export class LoginService {
     });
     return {
       username: user.name,
+      roles: user.roles.map((role) => role.name),
       new_cart: finalCart,
       access_token: aT,
     };

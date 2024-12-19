@@ -10,6 +10,7 @@ import { makePrivateRequest } from "../api/makePrivateRequest";
 import { ForbiddenError } from "../api/errors/ForbiddenError";
 import { UnauthorizedError } from "../api/errors/UnauthorizedError";
 import type { RegisterForm } from "../types/user-register";
+import { RoleEnum } from "../enums/role-enum";
 
 const authStore = writable<LoggedInUser | null>(null);
 
@@ -28,6 +29,7 @@ const refreshToken = async () => {
       return {
         username: data!.username,
         access_token: data!.access_token,
+        roles: data!.roles,
       };
     });
   }
@@ -44,9 +46,18 @@ const login = async (user: LoginForm, cart: CartItem[]) => {
     throw error;
   }
 
-  authStore.set({ username: data.username, access_token: data.access_token });
+  authStore.set({
+    username: data.username,
+    access_token: data.access_token,
+    roles: data.roles,
+  });
   localStorage.setItem("cart", JSON.stringify(data.new_cart));
-  await replace("/");
+
+  if (data.roles.includes(RoleEnum.ADMIN)) {
+    await replace("/admin");
+  } else {
+    await replace("/");
+  }
 };
 
 const logout = async () => {

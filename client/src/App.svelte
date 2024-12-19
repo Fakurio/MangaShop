@@ -1,7 +1,5 @@
 <script>
   import "./app.css";
-  // @ts-nocheck
-  
   import Home from "./routes/Home.svelte";
   import Router from "svelte-spa-router";
   import MangaDetails from "./routes/MangaDetails.svelte";
@@ -13,6 +11,7 @@
   import {authStore, refreshToken} from "./stores/auth.store";
   import {get} from "svelte/store";
   import {getCartFromLocalStorage} from "./stores/cart.store";
+  import AdminDashboard from "./routes/AdminDashboard/AdminDashboard.svelte";
 
   const verifyRefreshToken = async () => {
     if (get(authStore)) return true;
@@ -21,6 +20,7 @@
     } catch (error) {}
     return true;
   };
+
   
   let routes = {
       "/": wrap({
@@ -42,6 +42,10 @@
             () => getCartFromLocalStorage(),
             () => verifyRefreshToken(),
         ],
+      }),
+      "/admin": wrap({
+          component: AdminDashboard,
+          conditions: [() => verifyRefreshToken()],
       }),
       "/login": Login,
   };

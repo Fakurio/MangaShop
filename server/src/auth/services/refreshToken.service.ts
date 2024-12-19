@@ -43,12 +43,14 @@ export class RefreshTokenService {
     sub: string;
     email: string;
     username: string;
+    roles: string[];
   }) {
-    const { sub, email, username } = token;
+    const { sub, email, username, roles } = token;
     const newPayload = {
       sub: sub,
       email: email,
       username: username,
+      roles: roles,
     };
     const newAccessToken = await this.jwtService.signAsync(newPayload);
     const newRefreshToken = await this.jwtService.signAsync(newPayload, {
@@ -72,6 +74,7 @@ export class RefreshTokenService {
 
     return {
       username: token.username,
+      roles: token.roles,
       access_token: newAccessToken,
     };
   }
