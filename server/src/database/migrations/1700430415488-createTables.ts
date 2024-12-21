@@ -8,7 +8,7 @@ export class CreateTables1700430415488 implements MigrationInterface {
       `CREATE TABLE \`genre\` (\`genre_id\` int NOT NULL AUTO_INCREMENT, \`name\` varchar(20) NOT NULL, UNIQUE INDEX \`IDX_dd8cd9e50dd049656e4be1f7e8\` (\`name\`), PRIMARY KEY (\`genre_id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
-      `CREATE TABLE \`manga\` (\`manga_id\` int NOT NULL AUTO_INCREMENT, \`title\` varchar(50) NOT NULL, \`img_url\` varchar(255) NOT NULL, \`price\` decimal(5,2) NOT NULL, \`stock_quantity\` int NOT NULL, \`author\` varchar(50) NOT NULL, \`description\` text NOT NULL, UNIQUE INDEX \`IDX_34e4f0d3e489ceb36d48a73881\` (\`title\`), PRIMARY KEY (\`manga_id\`)) ENGINE=InnoDB`,
+      `CREATE TABLE \`manga\` (\`manga_id\` int NOT NULL AUTO_INCREMENT, \`title\` varchar(50) NOT NULL, \`img_url\` varchar(255) NOT NULL, \`price\` decimal(5,2) NOT NULL, \`stock_quantity\` int NOT NULL, \`author\` varchar(50) NOT NULL, \`description\` text NULL, UNIQUE INDEX \`IDX_34e4f0d3e489ceb36d48a73881\` (\`title\`), PRIMARY KEY (\`manga_id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
       `CREATE TABLE \`review\` (\`review_id\` int NOT NULL AUTO_INCREMENT, \`content\` text NOT NULL, \`rating\` int NOT NULL, \`created_at\` date NOT NULL, \`user_id\` int NULL, \`manga_id\` int NULL, PRIMARY KEY (\`review_id\`)) ENGINE=InnoDB`,

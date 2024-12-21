@@ -13,7 +13,7 @@ export const dataSourceOptions: DataSourceOptions = {
     ? ['dist/**/*.entity{.ts,.js}']
     : ['src/**/*.entity{.ts,.js}'],
   migrations: isCompiled
-    ? ['dist/database/migrations/*{.ts,.js}']
+    ? ['dist/src/database/migrations/*{.ts,.js}']
     : ['src/database/migrations/*{.ts,.js}'],
   synchronize: true,
 };

@@ -2,12 +2,15 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { User } from '../../entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Role, RoleEnum } from 'src/entities/role.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    @InjectRepository(Role)
+    private readonly rolesRepository: Repository<Role>,
   ) {}
 
   async getUserName(user_id: number): Promise<User> {
@@ -48,6 +51,9 @@ export class UsersService {
     user.email = email;
     user.password = password;
     user.name = username;
+    user.roles = await this.rolesRepository.find({
+      where: { name: RoleEnum.USER },
+    });
 
     return await this.usersRepository.save(user);
   }
