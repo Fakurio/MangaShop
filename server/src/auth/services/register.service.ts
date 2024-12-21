@@ -16,15 +16,15 @@ export class RegisterService {
 
     if (!RegisterUserSchema.safeParse(registerUserDto).success) {
       throw new HttpException(
-          'Incorrect registration data',
-          HttpStatus.BAD_REQUEST,
+        'Incorrect registration data',
+        HttpStatus.BAD_REQUEST,
       );
     }
     let userExists = await this.usersService.checkUser(email);
     if (userExists) {
       throw new HttpException(
-          'User with given e-mail already exists',
-          HttpStatus.CONFLICT,
+        'User with given e-mail already exists',
+        HttpStatus.CONFLICT,
       );
     }
 
@@ -32,7 +32,8 @@ export class RegisterService {
   }
 
   async registerUser(registerUserDto: RegisterUserDto) {
-    const { email, password, username } = await this.validateUser(registerUserDto);
+    const { email, password, username } =
+      await this.validateUser(registerUserDto);
     try {
       let hashedPassword = await this.hashService.hashPassword(password);
       await this.usersService.addNewUser(username, email, hashedPassword);

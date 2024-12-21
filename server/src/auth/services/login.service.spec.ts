@@ -12,6 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { CartItem } from '../../entities/cart-item.entity';
 import { Cart } from '../../entities/cart.entity';
+import { Role, RoleEnum } from '../../entities/role.entity';
 
 describe('LoginService', () => {
   let loginService: LoginService;
@@ -41,6 +42,7 @@ describe('LoginService', () => {
         { provide: getRepositoryToken(User), useValue: {} },
         { provide: getRepositoryToken(CartItem), useValue: {} },
         { provide: getRepositoryToken(Cart), useValue: {} },
+        { provide: getRepositoryToken(Role), useValue: {} },
       ],
     }).compile();
     loginService = moduleRef.get(LoginService);
@@ -56,7 +58,7 @@ describe('LoginService', () => {
     };
     const user = {
       name: 'Kamil',
-      roles: [{ role_id: 1, name: 'admin' }],
+      roles: [{ role_id: 1, name: RoleEnum.USER }],
     } as User;
     const response = {
       cookie: jest.fn(),
@@ -72,6 +74,7 @@ describe('LoginService', () => {
 
     expect(await loginService.loginUser(dto, response)).toEqual({
       username: 'Kamil',
+      roles: [RoleEnum.USER],
       access_token: undefined,
       new_cart: undefined,
     });

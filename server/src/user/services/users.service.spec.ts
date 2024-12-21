@@ -4,6 +4,7 @@ import { UsersService } from './users.service';
 import { User } from '../../entities/user.entity';
 import { Repository } from 'typeorm';
 import { HttpException } from '@nestjs/common';
+import { Role } from '../../entities/role.entity';
 
 describe('UsersService', () => {
   let usersService: UsersService;
@@ -17,6 +18,9 @@ describe('UsersService', () => {
     exist: jest.fn(),
     save: jest.fn(),
     update: jest.fn(),
+  };
+  const roleRepositoryMock = {
+    find: jest.fn(),
   };
   const mockUser: User = {
     user_id: 1,
@@ -32,6 +36,7 @@ describe('UsersService', () => {
       providers: [
         UsersService,
         { provide: getRepositoryToken(User), useValue: usersRepositoryMock },
+        { provide: getRepositoryToken(Role), useValue: roleRepositoryMock },
       ],
     }).compile();
     usersService = moduleRef.get(UsersService);
@@ -98,6 +103,7 @@ describe('UsersService', () => {
 
   it('should save user', async () => {
     jest.spyOn(usersRepository, 'save').mockResolvedValue(mockUser);
+    jest.spyOn(roleRepositoryMock, 'find').mockResolvedValue([]);
 
     expect(
       await usersService.addNewUser(
@@ -105,11 +111,12 @@ describe('UsersService', () => {
         mockUser.email,
         mockUser.password,
       ),
-    ).toEqual(mockUser);
+    ).toEqual({ ...mockUser, roles: [] });
     expect(usersRepository.save).toHaveBeenCalledWith({
       name: mockUser.name,
       email: mockUser.email,
       password: mockUser.password,
+      roles: [],
     });
   });
 

@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { User } from '../../entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Role, RoleEnum } from 'src/entities/role.entity';
+import { Role, RoleEnum } from '../../entities/role.entity';
 
 @Injectable()
 export class UsersService {
