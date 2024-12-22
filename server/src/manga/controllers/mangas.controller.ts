@@ -1,8 +1,10 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
   ParseIntPipe,
+  Post,
   UseGuards,
 } from '@nestjs/common';
 import { Manga } from '../../entities/manga.entity';
@@ -11,6 +13,7 @@ import { Roles } from '../../auth/decorators/roles.decorator';
 import { RoleEnum } from '../../entities/role.entity';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { JwtGuard } from '../../auth/guards/jwt.guard';
+import { AddMangaDTO } from '../dto/add-manga.dto';
 
 @Controller('mangas')
 export class MangasController {
@@ -32,5 +35,13 @@ export class MangasController {
   @Get(':id')
   getOne(@Param('id', ParseIntPipe) id: number): Promise<Manga | null> {
     return this.mangasService.getOne(id);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(RoleEnum.ADMIN)
+  @UseGuards(JwtGuard)
+  @Post()
+  addManga(@Body() addMangaDTO: AddMangaDTO) {
+    return this.mangasService.addManga(addMangaDTO);
   }
 }
