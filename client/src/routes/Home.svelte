@@ -1,43 +1,67 @@
 <script lang="ts">
-  import {fetchMangas, filteredMangaStore, mangaStore, serverError} from "../stores/manga.store";
+  import {
+    fetchMangas,
+    filteredMangaStore,
+    mangaStore,
+    serverError,
+  } from "../stores/manga.store";
   import MangaCard from "../components/MangaCard.svelte";
   import Header from "../components/Header.svelte";
   import SearchBar from "../components/SearchBar.svelte";
-  import {onDestroy} from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import FilterPanelMQ from "../components/FilterPanelMQ.svelte";
   import * as Alert from "$lib/components/ui/alert";
-  import {Skeleton} from "$lib/components/ui/skeleton";
-  import {Toaster} from "$lib/components/ui/sonner";
-  let scrollPos = $state<number>(0)
-  let loadedCards = $state<{title: string, loaded: boolean}[]>([])
-
+  import { Skeleton } from "$lib/components/ui/skeleton";
+  import { Toaster } from "$lib/components/ui/sonner";
+  import { replace } from "svelte-spa-router";
+  import { authStore } from "../stores/auth.store";
+  let scrollPos = $state<number>(0);
+  let loadedCards = $state<{ title: string; loaded: boolean }[]>([]);
 
   const scrollHandler = () => {
     scrollPos = window.scrollY;
-  }
+  };
 
   const handleCardLoad = (title: string) => {
-    loadedCards = loadedCards.map(item => {
-      return item.title === title ? {...item, loaded: true} : item;
-    })
-    const areAllLoaded = loadedCards.every(item => item.loaded)
-    if(areAllLoaded) {
-      scrollTo(0, Number(localStorage.getItem("scrollPos")!))
+    loadedCards = loadedCards.map((item) => {
+      return item.title === title ? { ...item, loaded: true } : item;
+    });
+    const areAllLoaded = loadedCards.every((item) => item.loaded);
+    if (areAllLoaded) {
+      scrollTo(0, Number(localStorage.getItem("scrollPos")!));
     }
-  }
+  };
 
   window.addEventListener("scroll", scrollHandler);
-  window.addEventListener("beforeunload", () => localStorage.removeItem("scrollPos"));
+  window.addEventListener("beforeunload", () =>
+    localStorage.removeItem("scrollPos")
+  );
 
   $effect(() => {
-    loadedCards = $filteredMangaStore.map(manga => {
-      return {title: manga.title, loaded: false}
-    })
-  })
+    loadedCards = $filteredMangaStore.map((manga) => {
+      return { title: manga.title, loaded: false };
+    });
+  });
+
+  onMount(() => {
+    const handlePopState = (event: any) => {
+      const isLoggedIn = $authStore !== null;
+      const hash = event.target.location.hash;
+      if (isLoggedIn && hash === "#/login") {
+        replace("/");
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  });
 
   onDestroy(() => {
-    localStorage.setItem("scrollPos", scrollPos.toString())
-    serverError.set({ isError: false, message: "" })
+    localStorage.setItem("scrollPos", scrollPos.toString());
+    serverError.set({ isError: false, message: "" });
     window.removeEventListener("scroll", scrollHandler);
   });
 </script>
@@ -50,35 +74,38 @@
   <Header />
   <main>
     {#if $mangaStore.length > 0}
-      <FilterPanelMQ/>
+      <FilterPanelMQ />
       <SearchBar />
     {/if}
     <section class="mangas">
       {#await fetchMangas()}
-        <Skeleton class="h-64 w-full m-auto"/>
+        <Skeleton class="h-64 w-full m-auto" />
       {:then _}
-      {#if $filteredMangaStore.length === 0}
+        {#if $filteredMangaStore.length === 0}
           <Alert.Root class="w-3/5 text-center">
-              <Alert.Title>No manga meets criteria</Alert.Title>
+            <Alert.Title>No manga meets criteria</Alert.Title>
           </Alert.Root>
-      {:else}
-      {#each $filteredMangaStore as manga (manga.manga_id)}
-        <MangaCard
-          manga_id={manga.manga_id}
-          title={manga.title}
-          img_url={manga.img_url}
-          price={manga.price}
-          {handleCardLoad}
-        />
-      {/each}
-      {/if}
+        {:else}
+          {#each $filteredMangaStore as manga (manga.manga_id)}
+            <MangaCard
+              manga_id={manga.manga_id}
+              title={manga.title}
+              img_url={manga.img_url}
+              price={manga.price}
+              {handleCardLoad}
+            />
+          {/each}
+        {/if}
       {/await}
     </section>
   </main>
-  <Toaster theme="dark" toastOptions={{
-    classes: {
-      toast: "border-2 text-lg",
-    }}}
+  <Toaster
+    theme="dark"
+    toastOptions={{
+      classes: {
+        toast: "border-2 text-lg",
+      },
+    }}
   />
 {/if}
 

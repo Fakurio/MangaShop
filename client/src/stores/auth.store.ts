@@ -1,6 +1,6 @@
 import { writable, get } from "svelte/store";
 import type { LoggedInUser } from "../types/logged-in-user";
-import { push, replace } from "svelte-spa-router";
+import { replace } from "svelte-spa-router";
 import type { LoginForm } from "../types/user-login";
 import type { CartItem } from "../types/cart-item";
 import cartStore from "./cart.store";
@@ -54,8 +54,7 @@ const login = async (user: LoginForm, cart: CartItem[]) => {
   localStorage.setItem("cart", JSON.stringify(data.new_cart));
 
   if (data.roles.includes(RoleEnum.ADMIN)) {
-    // TODO: Block back button after login to return to admin dashboard
-    await push("/admin");
+    await replace("/admin");
   } else {
     await replace("/");
   }
