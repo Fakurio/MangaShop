@@ -6,7 +6,7 @@ export type Manga = {
   title: string;
   description: string;
   img_url: string;
-  price: number;
+  price: string;
   stock_quantity: number;
   author: string;
   genres: Genre[];

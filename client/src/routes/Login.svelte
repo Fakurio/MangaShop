@@ -13,7 +13,7 @@
   import { getErrorsFromZod } from "../utils/getErrorsFromZod";
   import { toast } from "svelte-sonner";
   import { onMount } from "svelte";
-  import { pop } from "svelte-spa-router";
+  import { pop, replace } from "svelte-spa-router";
 
   let loginForm = $state<LoginForm>({
     password: "",
@@ -49,7 +49,7 @@
   onMount(() => {
     const isLoggedIn = $authStore !== null;
     if (isLoggedIn) {
-      pop();
+      replace("/");
     }
   });
 </script>

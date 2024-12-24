@@ -22,13 +22,9 @@
   });
 
   onMount(() => {
-    const isAdminLoggedIn =
-      $authStore !== null && $authStore.roles.includes(RoleEnum.ADMIN);
-    if (!isAdminLoggedIn) {
-      replace("/");
-    }
-
-    const handlePopState = (event) => {
+    const handlePopState = (event: any) => {
+      const isAdminLoggedIn =
+        $authStore !== null && $authStore.roles.includes(RoleEnum.ADMIN);
       const hash = event.target.location.hash as string;
       if (isAdminLoggedIn && !hash.startsWith("#/admin")) {
         replace("/admin");

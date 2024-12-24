@@ -1,11 +1,12 @@
 import { get } from "svelte/store";
 import { authStore, refreshToken } from "../stores/auth.store";
+import { BadRequestError } from "./errors/BadRequestError";
 
 export const makePrivateRequest = async (
   endpoint: string,
   method: string,
   credentials?: RequestCredentials,
-  body?: any,
+  body?: any
 ) => {
   const makeRequest = async () => {
     return await fetch(`${import.meta.env.VITE_SERVER_HOST}${endpoint}`, {
@@ -23,8 +24,12 @@ export const makePrivateRequest = async (
 
   if (!response.ok) {
     // console.log("Access token failed");
+    const error = await response.json();
+    if (response.status === 400) {
+      throw new BadRequestError(error);
+    }
     if (response.status !== 401 && response.status !== 403) {
-      throw await response.json();
+      throw new Error(error.message);
     }
     try {
       await refreshToken();

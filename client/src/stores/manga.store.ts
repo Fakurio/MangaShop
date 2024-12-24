@@ -30,28 +30,28 @@ const filteredMangaStore = derived(
       })
       .filter((manga) => {
         return (
-          manga.price >= $filteredPriceRange.from &&
-          manga.price <= $filteredPriceRange.to
+          parseFloat(manga.price) >= $filteredPriceRange.from &&
+          parseFloat(manga.price) <= $filteredPriceRange.to
         );
       })
       .filter((manga) => {
         return manga.title.toLowerCase().includes($filteredText.toLowerCase());
       });
-  },
+  }
 );
 
 window.addEventListener("beforeunload", () => {
   localStorage.setItem("selectedGenres", JSON.stringify(get(filteredGenres)));
   localStorage.setItem(
     "selectedPriceRange",
-    JSON.stringify(get(filteredPriceRange)),
+    JSON.stringify(get(filteredPriceRange))
   );
   localStorage.setItem("searchQuery", JSON.stringify(get(filteredText)));
 });
 
 const fetchGenres = async () => {
   const [error, data] = await catchError<Genre[]>(
-    makeRequest("/genres", "GET"),
+    makeRequest("/genres", "GET")
   );
 
   if (!error) {
@@ -78,7 +78,7 @@ const fetchMangas = async () => {
 const fetchMangaDetails = async (manga_id: number) => {
   if (!get(mangaStore).find((manga) => manga.manga_id === manga_id)?.fetched) {
     const [error, data] = await catchError<Manga>(
-      makeRequest(`/mangas/${manga_id}`, "GET"),
+      makeRequest(`/mangas/${manga_id}`, "GET")
     );
 
     if (error) {
