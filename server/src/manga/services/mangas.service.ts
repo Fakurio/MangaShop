@@ -81,6 +81,21 @@ export class MangasService {
     };
   }
 
+  async deleteManga(id: number) {
+    const found = await this.mangasRepository.findOne({
+      where: { manga_id: id },
+    });
+
+    if (!found) {
+      throw new NotFoundException(`Manga with id ${id} not found`);
+    }
+
+    await this.mangasRepository.delete({ manga_id: id });
+    return {
+      message: 'Manga deleted successfully',
+    };
+  }
+
   async addManga(addMangaDTO: MangaDTO) {
     const parsedDTO = this.validateMangaDTO(addMangaDTO);
     const parsedDTOWithGenres = await this.getGenres(parsedDTO);

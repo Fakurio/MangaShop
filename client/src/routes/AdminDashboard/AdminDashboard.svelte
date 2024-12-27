@@ -17,7 +17,7 @@
 
   $effect(() => {
     if ($adminMangaStoreError) {
-      toast.error("Failed to fetch manga inventory");
+      toast.error("Failed to connect with server");
     }
   });
 

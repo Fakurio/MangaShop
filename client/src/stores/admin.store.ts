@@ -76,6 +76,25 @@ const updateManga = async (
   return [undefined, data];
 };
 
+const deleteManga = async (id: string) => {
+  const [error] = await catchError(
+    makePrivateRequest(`/mangas/${id}`, "DELETE")
+  );
+
+  if (error) {
+    if (error instanceof UnauthorizedError) {
+      authStore.set(null);
+      await replace("/login");
+    } else {
+      adminMangaStoreError.set(true);
+    }
+  } else {
+    adminMangaStore.update((mangas) =>
+      mangas.filter((manga) => manga.manga_id !== parseInt(id))
+    );
+  }
+};
+
 export {
   adminMangaStore,
   adminMangaStoreError,
@@ -83,4 +102,5 @@ export {
   addManga,
   findManga,
   updateManga,
+  deleteManga,
 };

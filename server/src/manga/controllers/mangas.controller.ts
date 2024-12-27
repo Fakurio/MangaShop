@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -55,5 +56,13 @@ export class MangasController {
     @Body() updateMangaDto: MangaDTO,
   ) {
     return this.mangasService.updateManga(id, updateMangaDto);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(RoleEnum.ADMIN)
+  @UseGuards(JwtGuard)
+  @Delete(':id')
+  deleteManga(@Param('id', ParseIntPipe) id: number) {
+    return this.mangasService.deleteManga(id);
   }
 }
