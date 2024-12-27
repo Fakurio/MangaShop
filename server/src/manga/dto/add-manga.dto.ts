@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const addMangaDtoSchema = z.object({
+const mangaDtoSchema = z.object({
   title: z.string().refine(
     (title) => {
       const trimValue = title.trim();
@@ -54,7 +54,7 @@ const addMangaDtoSchema = z.object({
     .min(1, { message: 'At least one genre must be provided' }),
 });
 
-type AddMangaDTO = z.infer<typeof addMangaDtoSchema>;
+type MangaDTO = z.infer<typeof mangaDtoSchema>;
 
-export { addMangaDtoSchema };
-export type { AddMangaDTO };
+export { mangaDtoSchema };
+export type { MangaDTO };

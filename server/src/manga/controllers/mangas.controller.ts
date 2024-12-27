@@ -5,6 +5,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import { Manga } from '../../entities/manga.entity';
@@ -13,7 +14,7 @@ import { Roles } from '../../auth/decorators/roles.decorator';
 import { RoleEnum } from '../../entities/role.entity';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { JwtGuard } from '../../auth/guards/jwt.guard';
-import { AddMangaDTO } from '../dto/add-manga.dto';
+import { MangaDTO } from '../dto/add-manga.dto';
 
 @Controller('mangas')
 export class MangasController {
@@ -32,6 +33,14 @@ export class MangasController {
     return this.mangasService.getAllForAdmin();
   }
 
+  @UseGuards(RolesGuard)
+  @Roles(RoleEnum.ADMIN)
+  @UseGuards(JwtGuard)
+  @Get('admin/:id')
+  getOneForAdmin(@Param('id', ParseIntPipe) id: number): Promise<Manga> {
+    return this.mangasService.getOneForAdmin(id);
+  }
+
   @Get(':id')
   getOne(@Param('id', ParseIntPipe) id: number): Promise<Manga | null> {
     return this.mangasService.getOne(id);
@@ -41,7 +50,18 @@ export class MangasController {
   @Roles(RoleEnum.ADMIN)
   @UseGuards(JwtGuard)
   @Post()
-  addManga(@Body() addMangaDTO: AddMangaDTO) {
+  addManga(@Body() addMangaDTO: MangaDTO) {
     return this.mangasService.addManga(addMangaDTO);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(RoleEnum.ADMIN)
+  @UseGuards(JwtGuard)
+  @Put(':id')
+  updateManga(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateMangaDto: MangaDTO,
+  ) {
+    return this.mangasService.updateManga(id, updateMangaDto);
   }
 }

@@ -3,14 +3,15 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { Manga } from '../../entities/manga.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AddMangaDTO, addMangaDtoSchema } from '../dto/add-manga.dto';
+import { MangaDTO, mangaDtoSchema } from '../dto/add-manga.dto';
 import { getErrorsFromZod } from 'src/utils/getErrorsFromZod';
-import { Genre } from 'src/entities/genre.entity';
 import { GenresService } from './genres.service';
+import { ZodSchema } from 'zod';
 
 @Injectable()
 export class MangasService {
@@ -44,6 +45,19 @@ export class MangasService {
     });
   }
 
+  async getOneForAdmin(id: number) {
+    const found = await this.mangasRepository.findOne({
+      where: { manga_id: id },
+      relations: ['genres'],
+    });
+
+    if (!found) {
+      throw new NotFoundException(`Manga with id ${id} not found`);
+    }
+
+    return found;
+  }
+
   async getOne(id: number) {
     return await this.mangasRepository
       .createQueryBuilder('manga')
@@ -59,7 +73,28 @@ export class MangasService {
       .getOne();
   }
 
-  async addManga(addMangaDTO: AddMangaDTO) {
+  async updateManga(id: number, updateMangaDTO: MangaDTO) {
+    const found = await this.mangasRepository.findOne({
+      where: { manga_id: id },
+    });
+
+    if (!found) {
+      throw new NotFoundException(`Manga with id ${id} not found`);
+    }
+
+    const parsedDTO = this.validateMangaDTO(updateMangaDTO);
+    const parsedDTOWithGenres = await this.getGenres(parsedDTO);
+    const updated = this.mangasRepository.merge(found, {
+      ...parsedDTOWithGenres,
+      price: parseFloat(parsedDTOWithGenres.price),
+    });
+    await this.mangasRepository.save(updated);
+    return {
+      message: 'Manga updated successfully',
+    };
+  }
+
+  async addManga(addMangaDTO: MangaDTO) {
     const parsedDTO = this.validateMangaDTO(addMangaDTO);
     const parsedDTOWithGenres = await this.getGenres(parsedDTO);
     const newManga = new Manga();
@@ -76,8 +111,8 @@ export class MangasService {
     };
   }
 
-  private validateMangaDTO(addMangaDTO: AddMangaDTO) {
-    const parsedDTO = addMangaDtoSchema.safeParse(addMangaDTO);
+  private validateMangaDTO(mangaDTO: MangaDTO) {
+    const parsedDTO = mangaDtoSchema.safeParse(mangaDTO);
     if (!parsedDTO.success) {
       const errors = getErrorsFromZod(parsedDTO);
       throw new BadRequestException(errors);
@@ -86,15 +121,15 @@ export class MangasService {
     }
   }
 
-  private async getGenres(addMangaDTO: AddMangaDTO) {
+  private async getGenres(mangaDTO: MangaDTO) {
     const availableGenres = await this.genresService.getAllGenres();
-    const genres = addMangaDTO.genres.map((genre) => {
+    const genres = mangaDTO.genres.map((genre) => {
       const found = availableGenres.find((g) => g.name === genre);
       if (!found) {
         throw new BadRequestException(`Genre ${genre} not found`);
       }
       return found;
     });
-    return { ...addMangaDTO, genres };
+    return { ...mangaDTO, genres };
   }
 }
