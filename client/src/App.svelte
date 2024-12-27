@@ -14,6 +14,7 @@
   import AdminDashboard from "./routes/AdminDashboard/AdminDashboard.svelte";
   import { RoleEnum } from "./enums/role-enum";
   import AddManga from "./routes/AddManga.svelte";
+  import UpdateManga from "./routes/UpdateManga.svelte";
 
   const verifyRefreshToken = async () => {
     if (get(authStore)) return true;
@@ -69,6 +70,10 @@
     }),
     "/admin/add-manga": wrap({
       component: AddManga,
+      conditions: [() => verifyRefreshToken(), () => allowAdmin()],
+    }),
+    "/admin/update-manga/:id": wrap({
+      component: UpdateManga,
       conditions: [() => verifyRefreshToken(), () => allowAdmin()],
     }),
     "/login": Login,

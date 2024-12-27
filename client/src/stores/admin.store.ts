@@ -1,11 +1,11 @@
-import { writable } from "svelte/store";
+import { get, writable } from "svelte/store";
 import type { Manga } from "../types/manga";
 import { catchError } from "../api/catchError";
 import { makePrivateRequest } from "../api/makePrivateRequest";
 import { UnauthorizedError } from "../api/errors/UnauthorizedError";
 import { authStore } from "./auth.store";
 import { replace } from "svelte-spa-router";
-import type { AddMangaForm } from "src/types/add-manga-form";
+import type { MangaForm } from "src/types/manga-form";
 import { BadRequestError } from "../api/errors/BadRequestError";
 
 const adminMangaStore = writable<Manga[]>([]);
@@ -29,7 +29,7 @@ const fetchMangaForAdmin = async () => {
 };
 
 const addManga = async (
-  mangaData: AddMangaForm
+  mangaData: MangaForm
 ): Promise<[undefined, any] | [BadRequestError]> => {
   const [error, data] = await catchError(
     makePrivateRequest("/mangas", "POST", undefined, mangaData)
@@ -50,4 +50,37 @@ const addManga = async (
   return [undefined, data];
 };
 
-export { adminMangaStore, adminMangaStoreError, fetchMangaForAdmin, addManga };
+const findManga = (id: string) => {
+  return get(adminMangaStore).find((manga) => manga.manga_id === parseInt(id));
+};
+
+const updateManga = async (
+  id: string,
+  mangaDto: MangaForm
+): Promise<[undefined, any] | [BadRequestError]> => {
+  const [error, data] = await catchError(
+    makePrivateRequest(`/mangas/${id}`, "PUT", undefined, mangaDto)
+  );
+
+  if (error) {
+    if (error instanceof UnauthorizedError) {
+      authStore.set(null);
+      await replace("/login");
+    } else if (error instanceof BadRequestError) {
+      return [error];
+    } else {
+      throw error;
+    }
+  }
+
+  return [undefined, data];
+};
+
+export {
+  adminMangaStore,
+  adminMangaStoreError,
+  fetchMangaForAdmin,
+  addManga,
+  findManga,
+  updateManga,
+};

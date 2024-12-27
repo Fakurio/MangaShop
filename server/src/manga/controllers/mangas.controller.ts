@@ -33,14 +33,6 @@ export class MangasController {
     return this.mangasService.getAllForAdmin();
   }
 
-  @UseGuards(RolesGuard)
-  @Roles(RoleEnum.ADMIN)
-  @UseGuards(JwtGuard)
-  @Get('admin/:id')
-  getOneForAdmin(@Param('id', ParseIntPipe) id: number): Promise<Manga> {
-    return this.mangasService.getOneForAdmin(id);
-  }
-
   @Get(':id')
   getOne(@Param('id', ParseIntPipe) id: number): Promise<Manga | null> {
     return this.mangasService.getOne(id);

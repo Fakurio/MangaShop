@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const addMangaFormSchema = z.object({
+const mangaFormSchema = z.object({
   title: z.string().refine(
     (title) => {
       const trimValue = title.trim();
@@ -55,10 +55,10 @@ const addMangaFormSchema = z.object({
     .min(1, { message: "At least one genre must be provided" }),
 });
 
-type AddMangaForm = z.infer<typeof addMangaFormSchema>;
-type AddMangaFormErrors = {
-  [k in keyof AddMangaForm]?: string;
+type MangaForm = z.infer<typeof mangaFormSchema>;
+type MangaFormErrors = {
+  [k in keyof MangaForm]?: string;
 };
 
-export { addMangaFormSchema };
-export type { AddMangaForm, AddMangaFormErrors };
+export { mangaFormSchema };
+export type { MangaForm, MangaFormErrors };

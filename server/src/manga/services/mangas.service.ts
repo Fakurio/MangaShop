@@ -45,19 +45,6 @@ export class MangasService {
     });
   }
 
-  async getOneForAdmin(id: number) {
-    const found = await this.mangasRepository.findOne({
-      where: { manga_id: id },
-      relations: ['genres'],
-    });
-
-    if (!found) {
-      throw new NotFoundException(`Manga with id ${id} not found`);
-    }
-
-    return found;
-  }
-
   async getOne(id: number) {
     return await this.mangasRepository
       .createQueryBuilder('manga')
