@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Manga } from '../../entities/manga.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MangaDTO, mangaDtoSchema } from '../dto/add-manga.dto';
 import { getErrorsFromZod } from 'src/utils/getErrorsFromZod';
@@ -61,14 +61,8 @@ export class MangasService {
   }
 
   async updateManga(id: number, updateMangaDTO: MangaDTO) {
-    const found = await this.mangasRepository.findOne({
-      where: { manga_id: id },
-    });
-
-    if (!found) {
-      throw new NotFoundException(`Manga with id ${id} not found`);
-    }
-
+    const found = await this.checkIfMangaExists(id);
+    await this.checkIfMangaTitleExistsForUpdate(updateMangaDTO.title, id);
     const parsedDTO = this.validateMangaDTO(updateMangaDTO);
     const parsedDTOWithGenres = await this.getGenres(parsedDTO);
     const updated = this.mangasRepository.merge(found, {
@@ -82,14 +76,7 @@ export class MangasService {
   }
 
   async deleteManga(id: number) {
-    const found = await this.mangasRepository.findOne({
-      where: { manga_id: id },
-    });
-
-    if (!found) {
-      throw new NotFoundException(`Manga with id ${id} not found`);
-    }
-
+    await this.checkIfMangaExists(id);
     await this.mangasRepository.delete({ manga_id: id });
     return {
       message: 'Manga deleted successfully',
@@ -97,6 +84,7 @@ export class MangasService {
   }
 
   async addManga(addMangaDTO: MangaDTO) {
+    await this.checkIfMangaTitleExistsForAdding(addMangaDTO.title);
     const parsedDTO = this.validateMangaDTO(addMangaDTO);
     const parsedDTOWithGenres = await this.getGenres(parsedDTO);
     const newManga = new Manga();
@@ -111,6 +99,39 @@ export class MangasService {
     return {
       message: 'Manga added successfully',
     };
+  }
+
+  private async checkIfMangaExists(id: number) {
+    const found = await this.mangasRepository.findOne({
+      where: { manga_id: id },
+    });
+    if (!found) {
+      throw new NotFoundException(`Manga with id ${id} not found`);
+    }
+    return found;
+  }
+
+  private async checkIfMangaTitleExistsForUpdate(title: string, id: number) {
+    const isTitleTaken = await this.mangasRepository.exist({
+      where: { title, manga_id: Not(id) },
+    });
+    if (isTitleTaken) {
+      throw new BadRequestException({
+        title: 'Manga with this title already exists',
+      });
+    }
+  }
+
+  private async checkIfMangaTitleExistsForAdding(title: string) {
+    const found = await this.mangasRepository.findOne({
+      where: { title },
+    });
+    if (found) {
+      throw new BadRequestException({
+        title: 'Manga with this title already exists',
+      });
+    }
+    return found;
   }
 
   private validateMangaDTO(mangaDTO: MangaDTO) {
