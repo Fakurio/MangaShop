@@ -22,15 +22,18 @@
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
     searchByColumn: string;
+    startingColumnSorting?: SortingState;
   };
 
-  let { data, columns, searchByColumn }: DataTableProps<TData, TValue> =
-    $props();
+  let {
+    data,
+    columns,
+    searchByColumn,
+    startingColumnSorting,
+  }: DataTableProps<TData, TValue> = $props();
 
   let columnFilters = $state<ColumnFiltersState>([]);
-  let columnSorting = $state<SortingState>([
-    { id: "stock_quantity", desc: false },
-  ]);
+  let columnSorting = $state<SortingState>(startingColumnSorting ?? []);
   let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
 
   const table = createSvelteTable({

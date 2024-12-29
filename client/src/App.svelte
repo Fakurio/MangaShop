@@ -11,10 +11,11 @@
   import { authStore, refreshToken } from "./stores/auth.store";
   import { get } from "svelte/store";
   import { getCartFromLocalStorage } from "./stores/cart.store";
-  import AdminDashboard from "./routes/AdminDashboard/AdminDashboard.svelte";
+  import AdminDashboardInventory from "./routes/AdminDashboard/AdminDashboardInventory.svelte";
   import { RoleEnum } from "./enums/role-enum";
   import AddManga from "./routes/AddManga.svelte";
   import UpdateManga from "./routes/UpdateManga.svelte";
+  import AdminDashboardGenres from "./routes/AdminDashboard/AdminDashboardGenres.svelte";
 
   const verifyRefreshToken = async () => {
     if (get(authStore)) return true;
@@ -65,7 +66,11 @@
       conditions: [() => getCartFromLocalStorage(), () => verifyRefreshToken()],
     }),
     "/admin": wrap({
-      component: AdminDashboard,
+      component: AdminDashboardInventory,
+      conditions: [() => verifyRefreshToken(), () => allowAdmin()],
+    }),
+    "/admin/genres": wrap({
+      component: AdminDashboardGenres,
       conditions: [() => verifyRefreshToken(), () => allowAdmin()],
     }),
     "/admin/add-manga": wrap({

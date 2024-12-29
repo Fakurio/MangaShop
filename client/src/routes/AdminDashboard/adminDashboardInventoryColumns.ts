@@ -4,6 +4,7 @@ import { renderComponent, renderSnippet } from "$lib/components/ui/data-table";
 import DataTableSortButton from "../../components/DataTable/DataTableSortButton.svelte";
 import DataTableActions from "../../components/DataTable/DataTableActions.svelte";
 import type { Manga } from "../../types/manga";
+import { adminMangaStoreError, deleteManga } from "../../stores/admin.store";
 
 const LOW_STOCK_QUANTITY_THRESHOLD = 20;
 
@@ -20,7 +21,9 @@ export const adminColumns: ColumnDef<AdminDashboardColumns>[] = [
       const imageSnippet = createRawSnippet(() => {
         return {
           render: () =>
-            `<img src=${row.getValue("img_url")} class="h-[150px] max-w-[100px]" alt="manga logo"/>`,
+            `<img src=${row.getValue(
+              "img_url"
+            )} class="h-[150px] max-w-[100px]" alt="manga logo"/>`,
         };
       });
       return renderSnippet(imageSnippet, null);
@@ -79,7 +82,12 @@ export const adminColumns: ColumnDef<AdminDashboardColumns>[] = [
     header: "",
     cell: ({ row }) => {
       return renderComponent(DataTableActions, {
-        manga_id: row.original.manga_id,
+        entityId: row.original.manga_id,
+        updatePath: "/admin/update-manga",
+        onDelete: deleteManga,
+        dialogDescription: "Are you sure you want to delete this manga?",
+        storeError: adminMangaStoreError,
+        deleteSuccessMessage: "Manga deleted successfully",
       });
     },
   },

@@ -6,7 +6,7 @@
     adminMangaStore,
     adminMangaStoreError,
   } from "../../stores/admin.store";
-  import { adminColumns } from "./adminDashboardColumns";
+  import { adminColumns } from "./adminDashboardInventoryColumns";
   import DataTable from "../../components/DataTable/DataTable.svelte";
   import { Toaster } from "$lib/components/ui/sonner";
   import { toast } from "svelte-sonner";
@@ -48,6 +48,7 @@
       data={$adminMangaStore}
       columns={adminColumns}
       searchByColumn="title"
+      startingColumnSorting={[{ id: "stock_quantity", desc: false }]}
     />
   {/await}
   <Toaster

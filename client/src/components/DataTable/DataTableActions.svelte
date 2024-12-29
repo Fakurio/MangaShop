@@ -4,29 +4,42 @@
   import { link } from "svelte-spa-router";
   import { adminMangaStoreError, deleteManga } from "../../stores/admin.store";
   import { toast } from "svelte-sonner";
+  import type { Writable } from "svelte/store";
 
   interface DataTableActionsProps {
-    manga_id: string;
+    entityId: string;
+    updatePath?: string;
+    onDelete: (id: string) => Promise<void>;
+    dialogDescription: string;
+    storeError?: Writable<any>;
+    deleteSuccessMessage: string;
   }
 
-  let { manga_id }: DataTableActionsProps = $props();
+  let {
+    entityId,
+    updatePath,
+    onDelete,
+    dialogDescription,
+    storeError,
+    deleteSuccessMessage,
+  }: DataTableActionsProps = $props();
 
   let isOpen = $state<boolean>(false);
 
   const handleDeletion = async (e: SubmitEvent) => {
     e.preventDefault();
-    await deleteManga(manga_id);
+    onDelete(entityId);
     isOpen = false;
-    if (!$adminMangaStoreError) {
-      toast.success("Manga deleted successfully");
+    if (!$storeError) {
+      toast.success(deleteSuccessMessage);
     }
   };
 </script>
 
 <div class="flex justify-center gap-4 actions">
-  <Button
-    ><a href={`/admin/update-manga/${manga_id}`} use:link>Update</a></Button
-  >
+  {#if updatePath}
+    <Button><a href={`${updatePath}/${entityId}`} use:link>Update</a></Button>
+  {/if}
   <AlertDialog.Root bind:open={isOpen}>
     <AlertDialog.Trigger class={buttonVariants({ variant: "destructive" })}>
       Delete
@@ -34,7 +47,7 @@
     <AlertDialog.Content interactOutsideBehavior="close">
       <AlertDialog.Title>Confirm operation</AlertDialog.Title>
       <AlertDialog.Description>
-        Are you sure you want to delete this manga?
+        {dialogDescription}
       </AlertDialog.Description>
       <form
         class="flex w-full items-center gap-2"

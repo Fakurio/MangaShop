@@ -3,14 +3,14 @@
   import { authStore, logout } from "../stores/auth.store";
   import cartStore from "../stores/cart.store";
   import * as Sheet from "$lib/components/ui/sheet";
-  import {Button} from "$lib/components/ui/button"
-  import {Menu} from "lucide-svelte"
-  import {ShoppingCart} from "lucide-svelte";
-  import {HomeIcon} from "lucide-svelte";
-  import {NotebookTabs} from "lucide-svelte";
-  import {Warehouse} from "lucide-svelte";
-  import {Drama} from "lucide-svelte";
-  import {RoleEnum} from "../enums/role-enum";
+  import { Button } from "$lib/components/ui/button";
+  import { Menu } from "lucide-svelte";
+  import { ShoppingCart } from "lucide-svelte";
+  import { HomeIcon } from "lucide-svelte";
+  import { NotebookTabs } from "lucide-svelte";
+  import { Warehouse } from "lucide-svelte";
+  import { Drama } from "lucide-svelte";
+  import { RoleEnum } from "../enums/role-enum";
 </script>
 
 <header class="header">
@@ -21,7 +21,7 @@
           <a href="/admin" use:link>Inventory</a>
         </Button>
         <Button variant="link" class="text-md">
-          <a href="/admin" use:link>Genres</a>
+          <a href="/admin/genres" use:link>Genres</a>
         </Button>
       {:else}
         <Button variant="link" class="text-md">
@@ -39,7 +39,9 @@
       {#if !$authStore?.roles.includes(RoleEnum.ADMIN)}
         <a href="/cart" use:link class="relative">
           {#if $cartStore.length > 0}
-            <span class="cart-count bg-primary text-primary-foreground">{$cartStore.length}</span>
+            <span class="cart-count bg-primary text-primary-foreground"
+              >{$cartStore.length}</span
+            >
           {/if}
           <ShoppingCart />
         </a>
@@ -53,7 +55,9 @@
           <a href="/login" use:link>Login</a>
         </Button>
       {:else}
-        <span class="font-bold text-primary-foreground">{$authStore.username}</span>
+        <span class="font-bold text-primary-foreground"
+          >{$authStore.username}</span
+        >
         <Button onclick={logout} class="font-bold">Logout</Button>
       {/if}
     </div>
@@ -62,29 +66,29 @@
   <div class="mobile-nav">
     <Sheet.Root>
       <Sheet.Trigger>
-        <Menu/>
+        <Menu />
       </Sheet.Trigger>
       <Sheet.Content class="w-[300px]">
         <nav class="flex gap-6 flex-col">
           {#if $authStore?.roles.includes(RoleEnum.ADMIN)}
             <a href="/admin" use:link class="flex">
-              <Warehouse/>
+              <Warehouse />
               <span class="ml-2">Inventory</span>
             </a>
-            <a href="/admin" use:link class="flex">
-              <Drama/>
+            <a href="/admin/genres" use:link class="flex">
+              <Drama />
               <span class="ml-2">Genres</span>
             </a>
           {:else}
             <a href="/" use:link class="flex">
-              <HomeIcon/>
+              <HomeIcon />
               <span class="ml-2">Home</span>
             </a>
           {/if}
 
           {#if $authStore?.roles.includes(RoleEnum.USER)}
             <a href="/orders" use:link class="flex">
-              <NotebookTabs/>
+              <NotebookTabs />
               <span class="ml-2">My orders</span>
             </a>
           {/if}
@@ -92,9 +96,11 @@
           {#if !$authStore?.roles.includes(RoleEnum.ADMIN)}
             <a href="/cart" use:link class="flex relative">
               {#if $cartStore.length > 0}
-                <span class="cart-count bg-primary text-primary-foreground">{$cartStore.length}</span>
+                <span class="cart-count bg-primary text-primary-foreground"
+                  >{$cartStore.length}</span
+                >
               {/if}
-              <ShoppingCart/>
+              <ShoppingCart />
               <span class="ml-2">Cart</span>
             </a>
           {/if}
@@ -137,7 +143,7 @@
 
   @media (min-width: 600px) {
     .mobile-nav {
-      display: none
+      display: none;
     }
   }
 
@@ -147,7 +153,7 @@
     }
 
     .desktop-nav {
-      display: none
+      display: none;
     }
   }
 
@@ -156,5 +162,4 @@
       padding-inline: 1rem;
     }
   }
-
 </style>

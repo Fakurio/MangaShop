@@ -95,6 +95,10 @@ const deleteManga = async (id: string) => {
   }
 };
 
+const deleteGenre = async (id: string) => {
+  console.log("deleteGenre", id);
+};
+
 export {
   adminMangaStore,
   adminMangaStoreError,
@@ -103,4 +107,5 @@ export {
   findManga,
   updateManga,
   deleteManga,
+  deleteGenre,
 };
