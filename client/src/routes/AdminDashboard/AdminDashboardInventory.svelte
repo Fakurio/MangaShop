@@ -49,6 +49,7 @@
       columns={adminColumns}
       searchByColumn="title"
       startingColumnSorting={[{ id: "stock_quantity", desc: false }]}
+      addPageUrl="/admin/add-manga"
     />
   {/await}
   <Toaster

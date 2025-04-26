@@ -17,12 +17,14 @@
   import { Input } from "$lib/components/ui/input";
   import { Button } from "$lib/components/ui/button";
   import { link } from "svelte-spa-router";
+  import type {AddPageUrl} from "../../types/add-page-url";
 
   type DataTableProps<TData, TValue> = {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
     searchByColumn: string;
     startingColumnSorting?: SortingState;
+    addPageUrl: AddPageUrl
   };
 
   let {
@@ -30,6 +32,7 @@
     columns,
     searchByColumn,
     startingColumnSorting,
+    addPageUrl
   }: DataTableProps<TData, TValue> = $props();
 
   let columnFilters = $state<ColumnFiltersState>([]);
@@ -89,7 +92,7 @@
       table.getColumn(searchByColumn)?.setFilterValue(e.currentTarget.value);
     }}
   />
-  <Button><a href="/admin/add-manga" use:link>Add new</a></Button>
+  <Button><a href={`${addPageUrl}`} use:link>Add new</a></Button>
 </div>
 <div class="border-border border-2 rounded-md mt-4">
   <Table.Root>

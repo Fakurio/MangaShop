@@ -28,7 +28,7 @@
 
   const handleDeletion = async (e: SubmitEvent) => {
     e.preventDefault();
-    onDelete(entityId);
+    await onDelete(entityId);
     isOpen = false;
     if (!$storeError) {
       toast.success(deleteSuccessMessage);
@@ -36,7 +36,7 @@
   };
 </script>
 
-<div class="flex justify-center gap-4 actions">
+<div class="flex justify-end gap-4 actions">
   {#if updatePath}
     <Button><a href={`${updatePath}/${entityId}`} use:link>Update</a></Button>
   {/if}

@@ -7,13 +7,16 @@ import { authStore } from "./auth.store";
 import { replace } from "svelte-spa-router";
 import type { MangaForm } from "src/types/manga-form";
 import { BadRequestError } from "../api/errors/BadRequestError";
+import type { GenreForm } from "../types/genre-form";
+import type { Genre } from "../types/genre";
 
 const adminMangaStore = writable<Manga[]>([]);
 const adminMangaStoreError = writable<boolean>(false);
+const adminGenreStore = writable<Genre[]>([]);
 
 const fetchMangaForAdmin = async () => {
   const [error, data] = await catchError<Manga[]>(
-    makePrivateRequest("/mangas/admin", "GET")
+    makePrivateRequest("/mangas/admin", "GET"),
   );
 
   if (error) {
@@ -29,10 +32,10 @@ const fetchMangaForAdmin = async () => {
 };
 
 const addManga = async (
-  mangaData: MangaForm
+  mangaData: MangaForm,
 ): Promise<[undefined, any] | [BadRequestError]> => {
   const [error, data] = await catchError(
-    makePrivateRequest("/mangas", "POST", undefined, mangaData)
+    makePrivateRequest("/mangas", "POST", undefined, mangaData),
   );
 
   if (error) {
@@ -56,10 +59,10 @@ const findManga = (id: string) => {
 
 const updateManga = async (
   id: string,
-  mangaDto: MangaForm
+  mangaDto: MangaForm,
 ): Promise<[undefined, any] | [BadRequestError]> => {
   const [error, data] = await catchError(
-    makePrivateRequest(`/mangas/${id}`, "PUT", undefined, mangaDto)
+    makePrivateRequest(`/mangas/${id}`, "PUT", undefined, mangaDto),
   );
 
   if (error) {
@@ -78,7 +81,7 @@ const updateManga = async (
 
 const deleteManga = async (id: string) => {
   const [error] = await catchError(
-    makePrivateRequest(`/mangas/${id}`, "DELETE")
+    makePrivateRequest(`/mangas/${id}`, "DELETE"),
   );
 
   if (error) {
@@ -90,9 +93,31 @@ const deleteManga = async (id: string) => {
     }
   } else {
     adminMangaStore.update((mangas) =>
-      mangas.filter((manga) => manga.manga_id !== parseInt(id))
+      mangas.filter((manga) => manga.manga_id !== parseInt(id)),
     );
   }
+};
+
+const addGenre = async (
+  genreData: GenreForm,
+): Promise<[undefined, any] | [BadRequestError]> => {
+  const [error, data] = await catchError(
+    makePrivateRequest("/genres", "POST", undefined, genreData),
+  );
+
+  if (error) {
+    if (error instanceof UnauthorizedError) {
+      authStore.set(null);
+      await replace("/login");
+    } else if (error instanceof BadRequestError) {
+      return [error];
+    } else {
+      throw error;
+    }
+  }
+
+  adminGenreStore.update((genres) => [...genres, data]);
+  return [undefined, data];
 };
 
 const deleteGenre = async (id: string) => {
@@ -107,5 +132,6 @@ export {
   findManga,
   updateManga,
   deleteManga,
+  addGenre,
   deleteGenre,
 };

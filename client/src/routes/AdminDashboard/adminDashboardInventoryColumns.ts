@@ -22,7 +22,7 @@ export const adminColumns: ColumnDef<AdminDashboardColumns>[] = [
         return {
           render: () =>
             `<img src=${row.getValue(
-              "img_url"
+              "img_url",
             )} class="h-[150px] max-w-[100px]" alt="manga logo"/>`,
         };
       });
@@ -82,7 +82,7 @@ export const adminColumns: ColumnDef<AdminDashboardColumns>[] = [
     header: "",
     cell: ({ row }) => {
       return renderComponent(DataTableActions, {
-        entityId: row.original.manga_id,
+        entityId: row.original.manga_id.toString(),
         updatePath: "/admin/update-manga",
         onDelete: deleteManga,
         dialogDescription: "Are you sure you want to delete this manga?",

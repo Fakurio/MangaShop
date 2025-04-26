@@ -45,6 +45,7 @@
       data={genres}
       columns={adminGenresColumns}
       searchByColumn="name"
+      addPageUrl="/admin/add-genre"
     />
   {/await}
   <Toaster
