@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -42,5 +43,13 @@ export class GenresController {
     @Body() genreDTO: GenreDTO,
   ) {
     return this.genresService.updateGenre(id, genreDTO);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(RoleEnum.ADMIN)
+  @UseGuards(JwtGuard)
+  @Delete(':id')
+  deleteGenre(@Param('id', ParseIntPipe) id: number) {
+    return this.genresService.deleteGenre(id);
   }
 }

@@ -160,7 +160,22 @@ const updateGenre = async (
 };
 
 const deleteGenre = async (id: string) => {
-  console.log("deleteGenre", id);
+  const [error] = await catchError(
+    makePrivateRequest(`/genres/${id}`, "DELETE"),
+  );
+
+  if (error) {
+    if (error instanceof UnauthorizedError) {
+      authStore.set(null);
+      await replace("/login");
+    } else if (error instanceof BadRequestError) {
+      return error;
+    }
+  } else {
+    adminGenreStore.update((genres) =>
+      genres.filter((genre) => genre.genre_id !== parseInt(id)),
+    );
+  }
 };
 
 export {

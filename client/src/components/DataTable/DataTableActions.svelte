@@ -2,14 +2,14 @@
   import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
   import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
   import { link } from "svelte-spa-router";
-  import { adminMangaStoreError, deleteManga } from "../../stores/admin.store";
   import { toast } from "svelte-sonner";
   import type { Writable } from "svelte/store";
+  import type {BadRequestError} from "../../api/errors/BadRequestError";
 
   interface DataTableActionsProps {
     entityId: string;
     updatePath?: string;
-    onDelete: (id: string) => Promise<void>;
+    onDelete: (id: string) => any;
     dialogDescription: string;
     storeError?: Writable<any>;
     deleteSuccessMessage: string;
@@ -28,11 +28,15 @@
 
   const handleDeletion = async (e: SubmitEvent) => {
     e.preventDefault();
-    await onDelete(entityId);
+    const error = await onDelete(entityId);
     isOpen = false;
-    if (!$storeError) {
+    if(error !== undefined) {
+      toast.error(error.messages.message);
+    }
+    else {
       toast.success(deleteSuccessMessage);
     }
+
   };
 </script>
 

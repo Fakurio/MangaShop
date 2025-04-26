@@ -11,11 +11,11 @@
   import { RoleEnum } from "../../enums/role-enum";
   import { adminGenresColumns } from "./adminDashboardGenresColumns";
 
-  $effect(() => {
-    if ($adminMangaStoreError) {
-      toast.error("Failed to connect with server");
-    }
-  });
+  // $effect(() => {
+  //   if ($adminMangaStoreError) {
+  //     toast.error("Failed to connect with server");
+  //   }
+  // });
 
   onMount(() => {
     const handlePopState = (event: any) => {

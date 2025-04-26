@@ -2,7 +2,7 @@ import type { ColumnDef } from "@tanstack/table-core";
 import { renderComponent, renderSnippet } from "$lib/components/ui/data-table";
 import DataTableActions from "../../components/DataTable/DataTableActions.svelte";
 import type { Genre } from "src/types/genre";
-import { deleteGenre } from "../../stores/admin.store";
+import { adminMangaStoreError, deleteGenre } from "../../stores/admin.store";
 import { createRawSnippet } from "svelte";
 
 export const adminGenresColumns: ColumnDef<Genre>[] = [
@@ -29,6 +29,7 @@ export const adminGenresColumns: ColumnDef<Genre>[] = [
       return renderComponent(DataTableActions, {
         entityId: row.original.genre_id.toString(),
         updatePath: "/admin/update-genre",
+        storeError: adminMangaStoreError,
         onDelete: deleteGenre,
         dialogDescription: "Are you sure you want to delete this genre?",
         deleteSuccessMessage: "Genre deleted successfully",

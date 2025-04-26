@@ -37,15 +37,32 @@ export class GenresService {
 
   async updateGenre(id: number, genreDTO: GenreDTO) {
     const found = await this.checkIfGenreExists(id);
-    console.log('found', found);
     const parsedDTO = this.validateGenreDTO(genreDTO);
-    console.log('parsedDTO', parsedDTO);
     await this.checkIfGenreExistsForUpdate(parsedDTO.name, id);
     found.name = parsedDTO.name;
     await this.genresRepository.save(found);
     return {
       message: 'Genre updated successfully',
     };
+  }
+
+  async deleteGenre(id: number) {
+    await this.checkIfGenreExists(id);
+    await this.checkIfGenreReferenceAnyManga(id);
+    await this.genresRepository.delete({ genre_id: id });
+  }
+
+  private async checkIfGenreReferenceAnyManga(id: number) {
+    const count = await this.genresRepository
+      .createQueryBuilder('genre')
+      .innerJoin('genre.mangas', 'manga')
+      .where('genre.genre_id = :genreId', { genreId: id })
+      .getCount();
+    if (count > 0) {
+      throw new BadRequestException({
+        message: 'Genre is related to one or more mangas',
+      });
+    }
   }
 
   private validateGenreDTO(genreDTO: GenreDTO) {
