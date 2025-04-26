@@ -42,6 +42,7 @@
                 const [errors, data] = await updateGenre(params.id, updateGenreForm);
                 if (errors) {
                     // Server errors
+                    console.log(errors.messages)
                     updateGenreFormErrors = errors.messages;
                 } else {
                     toast.success(data.message);
