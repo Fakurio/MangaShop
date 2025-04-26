@@ -9,6 +9,7 @@ import type { MangaForm } from "src/types/manga-form";
 import { BadRequestError } from "../api/errors/BadRequestError";
 import type { GenreForm } from "../types/genre-form";
 import type { Genre } from "../types/genre";
+import { makeRequest } from "../api/makeRequest";
 
 const adminMangaStore = writable<Manga[]>([]);
 const adminMangaStoreError = writable<boolean>(false);
@@ -28,6 +29,18 @@ const fetchMangaForAdmin = async () => {
     }
   } else {
     adminMangaStore.set(data);
+  }
+};
+
+const fetchGenresToAdminStore = async () => {
+  const [error, data] = await catchError<Genre[]>(
+    makeRequest("/genres", "GET"),
+  );
+
+  if (!error) {
+    adminGenreStore.set(data);
+  } else {
+    throw error;
   }
 };
 
@@ -120,6 +133,32 @@ const addGenre = async (
   return [undefined, data];
 };
 
+const findGenre = (id: string) => {
+  return get(adminGenreStore).find((genre) => genre.genre_id === parseInt(id));
+};
+
+const updateGenre = async (
+  id: string,
+  genreDto: GenreForm,
+): Promise<[undefined, any] | [BadRequestError]> => {
+  const [error, data] = await catchError(
+    makePrivateRequest(`/genres/${id}`, "PUT", undefined, genreDto),
+  );
+
+  if (error) {
+    if (error instanceof UnauthorizedError) {
+      authStore.set(null);
+      await replace("/login");
+    } else if (error instanceof BadRequestError) {
+      return [error];
+    } else {
+      throw error;
+    }
+  }
+
+  return [undefined, data];
+};
+
 const deleteGenre = async (id: string) => {
   console.log("deleteGenre", id);
 };
@@ -127,11 +166,15 @@ const deleteGenre = async (id: string) => {
 export {
   adminMangaStore,
   adminMangaStoreError,
+  adminGenreStore,
   fetchMangaForAdmin,
+  fetchGenresToAdminStore,
   addManga,
   findManga,
   updateManga,
   deleteManga,
   addGenre,
+  findGenre,
+  updateGenre,
   deleteGenre,
 };

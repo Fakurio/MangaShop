@@ -17,6 +17,7 @@
   import UpdateManga from "./routes/UpdateManga.svelte";
   import AdminDashboardGenres from "./routes/AdminDashboard/AdminDashboardGenres.svelte";
   import AddGenre from "./routes/AddGenre.svelte";
+  import UpdateGenre from "./routes/UpdateGenre.svelte";
 
   const verifyRefreshToken = async () => {
     if (get(authStore)) return true;
@@ -86,6 +87,10 @@
       component: UpdateManga,
       conditions: [() => verifyRefreshToken(), () => allowAdmin()],
     }),
+      "/admin/update-genre/:id": wrap({
+          component: UpdateGenre,
+          conditions: [() => verifyRefreshToken(), () => allowAdmin()],
+      }),
     "/login": Login,
   };
 </script>

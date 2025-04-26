@@ -28,7 +28,7 @@ export const adminGenresColumns: ColumnDef<Genre>[] = [
     cell: ({ row }) => {
       return renderComponent(DataTableActions, {
         entityId: row.original.genre_id.toString(),
-        updatePath: "/admin/update-manga",
+        updatePath: "/admin/update-genre",
         onDelete: deleteGenre,
         dialogDescription: "Are you sure you want to delete this genre?",
         deleteSuccessMessage: "Genre deleted successfully",

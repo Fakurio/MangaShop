@@ -1,7 +1,7 @@
 <script lang="ts">
   import Header from "../../components/Header.svelte";
   import { Skeleton } from "$lib/components/ui/skeleton";
-  import { adminMangaStoreError } from "../../stores/admin.store";
+  import {adminMangaStoreError, fetchGenresToAdminStore, adminGenreStore} from "../../stores/admin.store";
   import DataTable from "../../components/DataTable/DataTable.svelte";
   import { Toaster } from "$lib/components/ui/sonner";
   import { toast } from "svelte-sonner";
@@ -9,7 +9,6 @@
   import { replace } from "svelte-spa-router";
   import { authStore } from "../../stores/auth.store";
   import { RoleEnum } from "../../enums/role-enum";
-  import { fetchGenres } from "../../stores/manga.store";
   import { adminGenresColumns } from "./adminDashboardGenresColumns";
 
   $effect(() => {
@@ -38,11 +37,11 @@
 
 <Header />
 <main class="px-20 py-6">
-  {#await fetchGenres()}
+  {#await fetchGenresToAdminStore()}
     <Skeleton class="h-96 w-full m-auto" />
-  {:then genres}
+  {:then _}
     <DataTable
-      data={genres}
+      data={$adminGenreStore}
       columns={adminGenresColumns}
       searchByColumn="name"
       addPageUrl="/admin/add-genre"
