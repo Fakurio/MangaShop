@@ -9,9 +9,8 @@ import { Manga } from '../../entities/manga.entity';
 import { Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MangaDTO, mangaDtoSchema } from '../dto/add-manga.dto';
-import { getErrorsFromZod } from 'src/utils/getErrorsFromZod';
+import { getErrorsFromZod } from '../../utils/getErrorsFromZod';
 import { GenresService } from './genres.service';
-import { ZodSchema } from 'zod';
 
 @Injectable()
 export class MangasService {

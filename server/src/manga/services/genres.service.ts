@@ -7,7 +7,6 @@ import { Genre } from '../../entities/genre.entity';
 import { Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import genreDTOSchema, { GenreDTO } from '../dto/add-genre.dto';
-import { MangaDTO, mangaDtoSchema } from '../dto/add-manga.dto';
 import { getErrorsFromZod } from '../../utils/getErrorsFromZod';
 
 @Injectable()

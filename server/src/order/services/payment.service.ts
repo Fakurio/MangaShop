@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PaymentMethod } from '../../entities/payment-method.entity';
-import {Repository} from 'typeorm';
-import {InjectRepository} from "@nestjs/typeorm";
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class PaymentService {
   constructor(
-      @InjectRepository(PaymentMethod)
-      private paymentsRepository: Repository<PaymentMethod>
+    @InjectRepository(PaymentMethod)
+    private paymentsRepository: Repository<PaymentMethod>,
   ) {}
 
   async getPaymentMethods() {

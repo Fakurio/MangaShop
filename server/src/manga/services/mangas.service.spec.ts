@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 import { MangasService } from './mangas.service';
 import { Manga } from '../../entities/manga.entity';
 import { HttpException } from '@nestjs/common';
+import { GenresService } from './genres.service';
+import { Genre } from '../../entities/genre.entity';
 
 describe('MangasService', () => {
   let mangasService: MangasService;
@@ -24,7 +26,9 @@ describe('MangasService', () => {
     const moduleRef = await Test.createTestingModule({
       providers: [
         MangasService,
+        GenresService,
         { provide: getRepositoryToken(Manga), useValue: mangasRepositoryMock },
+        { provide: getRepositoryToken(Genre), useValue: {} },
       ],
     }).compile();
     mangasService = moduleRef.get(MangasService);

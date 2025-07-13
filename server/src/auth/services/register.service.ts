@@ -20,7 +20,7 @@ export class RegisterService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    let userExists = await this.usersService.checkUser(email);
+    const userExists = await this.usersService.checkUser(email);
     if (userExists) {
       throw new HttpException(
         'User with given e-mail already exists',
@@ -35,7 +35,7 @@ export class RegisterService {
     const { email, password, username } =
       await this.validateUser(registerUserDto);
     try {
-      let hashedPassword = await this.hashService.hashPassword(password);
+      const hashedPassword = await this.hashService.hashPassword(password);
       await this.usersService.addNewUser(username, email, hashedPassword);
       return {
         message: 'User registered successfully',

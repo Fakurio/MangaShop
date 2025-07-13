@@ -3,9 +3,10 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { MangasController } from './mangas.controller';
 import { MangasService } from '../services/mangas.service';
 import { Manga } from '../../entities/manga.entity';
-import { JwtGuard } from '../../auth/guards/jwt.guard';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { GenresService } from '../services/genres.service';
+import { Genre } from '../../entities/genre.entity';
 
 describe('MangasController', () => {
   let controller: MangasController;
@@ -17,8 +18,10 @@ describe('MangasController', () => {
         MangasController,
         MangasService,
         JwtService,
+        GenresService,
         ConfigService,
         { provide: getRepositoryToken(Manga), useValue: {} },
+        { provide: getRepositoryToken(Genre), useValue: {} },
       ],
     }).compile();
     controller = moduleRef.get(MangasController);

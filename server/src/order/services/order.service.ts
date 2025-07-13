@@ -34,7 +34,7 @@ export class OrderService {
     newOrder.order_status = OrderStatus.PENDING;
     newOrder.orderItems = [];
     order.cart.forEach((item) => {
-      let orderItem = new OrderDetail();
+      const orderItem = new OrderDetail();
       orderItem.manga_id = item.manga_id;
       orderItem.quantity = item.quantity;
       newOrder.orderItems.push(orderItem);
@@ -60,6 +60,8 @@ export class OrderService {
   getOrderStatuses() {
     return Object.keys(OrderStatus).map((key) => OrderStatus[key]);
   }
+
+  foo() {}
 
   async getAllOrders(user_id: number) {
     return await this.ordersRepository.find({

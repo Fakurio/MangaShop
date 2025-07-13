@@ -13,24 +13,24 @@ export class InsertMangas1700430673734 implements MigrationInterface {
     const url = 'https://api.mangadex.org/manga';
     const manga_url = 'https://uploads.mangadex.org/covers';
 
-    let data = await fetch(
+    const data = await fetch(
       `${url}?` +
         new URLSearchParams({
           title: `${title}`,
           'includes[]': 'cover_art',
         }),
     );
-    let res = await data.json();
-    let relationships = res.data[0].relationships;
+    const res = await data.json();
+    const relationships = res.data[0].relationships;
     let filename = '';
     relationships.forEach((item) => {
       if (item.type === 'cover_art') {
         filename = item.attributes.fileName;
       }
     });
-    let manga_id = res.data[0].id;
+    const manga_id = res.data[0].id;
 
-    let manga = new Manga();
+    const manga = new Manga();
     manga.title = title;
     manga.price = price;
     manga.stock_quantity = stock_quantity;
@@ -43,9 +43,9 @@ export class InsertMangas1700430673734 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     for (const item of mangas) {
-      let manga = await this.mangaFactory(item[0], item[1], item[2], item[3]);
+      const manga = await this.mangaFactory(item[0], item[1], item[2], item[3]);
       for (const name of item[4]) {
-        let genre = await queryRunner.manager.findOne(Genre, {
+        const genre = await queryRunner.manager.findOne(Genre, {
           where: { name: name },
         });
         if (genre) {

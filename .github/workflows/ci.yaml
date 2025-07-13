@@ -1,0 +1,52 @@
+name: ci
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies in server
+        run: npm install
+        working-directory: ./server
+
+      - name: Run tests on server
+        run: npm run test
+        working-directory: ./server
+
+  styles:
+    name: Styles
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies in server
+        run: npm install
+        working-directory: ./server
+
+      - name: Format code
+        run: npm run format
+        working-directory: ./server
+
+      - name: Run linter
+        run: npm run lint
+        working-directory: ./server
