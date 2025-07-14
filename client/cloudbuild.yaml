@@ -1,0 +1,21 @@
+steps:
+  - id: 'Build Svelte App Image'
+    name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        docker build \
+          --build-arg VITE_SERVER_HOST=$$VITE_SERVER_HOST \
+          -t europe-central2-docker.pkg.dev/nth-celerity-465911-q3/manga-shop/svelte-app:latest \
+          .
+    secretEnv: ['VITE_SERVER_HOST']
+
+# Images to push to registry
+images:
+  - 'europe-central2-docker.pkg.dev/nth-celerity-465911-q3/manga-shop/svelte-app:latest'
+
+availableSecrets:
+  secretManager:
+    - versionName: projects/598011514774/secrets/VITE_SERVER_HOST/versions/latest
+      env: 'VITE_SERVER_HOST'

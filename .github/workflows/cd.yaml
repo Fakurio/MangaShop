@@ -1,0 +1,94 @@
+name: cd
+
+on:
+  push:
+    branches: [prod]
+
+jobs:
+  deploy_client:
+    name: Deploy svelte app
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{secrets.GCP_CREDENTIALS}}'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Use gcloud CLI
+        run: gcloud info
+
+      - name: Push client image
+        run: gcloud builds submit --config=cloudbuild.yaml .
+        working-directory: ./client
+
+      - name: Deploy client to Cloud Run
+        run: |
+          gcloud run deploy svelte-app \
+            --image europe-central2-docker.pkg.dev/nth-celerity-465911-q3/manga-shop/svelte-app:latest \
+            --port 80 \
+            --region europe-west3 \
+            --allow-unauthenticated \
+            --project nth-celerity-465911-q3 \
+            --max-instances=4
+
+  deploy_server:
+    name: Deploy nestjs app
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{secrets.GCP_CREDENTIALS}}'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Use gcloud CLI
+        run: gcloud info
+
+      - name: Push server image
+        run: | 
+          gcloud builds submit \
+            --tag europe-central2-docker.pkg.dev/nth-celerity-465911-q3/manga-shop/nestjs-app:latest .
+        working-directory: ./server
+
+      - name: Deploy server to Cloud Run
+        run: |
+          gcloud run deploy nestjs-app \
+            --image europe-central2-docker.pkg.dev/nth-celerity-465911-q3/manga-shop/nestjs-app:latest \
+            --add-cloudsql-instances nth-celerity-465911-q3:europe-west3:some-mysql \
+            --port 3000 \
+            --region europe-west3 \
+            --allow-unauthenticated \
+            --project nth-celerity-465911-q3 \
+            --max-instances=4 \
+            --set-env-vars="
+                SERVER_PORT=3000,\
+                NODE_ENV=production" \
+            --set-secrets="
+                DB_HOST=projects/598011514774/secrets/DB_HOST:latest,\
+                DB_NAME=projects/598011514774/secrets/DB_NAME:latest,\
+                DB_USERNAME=projects/598011514774/secrets/DB_USERNAME:latest,\
+                DB_PASSWORD=projects/598011514774/secrets/DB_PASSWORD:latest,\
+                CORS_WHITELIST_ORIGINS=projects/598011514774/secrets/CORS_WHITELIST_ORIGINS:latest,\
+                JWT_SECRET=projects/598011514774/secrets/JWT_SECRET:latest,\
+                JWT_EXPIRES_IN=projects/598011514774/secrets/JWT_EXPIRES_IN:latest,\
+                JWT_REFRESH_EXPIRES_IN=projects/598011514774/secrets/JWT_REFRESH_EXPIRES_IN:latest,\
+                COOKIE_MAX_AGE=projects/598011514774/secrets/COOKIE_MAX_AGE:latest"
+  
+
+
+ 
+  
+
+
