@@ -1,5 +1,4 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
-import { RoleEnum } from '../../entities/role.entity';
 
 export class Migrations1752600503482 implements MigrationInterface {
   name = 'AddRoleTables1752600503482';
@@ -17,16 +16,11 @@ export class Migrations1752600503482 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE \`user_role\` ADD CONSTRAINT \`FK_32a6fc2fcb019d8e3a8ace0f55f\` FOREIGN KEY (\`role_id\`) REFERENCES \`role\`(\`role_id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
-    const rolesToInsert = Object.values(RoleEnum).map((role) => ({
-      name: role,
-    }));
-    await queryRunner.manager
-      .createQueryBuilder()
-      .insert()
-      .into('role')
-      .values(rolesToInsert)
-      .orIgnore()
-      .execute();
+    await queryRunner.query(`
+      INSERT INTO role (role_id, name) VALUES
+      (1, 'admin'),
+      (2, 'user')
+    `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

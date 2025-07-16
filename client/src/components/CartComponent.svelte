@@ -47,7 +47,7 @@
   {#each cartContent as manga (manga.manga_id)}
     <div class="cart-item grid grid-cols-[300px_min-content_1fr_min-content] p-4 mt-6 rounded-md border-border border-2">
       <div class="item-left flex">
-        <img src={manga.logo} alt={manga.title} class="w-[100px]"/>
+        <img src={`${import.meta.env.VITE_SERVER_HOST}/proxy?url=${encodeURIComponent(manga.logo || "")}`} alt={manga.title} class="w-[100px]"/>
         <h2 class="ml-4 text-lg">{manga.title}</h2>
       </div>
 

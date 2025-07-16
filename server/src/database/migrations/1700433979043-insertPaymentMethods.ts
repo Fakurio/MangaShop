@@ -1,14 +1,13 @@
-import { PaymentMethod } from '../../entities/payment-method.entity';
 import { MigrationInterface, QueryRunner } from 'typeorm';
-import { Method } from '../../entities/payment-method.entity';
 
 export class InsertPaymentMethods1700433979043 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    for (const item of Object.values(Method)) {
-      const paymentMethod = new PaymentMethod();
-      paymentMethod.name = item;
-      await queryRunner.manager.save<PaymentMethod>(paymentMethod);
-    }
+    await queryRunner.query(`
+      INSERT INTO payment_method (payment_method_id, name) VALUES
+      (1, 'Card'),
+      (2, 'Paypal'),
+      (3, 'Bank Transfer')
+    `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
