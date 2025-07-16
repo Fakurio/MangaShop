@@ -23,13 +23,13 @@
   let orderItemsMangas = $state<OrderItemManga[]>([])
 
   const prepareContent = async () => {
-    await fetchMangas()
-    orderItems.forEach(orderItem => {
-      const foundManga = get(mangaStore).find(manga => manga.manga_id === orderItem.manga_id)
-      if(foundManga) {
-        orderItemsMangas.push({...foundManga, quantity: orderItem.quantity})
-      }
-    })
+      await fetchMangas()
+      orderItems.forEach(orderItem => {
+          const foundManga = get(mangaStore).find(manga => manga.manga_id === orderItem.manga_id)
+          if(foundManga) {
+            orderItemsMangas.push({...foundManga, quantity: orderItem.quantity})
+          }
+      })
   }
 </script>
 
@@ -53,7 +53,8 @@
                 <div class="flex flex-wrap gap-5">
                     {#each orderItemsMangas as manga (manga.manga_id)}
                         <div>
-                            <img src={manga.img_url} alt={manga.title} class="w-[100px] h-[150px]"/>
+                            <img src={`${import.meta.env.VITE_SERVER_HOST}/proxy?url=${encodeURIComponent(manga.img_url)}`}
+                                 alt={manga.title} class="w-[100px] h-[150px]"/>
                         </div>
                     {/each}
                 </div>
@@ -63,7 +64,8 @@
             <div class="mt-8 flex flex-col gap-5 text-[1.1rem]">
                 {#each orderItemsMangas as manga (manga.manga_id)}
                     <div class="border-border border-2 rounded-xl p-4 flex justify-between items-center max-[500px]:flex-col max-[500px]:gap-4">
-                        <img src={manga.img_url} alt={manga.title} class="w-[100px] h-[150px]"/>
+                        <img src={`${import.meta.env.VITE_SERVER_HOST}/proxy?url=${encodeURIComponent(manga ? manga.img_url : "")}`}
+                             alt={manga.title} class="w-[100px] h-[150px]"/>
                         <p>Quantity: {manga.quantity}</p>
                         <p>Price: {manga.price} PLN</p>
                     </div>

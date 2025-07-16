@@ -21,9 +21,8 @@ export const adminColumns: ColumnDef<AdminDashboardColumns>[] = [
       const imageSnippet = createRawSnippet(() => {
         return {
           render: () =>
-            `<img src=${row.getValue(
-              "img_url",
-            )} class="h-[150px] max-w-[100px]" alt="manga logo"/>`,
+            `<img src=${import.meta.env.VITE_SERVER_HOST}/proxy?url=${encodeURIComponent(row.getValue("img_url"))} 
+                class="h-[150px] max-w-[100px]" alt="manga logo"/>`,
         };
       });
       return renderSnippet(imageSnippet, null);

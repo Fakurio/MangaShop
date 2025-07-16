@@ -16,6 +16,7 @@
 
   let {title, img_url, price, manga_id, handleCardLoad} : MangaCardProps = $props()
   let isLoading = $state(true)
+  let proxiedImgUrl = $state('')
 
   const handleAddingToCart = () => {
     toast.success("Manga added to cart")
@@ -31,6 +32,7 @@
     img.onload = () => {
       isLoading = false;
       handleCardLoad(title)
+      proxiedImgUrl = imageStreamUrl;
     };
   })
 
@@ -42,7 +44,7 @@
   {:else}
     <a href="/manga/{manga_id}" class="hover:text-primary" use:link>
       <div class="manga-card">
-        <img src={img_url}  class="rounded-3xl h-full w-full" alt={title}/>
+        <img src={proxiedImgUrl}  class="rounded-3xl h-full w-full" alt={title}/>
         <h2 class="mt-4 text-xl ">{title}</h2>
       </div>
     </a>
