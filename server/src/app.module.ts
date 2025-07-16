@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CartModule } from './cart/cart.module';
 import { OrderModule } from './order/order.module';
 import { MangaModule } from './manga/manga.module';
+import { ProxyModule } from './proxy/proxy.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { MangaModule } from './manga/manga.module';
     CartModule,
     OrderModule,
     MangaModule,
+    ProxyModule,
   ],
 })
 export class AppModule {}

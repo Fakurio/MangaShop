@@ -15,9 +15,15 @@ async function bootstrap() {
     : [];
   app.enableCors({
     origin: (origin, callback) => {
-      return allowedOrigins.includes(origin)
-        ? callback(null, true)
-        : callback(new Error('Origin not allowed'));
+      if (process.env.NODE_ENV !== 'production') {
+        return callback(null, true);
+      }
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        console.log(`CORS blocked request from origin: ${origin}`);
+        return callback(new Error(`Not allowed by CORS: ${origin}`));
+      }
     },
     credentials: true,
   });

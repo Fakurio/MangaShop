@@ -23,8 +23,9 @@
   }
 
   onMount(() => {
+    const imageStreamUrl = `${import.meta.env.VITE_SERVER_HOST}/proxy?url=${encodeURIComponent(img_url)}`
     const img = new Image();
-    img.src = img_url;
+    img.src = imageStreamUrl;
     isLoading = true;
 
     img.onload = () => {
