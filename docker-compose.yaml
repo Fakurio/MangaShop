@@ -3,6 +3,8 @@ services:
     container_name: svelte-app
     build:
       context: ./client
+      args:
+        VITE_SERVER_HOST: http://localhost:3000
     ports:
       - "8080:80"
     networks:
@@ -10,26 +12,30 @@ services:
     restart: on-failure
     depends_on:
       - nestjs-app
+    environment:
+      - VITE_CLIENT_HOST=8080
 
   nestjs-app:
     container_name: nestjs-app
     build:
       context: ./server
+    restart: on-failure
     depends_on:
       - mysql
     ports:
       - "3000:3000"
     environment:
-      - JWT_SECRET="284da1a930d9eb659f5c912d6c49a59d3bd4ff1a3f07e1d39c88632fe1125381"
-      - JWT_EXPIRES_IN="5m"
-      - JWT_REFRESH_EXPIRES_IN="1d"
+      - JWT_SECRET=strong_secret
+      - JWT_EXPIRES_IN=5m
+      - JWT_REFRESH_EXPIRES_IN=1d
       - COOKIE_MAX_AGE=86400000
       - SERVER_PORT=3000
-      - DB_HOST="mysql"
+      - DB_HOST=mysql
       - DB_PORT=3306
-      - DB_USERNAME="root"
-      - DB_PASSWORD="root"
-      - DB_NAME="manga_shop"
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+      - DB_NAME=manga_shop
+      - NODE_ENV=dev
     networks:
       - backend
       - frontend
@@ -38,8 +44,8 @@ services:
     container_name: mysql
     image: mysql
     environment:
-      - MYSQL_ROOT_PASSWORD="root"
-      - MYSQL_DATABASE="manga_shop"
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=manga_shop
     networks:
       - backend
     restart: on-failure

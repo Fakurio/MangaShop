@@ -29,7 +29,7 @@ export class Manga {
   @Column('varchar', { length: 50 })
   author: string;
 
-  @Column('varchar', { length: 5000, default: '' })
+  @Column('text')
   description: string;
 
   @ManyToMany(() => Genre, (genre) => genre.mangas)

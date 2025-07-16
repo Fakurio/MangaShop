@@ -1,8 +1,8 @@
 FROM node:20.12.2 as base
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
-COPY . ./
+RUN npm ci
+COPY . .
 
 ARG VITE_SERVER_HOST
 ENV VITE_SERVER_HOST=$VITE_SERVER_HOST

@@ -1,0 +1,8 @@
+dist
+scripts
+.env*
+node_modules
+coverage
+*.spec.ts
+Dockerfile
+README.md

@@ -1,18 +1,54 @@
-MangaShop app build with NestJS and Svelte
+# MangaShop
 
-Existing features:
+MangaShop is a full-stack e-commerce prototype application built with **NestJS** for the backend API and **Svelte** for efficient frontend. Users can browse, search, and filter mangas, manage a persistent shopping cart, and view their order history.
 
-- user authentication using JWT
-- filtering mangas by genre and price range
-- searching mangas by title
-- cart persistance between logouts
-- orders page with summary of all given user created orders
-- reviewing mangas
+---
 
-How to run:
+## ✨ Features
 
-1.  change .env.example file in server folder to .env
-2.  open MangaShop folder in terminal and run:
-    - docker-compose up -d
-    - docker exec -it nestjs-app sh -c "npm run typeorm migration:run"
-3.  app is accessible on localhost:8080
+* **User Authentication (JWT):** Secure user registration and login with JSON Web Tokens.
+* **Manga Browse:**
+    * Filter mangas by genre.
+    * Filter mangas by price range.
+    * Search mangas by title for quick discovery.
+* **Persistent Shopping Cart:** Your cart contents are saved even after you log out, so you can pick up where you left off.
+* **Order Management:**
+    * View a comprehensive summary of all your past orders.
+* **Review mangas**
+    * Add comments and rating for chosen manga.
+
+---
+
+## 🚀 How to Run
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/Fakurio/MangaShop.git
+    cd MangaShop
+    ```
+
+2.  **Start the application:**
+    ```bash
+    docker-compose up -d
+    ```
+3.  **Access the application:**
+    Once the containers are up, the application will be accessible in your web browser at:
+    http://localhost:8080
+
+---
+
+## 🛠️ Technologies Used
+
+**Backend:**
+* **NestJS**
+* **Typescript**
+* **TypeORM**
+* **MySQL**
+* **JWT (JSON Web Tokens)**
+
+**Frontend:**
+* **Svelte**
+* **Typescript**
+* **Shadcn/ui**
+
+---
